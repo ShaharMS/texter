@@ -1,5 +1,5 @@
 {
-    "name": "msf",
+    "name": "texter",
     "classPath": "src",
     "license": "MIT",
     "releasenote": "more text input support",
@@ -9,5 +9,7 @@
         "flixel": "",
 		"flixel-addons": "",
         "flixel-ui": ""
-    }
+    },
+    "tags": ["text", "input", "rtl", "ltr", "char"]
+    
 }
