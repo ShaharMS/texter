@@ -1,15 +1,13 @@
-package msf.extras;
+package texter.flixel;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
-import lime.ui.KeyCode;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.text.TextField;
 import openfl.text._internal.TextLayout;
-import openfl.ui.Keyboard;
 
 /**
  * Extends TextFeild to support flixel & RTL. displays over all other objects

@@ -20,17 +20,35 @@ I figured I'm not the only person that needs those fixes, **and thats how and wh
 My memory is kinda trash, so i thought of making a roadmap for me and you to know whats supported and whats yet to be 
 supported (I promise you i need this more then you 😂)
 
+ - ✅ - fully working
+ - ❌ - needs implementation
+ - ✅❌ - partially complete, probably works but might be wonky
 ---
 
-### FlxInputTextRTL
+### **FlxInputTextRTL**
 
 Reguar FlxInputText with extended support for:
  - All languages
  - Bi-directional text
  - Multilne (Almost!)
 
-| Feature | Status | More Details | Targets |
-|  :---:  |  :---: |     :---:    |  :---:  |
-| General RTL typing for RTL languages | ✅ | not related to RTL characters - need to add RTL spacebar logic | All |
+| Feature | Works On JS | Works On Non-JS |More Details |
+|  :---:  |     :---:   |       :---:     |    :---:    |
+| General LTR typing for LTR languages | ✅ | ✅ | the actual letters/signs being typed |
+| General RTL typing for RTL languages | ✅ | ✅ | the actual letters/signs being typed with the RTL Marker (when needed) |
+| LTR Spacebar  | ✅ | ✅ | the regular `space` char - `" "` |
+| RTL Spacebar  | ✅ | ❌ | the regular `space` char for RTL languages with the RTL Marker - need to add RTL spacebar logic on non-JS targets |
+| LTR Backspace | ✅ | ✅ | the regular `backspace` deletion |
+| RTL Backspace | ✅ | ✅ | the regular `backspace` char for RTL languages |
+| LTR Delete    | ✅ | ✅ | the regular `delete` deletion |
+| RTL Delete    | ✅ | ✅ | the regular `delete` deletion for RTL languages |
+| LTR Caret     | ✅ | ✅ | the letter insertion/deletion point |
+| RTL Caret     | ✅ | ✅ | the letter insertion/deletion point|
+| Multiline text | ❌ | ✅❌ | expands the input text vertiacly to match the text size & create a  new line. **on JS - causes a shader crash**, on non-JS - caret gets stuck on the first line |
+| Scrolling Single-Line text | ❌ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
+| Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
+| Up/Down Arrow Keys | ❌ | ❌ | used to move the caret between lines. doesnt work because the caret is always on the first line |
+| LTR/RTL Enter | ❌ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. isnt supported since multiline isnt supported |
+
 
 

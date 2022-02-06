@@ -1,4 +1,4 @@
-package msf.extras;
+package texter.flixel;
 
 import flixel.ui.FlxButton;
 import flixel.FlxG;

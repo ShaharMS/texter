@@ -1,15 +1,21 @@
-package msf.extras;
+package texter.flixel;
+
+
+import openfl.geom.Rectangle;
+import flixel.text.FlxText.FlxTextAlign;
+import openfl.text.TextField;
 #if js
 import haxe.Timer;
+import flixel.FlxG;
 #else
 import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
+import texter.GeneralCharMaps;
 #end
 import flixel.addons.ui.FlxInputText;
 import flixel.util.FlxColor;
-import flixel.FlxG;
 
 using flixel.util.FlxStringUtil;
 #if js
@@ -18,17 +24,24 @@ using flixel.util.FlxStringUtil;
  */
 class FlxInputTextRTL extends FlxInputText
 {
+	/**
+	 * in order to fix caret positioning behaving wierd, were going to move it to the correct position with adding the offset to its `X`
+	 */
+	var rtlCaretOffset:Float = 0;
 
-	var pressTime:Int = 0;
-
-	var __rtlOffset:Int = 0;
+	
 	/**
 	 * the input with which were going to capture key presses.
 	 */
 	var textInput:js.html.InputElement;
 
-	var keyCode:Int;
 	/**
+	 * Creates a new text input field with multilang support && multiline. 
+	 * 
+	 * for more info about supported features check the roadmap below:
+	 * 
+	 * https://github.com/ShaharMS/texter#roadmap
+	 * 
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
 	 * @param	Width			The width of the text object (height is determined automatically).
@@ -38,11 +51,11 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK,
-			BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size);
 		wordWrap = true;
+		textField.autoSize = LEFT;
 		getInput();
 	}
 	override function set_hasFocus(newFocus:Bool):Bool
@@ -53,7 +66,7 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
 				caret.visible = true;
-				caretIndex = 0;
+				caretIndex = text.length;
 			}
 		}
 		else
@@ -98,7 +111,7 @@ class FlxInputTextRTL extends FlxInputText
 		textInput.value = String.fromCharCode(127);
 		textInput.style.left = "0px";
 		textInput.style.top = "50%";
-		untyped (textInput.style).pointerEvents = 'none';
+		untyped textInput.style.pointerEvents = 'none';
 		textInput.style.zIndex = "-10000000";
 		js.Browser.document.body.appendChild(textInput);
 		textInput.addEventListener('input', (e:js.html.InputEvent) ->
@@ -126,7 +139,7 @@ class FlxInputTextRTL extends FlxInputText
 	function typeChar(?char:String = "") {
 		if (char == "bsp") {
 			caretIndex--;
-			text = text.substring(0, caretIndex);
+			text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 			onChange(FlxInputText.BACKSPACE_ACTION);
 			text = text;
 			Timer.delay(() -> {
@@ -135,7 +148,7 @@ class FlxInputTextRTL extends FlxInputText
 				t.run = () -> {
 					if(FlxG.keys.pressed.BACKSPACE) {
 						caretIndex--;
-						text = text.substring(0, caretIndex);
+						text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 						onChange(FlxInputText.BACKSPACE_ACTION);
 						text = text;
 					} else t.stop();
@@ -195,7 +208,97 @@ class FlxInputTextRTL extends FlxInputText
 			if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;
 			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
 			if (FlxG.keys.justPressed.END) caretIndex = text.length;
+			
 		}
+	}
+
+	override function set_caretIndex(newCaretIndex:Int):Int
+	{
+		var offx:Float = 0;
+
+		var alignStr:FlxTextAlign = getAlignStr();
+
+		switch (alignStr)
+		{
+			case RIGHT:
+				offx = textField.width - 2 - textField.textWidth - 2;
+				if (offx < 0)
+					offx = 0; // hack, fix negative offset.
+
+			case CENTER:
+				#if !js
+				offx = (textField.width - 2 - textField.textWidth) / 2 + textField.scrollH / 2;
+				#end
+				if (offx <= 1)
+					offx = 0; // hack, fix ofset rounding alignment.
+
+			default:
+				offx = 0;
+		}
+
+		caretIndex = newCaretIndex;
+
+		// If caret is too far to the right something is wrong
+		if (caretIndex > (text.length + 1))
+		{
+			caretIndex = -1;
+		}
+
+		// Caret is OK, proceed to position
+		if (caretIndex != -1)
+		{
+			var boundaries:Rectangle = null;
+
+			// Caret is not to the right of text
+			if (caretIndex < text.length)
+			{
+				boundaries = getCharBoundaries(caretIndex);
+				if (boundaries != null)
+				{
+					caret.x = offx + boundaries.left + x;
+					caret.y = boundaries.top + y;
+				}
+			}
+			// Caret is to the right of text
+			else
+			{
+				boundaries = getCharBoundaries(caretIndex - 1);
+				if (boundaries != null)
+				{
+					caret.x = offx + boundaries.right + x;
+					caret.y = boundaries.top + y;
+				}
+				// Text box is empty
+				else if (text.length == 0)
+				{
+					// 2 px gutters
+					caret.x = x + offx + 2;
+					caret.y = y + 2;
+				}
+			}
+		}
+
+		#if !js
+		caret.x -= textField.scrollH;
+		#end
+		var trueWidth:Float = 0;
+		var tWidth:Float = 0;
+		
+		if (caretIndex > 0) {
+			for (char in [for (i in 0...caretIndex + 1) getCharBoundaries(i).width]) trueWidth += char;
+			trace(trueWidth);
+			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width]) tWidth += char;
+			trace(tWidth);
+			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1))) caret.x = tWidth - trueWidth + 2;
+		}
+		
+		// Make sure the caret doesn't leave the textfield on single-line input texts
+		if ((lines == 1) && (caret.x + caret.width) > (x + width))
+		{
+			caret.x = x + width - 2;
+		}
+
+		return caretIndex;
 	}
 }
 #else
@@ -297,8 +400,8 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (caretIndex > 0)
 			{
-				if (FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1))
-					|| FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1))
+					|| GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				} else {
 					caretIndex--;
@@ -313,7 +416,7 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (text.length > 0 && caretIndex < text.length)
 			{
-				if (FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1)) || FlxCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1)) || GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
 					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
 					caretIndex--;
 				} else {
@@ -345,13 +448,13 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	function regularKeysDown(letter:String) {
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return
+		if (!hasFocus) return;
 		//if the caret is broken for some reason, fix it
 		if (caretIndex < 0) caretIndex = 0;
 		//set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "";
 		if (letter != null) {
-			if (FlxCharMaps.rtlLetterArray.contains(letter)) { t = "‏" + letter;}
+			if (GeneralCharMaps.rtlLetterArray.contains(letter)) { t = "‏" + letter;}
 			else t = letter;
 		} else "";
 

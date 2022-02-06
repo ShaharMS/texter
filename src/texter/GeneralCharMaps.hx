@@ -1,6 +1,6 @@
 package texter;
 
-class FlxCharMaps {
+class GeneralCharMaps {
 	public static var completeMap(default, null):Map<Int, String> = [
 		32 => " ",
 		33 => "!",
