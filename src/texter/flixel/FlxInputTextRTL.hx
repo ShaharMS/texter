@@ -29,7 +29,15 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	var rtlCaretOffset:Float = 0;
 
-	
+	/**
+	 * **for multiline** - the text above the current text feild - can be accessed when caretIndex gets below 0/the `UP` key is pressed.
+	 */
+	public var parentText:FlxInputTextRTL;
+
+	/**
+	 * **for multiline** - the text below the current text feild - can be accessed when caretIndex gets above 0/the `Down` key is pressed.
+	 */
+	public var childText:FlxInputTextRTL;
 	/**
 	 * the input with which were going to capture key presses.
 	 */
@@ -53,15 +61,16 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
-		super(X, Y, Width, Text, size);
-		wordWrap = true;
-		textField.autoSize = LEFT;
+		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
+		wordWrap = false;
 		getInput();
 	}
 	override function set_hasFocus(newFocus:Bool):Bool
 	{
 		if (newFocus)
 		{
+			if (parentText != null) parentText.hasFocus = false;
+			if (childText != null) childText.hasFocus = false;
 			if (hasFocus != newFocus)
 			{
 				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
@@ -138,22 +147,32 @@ class FlxInputTextRTL extends FlxInputText
 
 	function typeChar(?char:String = "") {
 		if (char == "bsp") {
-			caretIndex--;
-			text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-			onChange(FlxInputText.BACKSPACE_ACTION);
-			text = text;
-			Timer.delay(() -> {
-				var t:Timer;
-				t = new Timer(16);
-				t.run = () -> {
-					if(FlxG.keys.pressed.BACKSPACE) {
-						caretIndex--;
-						text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-						onChange(FlxInputText.BACKSPACE_ACTION);
-						text = text;
-					} else t.stop();
-				};
-			}, 500);
+			if (caretIndex > 0) {
+				caretIndex--;
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				onChange(FlxInputText.BACKSPACE_ACTION);
+				text = text;
+				Timer.delay(() ->
+				{
+					var t:Timer;
+					t = new Timer(16);
+					t.run = () ->
+					{
+						if (FlxG.keys.pressed.BACKSPACE)
+						{
+							caretIndex--;
+							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+							onChange(FlxInputText.BACKSPACE_ACTION);
+							text = text;
+						}
+						else
+							t.stop();
+					};
+				}, 500);
+			}
+			else {
+				textParent();
+			}
 		}
 		else if (char == "del") {
 			if (text.length > 0 && caretIndex < text.length)
@@ -174,6 +193,7 @@ class FlxInputTextRTL extends FlxInputText
 				}, 500);
 			}
 		}
+		else if (char == "enter") textChild();
 		else if (char == " ") {
 			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 				text = insertSubstring(text, char, caretIndex);
@@ -196,6 +216,46 @@ class FlxInputTextRTL extends FlxInputText
 		}
 	}
 
+	/**
+	 * Creates/sets the focus to the parent text
+	 */
+	function textParent() {
+		if (parentText == null)
+		{
+			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), " ", this.size, this.color, this.backgroundColor);
+			FlxG.state.add(parentText);
+			parentText.childText = this;
+			parentText.hasFocus = true;
+			this.hasFocus = false;
+		}
+		else
+		{
+			parentText.hasFocus = true;
+			parentText.caretIndex = parentText.text.length;
+			this.hasFocus = false;
+		}
+	}
+
+	/**
+	 * Creates/sets the focus to the child text
+	 */
+	function textChild() {
+		if (childText == null)
+		{
+			childText = new FlxInputTextRTL(this.x, this.y + this.height, Std.int(this.width), " ", this.size, this.color, this.backgroundColor);
+			FlxG.state.add(childText);
+			childText.parentText = this;
+			childText.hasFocus = true;
+			this.hasFocus = false;
+		}
+		else
+		{
+			childText.hasFocus = true;
+			childText.caretIndex = childText.text.length;
+			this.hasFocus = false;
+		}
+	}
+
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -203,9 +263,20 @@ class FlxInputTextRTL extends FlxInputText
 		if (hasFocus) {
 			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
 			if (FlxG.keys.justPressed.BACKSPACE) typeChar("bsp");
-			if (FlxG.keys.justPressed.DELETE) typeChar("del"); 
-			if (FlxG.keys.justPressed.LEFT) if (caretIndex > 0) caretIndex --;
-			if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;
+			if (FlxG.keys.justPressed.DELETE) typeChar("del");
+			if (FlxG.keys.justPressed.ENTER) typeChar("enter"); 
+			if (FlxG.keys.justPressed.LEFT) {
+				if (caretIndex > 0) {
+					caretIndex--;
+				} 
+				else textParent();
+			}
+			if (FlxG.keys.justPressed.RIGHT) {
+				if (caretIndex < text.length) {
+					caretIndex ++;
+				}
+				else textChild();
+			}
 			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
 			if (FlxG.keys.justPressed.END) caretIndex = text.length;
 			

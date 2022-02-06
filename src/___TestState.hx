@@ -7,6 +7,6 @@ class ___TestState extends FlxState {
     
     public override function create() {
         super.create();
-        add(new FlxInputTextRTL(0,0, 700, "", 30));
+        add(new FlxInputTextRTL(0,300, 700, "", 30));
     }
 }
