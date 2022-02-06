@@ -1,4 +1,4 @@
-package msf.extras;
+package texter;
 
 class FlxCharMaps {
 	public static var completeMap(default, null):Map<Int, String> = [

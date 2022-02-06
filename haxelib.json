@@ -1,0 +1,13 @@
+{
+    "name": "msf",
+    "classPath": "src",
+    "license": "MIT",
+    "releasenote": "more text input support",
+    "contributors": ["ShaharMS"],
+    "version": "1.2.1",
+    "dependencies": {
+        "flixel": "",
+		"flixel-addons": "",
+        "flixel-ui": ""
+    }
+}
