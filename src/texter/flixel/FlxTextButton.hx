@@ -11,6 +11,8 @@ import flixel.util.FlxColor;
  * A text that calls a function when clicked
  * Behaves like a regular `FlxText`, but
  * with extra button functions.
+ * 
+ * //INCOMPLETE - works but lacks features
  */
 class FlxTextButton extends FlxText {
     public var status:Int;

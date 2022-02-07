@@ -23,6 +23,11 @@ using flixel.util.FlxStringUtil;
  */
 class FlxInputTextRTL extends FlxInputText
 {
+
+	/**
+	 * TEMPORARY - just to avoid crash bugs
+	 */
+	static var justCreated = false;
 	/**
 	 * in order to fix caret positioning behaving wierd, were going to move it to the correct position with adding the offset to its `X`
 	 */
@@ -148,7 +153,21 @@ class FlxInputTextRTL extends FlxInputText
 		}
 	}
 
+	
+	/**
+	   Used to get special char inputs:
+	  
+	  | Type | Action |
+	  | --- | --- |
+	  | **`"bsp"`** | Backspace Action |
+	  | **`"del"`** | Delete Action |
+	  | **`" "`** | Spacebar Action |
+	  | **`"enter"`** | Enter Action |
+
+	  @param char Should be one of the `Type`s, not case sensitive
+	 **/
 	function typeChar(?char:String = "") {
+		char = char.toLowerCase();
 		if (char == "bsp") {
 			if (caretIndex > 0) {
 				caretIndex--;
@@ -174,7 +193,7 @@ class FlxInputTextRTL extends FlxInputText
 				}, 500);
 			}
 			else {
-				textParent();
+				createParent();
 			}
 		}
 		else if (char == "del") {
@@ -196,7 +215,7 @@ class FlxInputTextRTL extends FlxInputText
 				}, 500);
 			}
 		}
-		else if (char == "enter") textChild();
+		else if (char == "enter") createChild();
 		else if (char == " ") {
 			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 				text = insertSubstring(text, char, caretIndex);
@@ -222,40 +241,40 @@ class FlxInputTextRTL extends FlxInputText
 	/**
 	 * Creates/sets the focus to the parent text
 	 */
-	function textParent() {
-		if (parentText == null)
-		{
-			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), " ", this.size, this.color, this.backgroundColor);
+	function createParent() {
+		//used to avoid crashes with creating too many text inputs;
+		if (justCreated) return;
+		if (parentText == null) {
+			justCreated = true;
+			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
 			FlxG.state.add(parentText);
-			parentText.childText = this;
-			parentText.hasFocus = true;
 			this.hasFocus = false;
-		}
-		else
-		{
+			parentText.hasFocus = true;
+			justCreated = false;
+		} else {
+			this.hasFocus = false;
 			parentText.hasFocus = true;
 			parentText.caretIndex = parentText.text.length;
-			this.hasFocus = false;
 		}
 	}
 
 	/**
 	 * Creates/sets the focus to the child text
 	 */
-	function textChild() {
-		if (childText == null)
-		{
-			childText = new FlxInputTextRTL(this.x, this.y + this.height, Std.int(this.width), " ", this.size, this.color, this.backgroundColor);
+	function createChild() {
+		//used to avoid crashes with creating too many text inputs;
+		if (justCreated) return;
+		if (childText == null) {
+			justCreated = true;
+			childText = new FlxInputTextRTL(this.x, this.y + this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
 			FlxG.state.add(childText);
-			childText.parentText = this;
-			childText.hasFocus = true;
 			this.hasFocus = false;
-		}
-		else
-		{
+			childText.hasFocus = true;
+			justCreated = false;
+		} else {
+			this.hasFocus = false;
 			childText.hasFocus = true;
 			childText.caretIndex = childText.text.length;
-			this.hasFocus = false;
 		}
 	}
 
@@ -272,13 +291,13 @@ class FlxInputTextRTL extends FlxInputText
 				if (caretIndex > 0) {
 					caretIndex--;
 				} 
-				else textParent();
+				else createParent();
 			}
 			if (FlxG.keys.justPressed.RIGHT) {
 				if (caretIndex < text.length) {
 					caretIndex ++;
 				}
-				else textChild();
+				else createChild();
 			}
 			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
 			if (FlxG.keys.justPressed.END) caretIndex = text.length;
@@ -357,12 +376,10 @@ class FlxInputTextRTL extends FlxInputText
 		#end
 		var trueWidth:Float = 0;
 		var tWidth:Float = 0;
-		
-		if (caretIndex > 0) {
+		//fix for RTL languages to implement correct caret positioning without actually altering caretIndex
+		if (caretIndex > 0 && text.length > 0) {
 			for (char in [for (i in 0...caretIndex + 1) getCharBoundaries(i).width]) trueWidth += char;
-			trace(trueWidth);
 			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width]) tWidth += char;
-			trace(tWidth);
 			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1))) caret.x = tWidth - trueWidth + 2;
 		}
 		
