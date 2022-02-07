@@ -1,12 +1,11 @@
 package texter.flixel;
 
 
-import openfl.geom.Rectangle;
-import flixel.text.FlxText.FlxTextAlign;
-import openfl.text.TextField;
 #if js
 import haxe.Timer;
 import flixel.FlxG;
+import openfl.geom.Rectangle;
+import flixel.text.FlxText.FlxTextAlign;
 #else
 import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
@@ -38,6 +37,8 @@ class FlxInputTextRTL extends FlxInputText
 	 * **for multiline** - the text below the current text feild - can be accessed when caretIndex gets above 0/the `Down` key is pressed.
 	 */
 	public var childText:FlxInputTextRTL;
+
+	
 	/**
 	 * the input with which were going to capture key presses.
 	 */
@@ -141,8 +142,10 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	function updateFocus()
 	{
-		textInput.focus();
-		textInput.select();
+		if (hasFocus) {
+			textInput.focus();
+			textInput.select();
+		}
 	}
 
 	function typeChar(?char:String = "") {
