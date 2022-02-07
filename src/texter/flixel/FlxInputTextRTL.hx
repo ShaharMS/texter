@@ -1,6 +1,8 @@
 package texter.flixel;
 
 
+import flixel.FlxSprite;
+import openfl.display.Window;
 #if js
 import haxe.Timer;
 import flixel.FlxG;
@@ -13,7 +15,7 @@ import openfl.Lib;
 import openfl.events.KeyboardEvent;
 import texter.GeneralCharMaps;
 #end
-import flixel.addons.ui.FlxInputText;
+import texter.flixel._internal.FlxInputText;
 import flixel.util.FlxColor;
 
 using flixel.util.FlxStringUtil;
@@ -24,26 +26,22 @@ using flixel.util.FlxStringUtil;
 class FlxInputTextRTL extends FlxInputText
 {
 
-	/**
-	 * TEMPORARY - just to avoid crash bugs
-	 */
-	static var justCreated = false;
-	/**
-	 * in order to fix caret positioning behaving wierd, were going to move it to the correct position with adding the offset to its `X`
-	 */
-	var rtlCaretOffset:Float = 0;
-
+	
 	/**
 	 * **for multiline** - the text above the current text feild - can be accessed when caretIndex gets below 0/the `UP` key is pressed.
 	 */
-	public var parentText:FlxInputTextRTL;
+	var parentText:FlxInputTextRTL;
 
 	/**
 	 * **for multiline** - the text below the current text feild - can be accessed when caretIndex gets above 0/the `Down` key is pressed.
 	 */
-	public var childText:FlxInputTextRTL;
+	var childText:FlxInputTextRTL;
 
-	
+	/**
+	 * Enables or disables multiline text input on this `FlxInputTextRTL`
+	 */
+	public var multiline:Bool = true;
+
 	/**
 	 * the input with which were going to capture key presses.
 	 */
@@ -192,8 +190,8 @@ class FlxInputTextRTL extends FlxInputText
 					};
 				}, 500);
 			}
-			else {
-				createParent();
+			else if (multiline) {
+				moveToParent();
 			}
 		}
 		else if (char == "del") {
@@ -215,7 +213,7 @@ class FlxInputTextRTL extends FlxInputText
 				}, 500);
 			}
 		}
-		else if (char == "enter") createChild();
+		else if (char == "enter" && multiline) moveToChild();
 		else if (char == " ") {
 			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 				text = insertSubstring(text, char, caretIndex);
@@ -241,19 +239,17 @@ class FlxInputTextRTL extends FlxInputText
 	/**
 	 * Creates/sets the focus to the parent text
 	 */
-	function createParent() {
-		//used to avoid crashes with creating too many text inputs;
-		if (justCreated) return;
+	function moveToParent() {
 		if (parentText == null) {
-			justCreated = true;
 			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
-			FlxG.state.add(parentText);
+			FlxG.state.insert(FlxG.state.members.indexOf(this), parentText);
+			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x + borderSize, this.y + this.height - borderSize).makeGraphic(Std.int(this.width - borderSize * 2), Std.int(borderSize) * 2));
+			parentText.childText = this;
 			this.hasFocus = false;
-			parentText.hasFocus = true;
-			justCreated = false;
+			Timer.delay(() -> parentText.hasFocus = true, 34);
 		} else {
 			this.hasFocus = false;
-			parentText.hasFocus = true;
+			Timer.delay(() -> parentText.hasFocus = true, 34);
 			parentText.caretIndex = parentText.text.length;
 		}
 	}
@@ -261,19 +257,17 @@ class FlxInputTextRTL extends FlxInputText
 	/**
 	 * Creates/sets the focus to the child text
 	 */
-	function createChild() {
-		//used to avoid crashes with creating too many text inputs;
-		if (justCreated) return;
+	function moveToChild() {
 		if (childText == null) {
-			justCreated = true;
 			childText = new FlxInputTextRTL(this.x, this.y + this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
-			FlxG.state.add(childText);
+			FlxG.state.insert(FlxG.state.members.indexOf(this), childText);
+			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x, this.y + this.height - borderSize).makeGraphic(Std.int(this.width), Std.int(borderSize) * 2));
+			childText.parentText = this;
 			this.hasFocus = false;
-			childText.hasFocus = true;
-			justCreated = false;
+			Timer.delay(() -> childText.hasFocus = true, 34);
 		} else {
 			this.hasFocus = false;
-			childText.hasFocus = true;
+			Timer.delay(() -> childText.hasFocus = true, 34);
 			childText.caretIndex = childText.text.length;
 		}
 	}
@@ -291,14 +285,16 @@ class FlxInputTextRTL extends FlxInputText
 				if (caretIndex > 0) {
 					caretIndex--;
 				} 
-				else createParent();
+				else if (multiline) moveToParent();
 			}
 			if (FlxG.keys.justPressed.RIGHT) {
 				if (caretIndex < text.length) {
 					caretIndex ++;
 				}
-				else createChild();
+				else if(multiline) moveToChild();
 			}
+			if (FlxG.keys.justPressed.UP && multiline) moveToParent();
+			if (FlxG.keys.justPressed.DOWN && multiline) moveToChild();
 			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
 			if (FlxG.keys.justPressed.END) caretIndex = text.length;
 			
@@ -381,6 +377,26 @@ class FlxInputTextRTL extends FlxInputText
 			for (char in [for (i in 0...caretIndex + 1) getCharBoundaries(i).width]) trueWidth += char;
 			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width]) tWidth += char;
 			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1))) caret.x = tWidth - trueWidth + 2;
+			//for word-wrapping
+			if (tWidth >= width) {	
+				var wordArray = text.split(" ");
+				var words = wordArray.copy();
+				words.pop();
+				var newSentence = "";
+				for (i in words) newSentence += i + " ";
+				var newTWidth:Float = 0;
+				for (char in [for (i in 0...newSentence.length + 1) getCharBoundaries(i).width]) newTWidth += char;
+				if (newTWidth < width) {
+					moveToChild();
+					childText.text = wordArray.pop() + childText.text;
+					if (caretIndex >= newSentence.length) {
+						this.hasFocus = false;
+						Timer.delay(() -> childText.hasFocus = true, 50);
+						childText.caretIndex = text.length - caretIndex;
+					}
+					text = newSentence;
+				}
+			}
 		}
 		
 		// Make sure the caret doesn't leave the textfield on single-line input texts

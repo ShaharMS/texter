@@ -6,9 +6,7 @@
     "contributors": ["ShaharMS"],
     "version": "1.2.1",
     "dependencies": {
-        "flixel": "",
-		"flixel-addons": "",
-        "flixel-ui": ""
+        "flixel": ""
     },
     "tags": ["text", "input", "rtl", "ltr", "char"]
     

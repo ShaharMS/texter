@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
  * Behaves like a regular `FlxText`, but
  * with extra button functions.
  * 
- * //INCOMPLETE - works but lacks features
+ * INCOMPLETE - works but lacks features
  */
 class FlxTextButton extends FlxText {
     public var status:Int;
