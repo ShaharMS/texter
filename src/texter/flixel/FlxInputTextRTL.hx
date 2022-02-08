@@ -243,7 +243,7 @@ class FlxInputTextRTL extends FlxInputText
 		if (parentText == null) {
 			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
 			FlxG.state.insert(FlxG.state.members.indexOf(this), parentText);
-			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x + borderSize, this.y + this.height - borderSize).makeGraphic(Std.int(this.width - borderSize * 2), Std.int(borderSize) * 2));
+			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x + borderSize, this.y - this.height + borderSize).makeGraphic(Std.int(this.width - borderSize * 2), Std.int(borderSize) * 2));
 			parentText.childText = this;
 			this.hasFocus = false;
 			Timer.delay(() -> parentText.hasFocus = true, 34);
