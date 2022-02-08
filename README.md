@@ -48,7 +48,7 @@ Reguar FlxInputText with extended support for:
 | Scrolling Single-Line text | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
 | Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
 | Up/Down Arrow Keys | ✅ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line |
-| LTR/RTL Enter | ❌ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. isnt supported since multiline isnt supported |
+| LTR/RTL Enter | ✅ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. On non-JS - isnt supported since multiline isnt supported yet|
 
 
 
