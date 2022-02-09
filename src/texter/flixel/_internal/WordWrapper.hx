@@ -5,6 +5,11 @@ typedef DualInt = {
     public var int1:Int;
     public var int2:Int;
 };
+
+function formatDualInt(dual:DualInt):String {
+    return '${dual.int1}, ${dual.int2}';
+}
+
 class WordWrapper {
     
     public static var splitOnChars:Array<String> = [" ", "-", "\t"];
@@ -15,7 +20,7 @@ class WordWrapper {
         var indexArray:Array<DualInt> = [];
         var lastCheck = 0;
         for (i in 0...textInput.text.length) {
-			if (textInput.text.charAt(i) == " ") {
+			if (textInput.text.charAt(i) == " " || i == textInput.text.length - 1) {
                 var word = textInput.text.substring(lastCheck, i + 1);
                 indexArray.push({int1: lastCheck, int2: i + 1});
                 wordArray.push(word);
@@ -23,73 +28,35 @@ class WordWrapper {
             }
         }
         //wordArray is now consisting of: WORD + SPACE, WORD + SPACE
-        
-        @:privateAccess {
-            for (index in indexArray) {
-                var bounderySum:Float = 0;
-                for (char in index.int1...index.int2 + 1) {
-                    bounderySum += textInput.getCharBoundaries(char).width;
-                }
+		var textWithNewLines:String = "";
+       
+        var bounderySum:Float = 0;
+        var currentWord:Float = 0;
+        for (i in 0...wordArray.length) {
+            for (char in indexArray[i].int1...indexArray[i].int2 + 1) {
+				currentWord += @:privateAccess textInput.getCharBoundaries(char).width;
             }
+			bounderySum += currentWord;
+            trace('length of word "${wordArray[i]}" is: ${currentWord}');
+			if (bounderySum > textInput.width) {
+                textWithNewLines += "\n";
+                bounderySum = currentWord;
+            }
+			textWithNewLines += wordArray[i];
+            currentWord = 0;
         }
+        trace(textWithNewLines);
+		return textWithNewLines;         
+        
+        
 
         return "";
     }
 
     public static function warpByWords(text:String, length:Int):String {
-        var words:Array<String> = explodeString(text, splitOnChars);
-        trace(words);
-        var currentLineLength = 0;
-        var stringBuffer = new StringBuf();
-        for (word in words) {
-            if (currentLineLength + word.length > length) {
-
-                if (currentLineLength > 0) {
-					stringBuffer.add("\n");
-					currentLineLength = 0;
-                }    
-                
-				while (word.length > length)
-				{
-					stringBuffer.add(word.substring(0, length - 1) + "-");
-					word = word.substring(length - 1);
-					stringBuffer.add("\n");
-				}
-
-				word = StringTools.ltrim(word);
-            }
-            stringBuffer.add(word);
-            currentLineLength += word.length;  
-        }
-
-        return stringBuffer.toString();
+        return "";
     }
 
-    public static function explodeString(text:String, splitOnChars:Array<String>):Array<String> {
-        var parts = new Array<String>();
-        var startIndex = 0;
-        while (true) {
-            trace("iteration");
-            var index = text.indexOfAny(splitOnChars, startIndex);
-            if (index == -1) {
-                parts.push(text.substring(startIndex));
-                break;
-            }
-
-            var word = text.substring(startIndex, index - startIndex);
-            var nextChar = text.substring(index, text.length).charAt(0);
-
-            if (nextChar.containsWhiteSpace()) {
-				parts.push(word);
-				parts.push(nextChar);
-            } else {
-				parts.push(word + nextChar);
-            }
-
-			startIndex += index + 1;
-        }
-		return parts;
-    }
     public static function indexOfAny(string:String, splitOnStrings:Array<String>, ?startIndex:Int = 0):Int {
 		for (i in startIndex...string.length)
 		{

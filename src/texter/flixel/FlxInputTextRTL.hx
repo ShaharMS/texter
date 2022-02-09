@@ -1,8 +1,9 @@
 package texter.flixel;
 
-
+import js.Lib;
+using flixel.util.FlxStringUtil;
 import flixel.FlxSprite;
-import openfl.display.Window;
+import flixel.util.FlxColor;
 #if js
 import haxe.Timer;
 import flixel.FlxG;
@@ -16,32 +17,14 @@ import openfl.events.KeyboardEvent;
 import texter.GeneralCharMaps;
 #end
 import texter.flixel._internal.FlxInputText;
-import flixel.util.FlxColor;
+import texter.flixel._internal.WordWrapper;
 
-using flixel.util.FlxStringUtil;
 #if js
 /**
  * FlxInputText with support for RTL languages.
  */
 class FlxInputTextRTL extends FlxInputText
 {
-
-	
-	/**
-	 * **for multiline** - the text above the current text feild - can be accessed when caretIndex gets below 0/the `UP` key is pressed.
-	 */
-	var parentText:FlxInputTextRTL;
-
-	/**
-	 * **for multiline** - the text below the current text feild - can be accessed when caretIndex gets above 0/the `Down` key is pressed.
-	 */
-	var childText:FlxInputTextRTL;
-
-	/**
-	 * Enables or disables multiline text input on this `FlxInputTextRTL`
-	 */
-	public var multiline:Bool = true;
-
 	/**
 	 * the input with which were going to capture key presses.
 	 */
@@ -66,239 +49,8 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
-		wordWrap = false;
+		wordWrap = true;
 		getInput();
-	}
-	override function set_hasFocus(newFocus:Bool):Bool
-	{
-		if (newFocus)
-		{
-			if (parentText != null) parentText.hasFocus = false;
-			if (childText != null) childText.hasFocus = false;
-			if (hasFocus != newFocus)
-			{
-				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
-				caret.visible = true;
-				caretIndex = text.length;
-			}
-		}
-		else
-		{
-			// Graphics
-			caret.visible = false;
-			if (_caretTimer != null)
-			{
-				_caretTimer.cancel();
-			}
-		}
-
-		if (newFocus != hasFocus)
-		{
-			calcFrame();
-		}
-		return hasFocus = newFocus;
-	}
-	/**
-	   The original `onKeyDown` from `FlxInputText` is replaced with four functions - 
-	  
-	  | Function | Job |
-	  | --- | --- |
-	  | **`getInput()`** | used to set up the input element with which were going to listen to text input |
-	  | **`updateInput()`** | called every frame, selects the input element to continue listening for text input |
-	  | **`typeChar(String)`** | called when special keys (spacebar, backspace...) are pressed since `getInput()` can't listen to those |
-	  | **`update(Float)`** | called every frame, checks if one of the special keys (spacebar, backspace...) is pressed to call `typeChar(String)` |
-	 **/
-	override function onKeyDown(e:flash.events.KeyboardEvent) {}
-
-	/**
-	 * Exists to set up the input element, with which
-	 * were going to listen for text input
-	 */
-	function getInput()
-	{
-		textInput = cast js.Browser.document.createElement('input');
-		textInput.type = 'text';
-		textInput.style.position = 'absolute';
-		textInput.style.opacity = "0";
-		textInput.style.color = "transparent";
-		textInput.value = String.fromCharCode(127);
-		textInput.style.left = "0px";
-		textInput.style.top = "50%";
-		untyped textInput.style.pointerEvents = 'none';
-		textInput.style.zIndex = "-10000000";
-		js.Browser.document.body.appendChild(textInput);
-		textInput.addEventListener('input', (e:js.html.InputEvent) ->
-		{
-			if (caretIndex < 0) caretIndex = 0;
-			if (textInput.value.length > 0 && (maxLength == 0 || (text.length + textInput.value.length) < maxLength)) {
-				text = insertSubstring(text, textInput.value, caretIndex);
-				caretIndex++;
-				text = text;
-			}
-			
-		}, true);
-	}
-
-	/**
-	 * Were getting the text from an invisible input text and it isnt openFL/flixel related.
-	 * we have to keep it selected
-	 */
-	function updateFocus()
-	{
-		if (hasFocus) {
-			textInput.focus();
-			textInput.select();
-		}
-	}
-
-	
-	/**
-	   Used to get special char inputs:
-	  
-	  | Type | Action |
-	  | --- | --- |
-	  | **`"bsp"`** | Backspace Action |
-	  | **`"del"`** | Delete Action |
-	  | **`" "`** | Spacebar Action |
-	  | **`"enter"`** | Enter Action |
-
-	  @param char Should be one of the `Type`s, not case sensitive
-	 **/
-	function typeChar(?char:String = "") {
-		char = char.toLowerCase();
-		if (char == "bsp") {
-			if (caretIndex > 0) {
-				caretIndex--;
-				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-				onChange(FlxInputText.BACKSPACE_ACTION);
-				text = text;
-				Timer.delay(() ->
-				{
-					var t:Timer;
-					t = new Timer(16);
-					t.run = () ->
-					{
-						if (FlxG.keys.pressed.BACKSPACE)
-						{
-							caretIndex--;
-							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-							onChange(FlxInputText.BACKSPACE_ACTION);
-							text = text;
-						}
-						else
-							t.stop();
-					};
-				}, 500);
-			}
-			else if (multiline) {
-				moveToParent();
-			}
-		}
-		else if (char == "del") {
-			if (text.length > 0 && caretIndex < text.length)
-			{
-				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-				onChange(FlxInputText.DELETE_ACTION);
-				text = text;
-				Timer.delay(() -> {
-					var t:Timer;
-					t = new Timer(16);
-					t.run = () -> {
-						if(FlxG.keys.pressed.DELETE) {
-							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-							onChange(FlxInputText.DELETE_ACTION);
-							text = text;
-						} else t.stop();
-					};
-				}, 500);
-			}
-		}
-		else if (char == "enter" && multiline) moveToChild();
-		else if (char == " ") {
-			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
-				text = insertSubstring(text, char, caretIndex);
-				caretIndex++;
-				text = text;
-			}			
-			Timer.delay(() -> {
-				var t:Timer;
-				t = new Timer(16);
-				t.run = () -> {
-					if(FlxG.keys.pressed.BACKSPACE) {
-						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
-							text = insertSubstring(text, char, caretIndex);
-							caretIndex++;
-							text = text;
-						}						
-					} else t.stop();
-				};
-			}, 500);
-		}
-	}
-
-	/**
-	 * Creates/sets the focus to the parent text
-	 */
-	function moveToParent() {
-		if (parentText == null) {
-			parentText = new FlxInputTextRTL(this.x, this.y - this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
-			FlxG.state.insert(FlxG.state.members.indexOf(this), parentText);
-			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x + borderSize, this.y - this.height + borderSize).makeGraphic(Std.int(this.width - borderSize * 2), Std.int(borderSize) * 2));
-			parentText.childText = this;
-			this.hasFocus = false;
-			Timer.delay(() -> parentText.hasFocus = true, 34);
-		} else {
-			this.hasFocus = false;
-			Timer.delay(() -> parentText.hasFocus = true, 34);
-			parentText.caretIndex = parentText.text.length;
-		}
-	}
-
-	/**
-	 * Creates/sets the focus to the child text
-	 */
-	function moveToChild() {
-		if (childText == null) {
-			childText = new FlxInputTextRTL(this.x, this.y + this.height, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
-			FlxG.state.insert(FlxG.state.members.indexOf(this), childText);
-			FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, new FlxSprite(this.x, this.y + this.height - borderSize).makeGraphic(Std.int(this.width), Std.int(borderSize) * 2));
-			childText.parentText = this;
-			this.hasFocus = false;
-			Timer.delay(() -> childText.hasFocus = true, 34);
-		} else {
-			this.hasFocus = false;
-			Timer.delay(() -> childText.hasFocus = true, 34);
-			childText.caretIndex = childText.text.length;
-		}
-	}
-
-	public override function update(elapsed:Float)
-	{
-		super.update(elapsed);
-		updateFocus();
-		if (hasFocus) {
-			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
-			if (FlxG.keys.justPressed.BACKSPACE) typeChar("bsp");
-			if (FlxG.keys.justPressed.DELETE) typeChar("del");
-			if (FlxG.keys.justPressed.ENTER) typeChar("enter"); 
-			if (FlxG.keys.justPressed.LEFT) {
-				if (caretIndex > 0) {
-					caretIndex--;
-				} 
-				else if (multiline) moveToParent();
-			}
-			if (FlxG.keys.justPressed.RIGHT) {
-				if (caretIndex < text.length) {
-					caretIndex ++;
-				}
-				else if(multiline) moveToChild();
-			}
-			if (FlxG.keys.justPressed.UP && multiline) moveToParent();
-			if (FlxG.keys.justPressed.DOWN && multiline) moveToChild();
-			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
-			if (FlxG.keys.justPressed.END) caretIndex = text.length;
-			
-		}
 	}
 
 	override function set_caretIndex(newCaretIndex:Int):Int
@@ -372,33 +124,17 @@ class FlxInputTextRTL extends FlxInputText
 		#end
 		var trueWidth:Float = 0;
 		var tWidth:Float = 0;
-		//fix for RTL languages to implement correct caret positioning without actually altering caretIndex
-		if (caretIndex > 0 && text.length > 0) {
-			for (char in [for (i in 0...caretIndex + 1) getCharBoundaries(i).width]) trueWidth += char;
-			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width]) tWidth += char;
-			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1))) caret.x = tWidth - trueWidth + 2;
-			//for word-wrapping
-			if (tWidth >= width) {	
-				var wordArray = text.split(" ");
-				var words = wordArray.copy();
-				words.pop();
-				var newSentence = "";
-				for (i in words) newSentence += i + " ";
-				var newTWidth:Float = 0;
-				for (char in [for (i in 0...newSentence.length + 1) getCharBoundaries(i).width]) newTWidth += char;
-				if (newTWidth < width) {
-					moveToChild();
-					childText.text = wordArray.pop() + childText.text;
-					if (caretIndex >= newSentence.length) {
-						this.hasFocus = false;
-						Timer.delay(() -> childText.hasFocus = true, 50);
-						childText.caretIndex = text.length - caretIndex;
-					}
-					text = newSentence;
-				}
-			}
+		// fix for RTL languages to implement correct caret positioning without actually altering caretIndex
+		if (caretIndex > 0 && text.length > 0)
+		{
+			for (char in [for (i in 0...caretIndex + 1) getCharBoundaries(i).width])
+				trueWidth += char;
+			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width])
+				tWidth += char;
+			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1)))
+				caret.x = tWidth - trueWidth + 2;
 		}
-		
+
 		// Make sure the caret doesn't leave the textfield on single-line input texts
 		if ((lines == 1) && (caret.x + caret.width) > (x + width))
 		{
@@ -407,6 +143,168 @@ class FlxInputTextRTL extends FlxInputText
 
 		return caretIndex;
 	}
+	/**
+	   The original `onKeyDown` from `FlxInputText` is replaced with four functions - 
+	  
+	  | Function | Job |
+	  | --- | --- |
+	  | **`getInput()`** | used to set up the input element with which were going to listen to text input from |
+	  | **`updateInput()`** | called every frame, selects the input element to continue listening for text input |
+	  | **`typeChar(String)`** | called when special keys (spacebar, backspace...) are pressed since `getInput()` can't listen to those |
+	  | **`update(Float)`** | called every frame, checks if one of the special keys (spacebar, backspace...) is pressed to call `typeChar(String)` |
+	 **/
+	override function onKeyDown(e:flash.events.KeyboardEvent) {}
+
+	/**
+	 * Exists to set up the input element, with which
+	 * were going to listen for text input
+	 */
+	function getInput()
+	{
+		textInput = cast js.Browser.document.createElement('input');
+		textInput.type = 'text';
+		textInput.style.position = 'absolute';
+		textInput.style.opacity = "0";
+		textInput.style.color = "transparent";
+		textInput.value = String.fromCharCode(127);
+		textInput.style.left = "0px";
+		textInput.style.top = "50%";
+		untyped textInput.style.pointerEvents = 'none';
+		textInput.style.zIndex = "-10000000";
+		js.Browser.document.body.appendChild(textInput);
+		textInput.addEventListener('input', (e:js.html.InputEvent) ->
+		{
+			if (caretIndex < 0) caretIndex = 0;
+			if (textInput.value.length > 0 && (maxLength == 0 || (text.length + textInput.value.length) < maxLength)) {
+				text = insertSubstring(text, textInput.value, caretIndex);
+				caretIndex++;
+				//text = WordWrapper.wrapVisual(this);
+				text = text;
+			}
+			
+		}, true);
+	}
+
+	/**
+	 * Were getting the text from an invisible input text and it isnt openFL/flixel related.
+	 * we have to keep it selected
+	 */
+	function updateFocus()
+	{
+		if (hasFocus) {
+			textInput.focus();
+			textInput.select();
+		}
+	}
+
+	
+	/**
+	   Used to get special char inputs:
+	  
+	  | Type | Action |
+	  | --- | --- |
+	  | **`"bsp"`** | Backspace Action |
+	  | **`"del"`** | Delete Action |
+	  | **`" "`** | Spacebar Action |
+	  | **`"enter"`** | Enter Action |
+
+	  @param char Should be one of the `Type`s, not case sensitive
+	 **/
+	function typeChar(?char:String = "") {
+		char = char.toLowerCase();
+		if (char == "bsp") {
+			if (caretIndex > 0) {
+				caretIndex--;
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				onChange(FlxInputText.BACKSPACE_ACTION);
+				//text = WordWrapper.wrapVisual(this);
+				text = text;
+				Timer.delay(() ->
+				{
+					var t:Timer;
+					t = new Timer(16);
+					t.run = () ->
+					{
+						if (FlxG.keys.pressed.BACKSPACE)
+						{
+							caretIndex--;
+							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+							onChange(FlxInputText.BACKSPACE_ACTION);
+							//text = WordWrapper.wrapVisual(this);
+							text = text;
+						}
+						else
+							t.stop();
+					};
+				}, 500);
+			}
+		}
+		else if (char == "del") {
+			if (text.length > 0 && caretIndex < text.length)
+			{
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				onChange(FlxInputText.DELETE_ACTION);
+				//text = WordWrapper.wrapVisual(this);
+				text = text;
+				Timer.delay(() -> {
+					var t:Timer;
+					t = new Timer(16);
+					t.run = () -> {
+						if(FlxG.keys.pressed.DELETE) {
+							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+							onChange(FlxInputText.DELETE_ACTION);
+							//text = WordWrapper.wrapVisual(this);
+							text = text;
+						} else t.stop();
+					};
+				}, 500);
+			}
+		}
+		else if (char == "enter" && wordWrap) text += "\n";
+		else if (char == " ") {
+			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+				text = insertSubstring(text, char, caretIndex);
+				caretIndex++;
+				//text = WordWrapper.wrapVisual(this);
+				text = text;
+			}			
+			Timer.delay(() -> {
+				var t:Timer;
+				t = new Timer(16);
+				t.run = () -> {
+					if(FlxG.keys.pressed.BACKSPACE) {
+						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+							text = insertSubstring(text, char, caretIndex);
+							caretIndex++;
+							//text = WordWrapper.wrapVisual(this);
+							text = text;
+						}						
+					} else t.stop();
+				};
+			}, 500);
+		}
+	}
+
+	public override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		updateFocus();
+		if (hasFocus) {
+			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
+			if (FlxG.keys.justPressed.ENTER) typeChar("enter"); 
+			else if (FlxG.keys.justPressed.BACKSPACE) typeChar("bsp");
+			else if (FlxG.keys.justPressed.DELETE) typeChar("del");
+			if (FlxG.keys.justPressed.LEFT) if (caretIndex > 0) caretIndex--;
+			else if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;			
+			if (FlxG.keys.justPressed.UP && wordWrap) {}
+			else if (FlxG.keys.justPressed.DOWN && wordWrap) {}
+			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
+			else if (FlxG.keys.justPressed.END) caretIndex = text.length;
+			
+		}
+	}
+
+	
 }
 #else
 /**
