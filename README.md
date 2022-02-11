@@ -44,11 +44,11 @@ Reguar FlxInputText with extended support for:
 | RTL Delete    | ✅ | ✅ | the regular `delete` deletion for RTL languages |
 | LTR Caret     | ✅ | ✅ | the letter insertion/deletion point |
 | RTL Caret     | ✅ | ✅ | the letter insertion/deletion point|
-| Multiline text | ✅❌ | ✅❌ | expands the input text verticly to match the text size & create a  new line. on non-JS - caret gets stuck on the first line, on JS - implement word wrapping (text moving between the lines) |
+| Multiline text | ❌ | ✅❌ | expands the input text verticly to match the text size & create a  new line. on non-JS - caret gets stuck on the first line, on JS - implement word wrapping (text moving between the lines) |
 | Scrolling Single-Line text | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
 | Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
-| Up/Down Arrow Keys | ✅ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line |
-| LTR/RTL Enter | ✅ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. On non-JS - isnt supported since multiline isnt supported yet|
+| Up/Down Arrow Keys | ❌ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line |
+| LTR/RTL Enter | ❌ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. On non-JS - isnt supported since multiline isnt supported yet|
 
 
 

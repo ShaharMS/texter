@@ -65,7 +65,7 @@ class FlxInputText extends FlxText
 	/**
 	 * A function called whenever the value changes from user input, or enter is pressed
 	 */
-	public var callback:String->String->Void;
+	public var callback:(String, String) -> Void;
 
 	/**
 	 * Whether or not the textbox has a background
@@ -114,13 +114,13 @@ class FlxInputText extends FlxText
 	 * callback that is triggered when this text field gets focus
 	 * @since 2.2.0
 	 */
-	public var focusGained:Void->Void;
+	public var focusGained:Void -> Void;
 
 	/**
 	 * callback that is triggered when this text field loses focus
 	 * @since 2.2.0
 	 */
-	public var focusLost:Void->Void;
+	public var focusLost:Void -> Void;
 
 	/**
 	 * The Case that's being enforced. Either ALL_CASES, UPPER_CASE or LOWER_CASE.
