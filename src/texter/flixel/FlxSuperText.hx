@@ -1,12 +1,7 @@
 package texter.flixel;
 
-import openfl.display.BitmapData;
-import openfl.text.TextFieldType;
-import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
-import flixel.addons.effects.chainable.FlxOutlineEffect;
+
 
 /**
  * A text class that has some extra fancy visual settings to it.
