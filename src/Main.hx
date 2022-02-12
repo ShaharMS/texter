@@ -1,7 +1,5 @@
 package;
 
-import openfl.text.TextFieldType;
-import openfl.text.TextField;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 

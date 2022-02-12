@@ -217,8 +217,8 @@ class FlxInputTextRTL extends FlxInputText
 				caretIndex--;
 				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				onChange(FlxInputText.BACKSPACE_ACTION);
-				//text = WordWrapper.wrapVisual(this);
 				text = text;
+				if (text == "") refresh();
 				Timer.delay(() ->
 				{
 					var t:Timer;
@@ -230,8 +230,8 @@ class FlxInputTextRTL extends FlxInputText
 							caretIndex--;
 							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 							onChange(FlxInputText.BACKSPACE_ACTION);
-							//text = WordWrapper.wrapVisual(this);
 							text = text;
+							if (text == "") refresh();
 						}
 						else
 							t.stop();
@@ -244,8 +244,8 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				onChange(FlxInputText.DELETE_ACTION);
-				//text = WordWrapper.wrapVisual(this);
 				text = text;
+				if (text == "") refresh();
 				Timer.delay(() -> {
 					var t:Timer;
 					t = new Timer(16);
@@ -255,13 +255,14 @@ class FlxInputTextRTL extends FlxInputText
 							onChange(FlxInputText.DELETE_ACTION);
 							//text = WordWrapper.wrapVisual(this);
 							text = text;
+							if (text == "") refresh();
 						} else t.stop();
 					};
 				}, 500);
 			}
 		}
 		else if (char == "enter" && wordWrap) text += "\n";
-		else if (char == " ") {
+		else if (char == " ") { //TODO
 			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 				text = insertSubstring(text, char, caretIndex);
 				caretIndex++;
@@ -285,6 +286,29 @@ class FlxInputTextRTL extends FlxInputText
 		}
 	}
 
+	/**
+	 	JS FlxInputTExt has problems with the first char not disappearing
+		when you delete all of the chars. a lazy and temporary solution is
+		to just refresh the FlxInputTextRTL
+	**/
+	function refresh() {
+		var nText = new FlxInputTextRTL(
+			this.x,
+			this.y, 
+			Std.int(this.width),
+			"",
+			this.size,
+			this.color,
+			this.backgroundColor,
+			this.embedded);
+		Timer.delay(() -> nText.hasFocus = true , 20);
+		nText.passwordMode = this.passwordMode;
+		nText.filterMode = this.filterMode;
+		FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, nText);
+		FlxG.state.remove(this);
+		
+	}
+
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -292,7 +316,7 @@ class FlxInputTextRTL extends FlxInputText
 		if (hasFocus) {
 			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
 			if (FlxG.keys.justPressed.ENTER) typeChar("enter"); 
-			else if (FlxG.keys.justPressed.BACKSPACE) typeChar("bsp");
+			else if (FlxG.keys.justPressed.BACKSPACE) { if (text == "") refresh() else typeChar("bsp");}
 			else if (FlxG.keys.justPressed.DELETE) typeChar("del");
 			if (FlxG.keys.justPressed.LEFT) if (caretIndex > 0) caretIndex--;
 			else if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;			

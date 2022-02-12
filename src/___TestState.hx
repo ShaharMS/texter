@@ -14,25 +14,14 @@ using texter.flixel._internal.WordWrapper;
 import texter.flixel._internal.FlxInputText;
 
 class ___TestState extends FlxState {
-    
-	var s:FlxText;
+
     public override function create() {
         super.create();
-		
-        add(new FlxSprite().makeGraphic(800, 800, FlxColor.BLUE));
-		s = new FlxText(0, 300, 400, "",20);
-        s.color = FlxColor.BLACK;
-        s.wordWrap = true;
-        add(s);
-
-        Browser.document.onkeypress = (text) -> {
-            s.text += text;
-            trace(text);
-        };
+		add(new FlxSprite().makeGraphic(1000, 1000, 0x0000FFFF));
+        add(new FlxInputTextRTL(0, 300, 400, "", 20));
     }
 
     public override function update(elapsed:Float) {
         super.update(elapsed);
-        if (FlxG.keys.justPressed.ENTER) s.text += "\n";
     }
 }

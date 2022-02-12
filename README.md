@@ -49,6 +49,7 @@ Reguar FlxInputText with extended support for:
 | Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
 | Up/Down Arrow Keys | ❌ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line |
 | LTR/RTL Enter | ❌ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. On non-JS - isnt supported since multiline isnt supported yet|
+| First Char Deletion Bug Fixed | ✅ | ✅ | on JS (and for some time on non-JS) there was a bug that made the forst character in the FlxInputTExt still appear inside the input, but not exist |
 
 
 
