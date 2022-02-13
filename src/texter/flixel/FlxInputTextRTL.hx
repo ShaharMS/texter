@@ -336,7 +336,14 @@ class FlxInputTextRTL extends FlxInputText
 {
 
 	/**
-	 * Creates a new multi-line text input with support for all languages - both RTL and LTR.
+	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
+	 * 
+	 * - multilne
+	 * - multiple languages
+	 * - LTR & RTL support both in the same text input
+	 * - fully working caret
+	 * 
+	 * And more (probably forgot some things ;) )
 	 * 
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
@@ -355,27 +362,6 @@ class FlxInputTextRTL extends FlxInputText
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
 	}
 
-	override function set_hasFocus(newFocus:Bool):Bool {
-		if (newFocus) { //text input is selected
-			if (hasFocus != newFocus) { //text input wasnt selected before this selection
-				_caretTimer = new flixel.util.FlxTimer().start(0.5, toggleCaret, 0);
-				caret.visible = true;
-				caretIndex = text.length;
-				
-			}
-		} else { //text input isnt selected, update the caret's graphic to show that
-			caret.visible = false;
-			if (_caretTimer != null) {
-				_caretTimer.cancel();
-			}
-		}
-
-		if (newFocus != hasFocus) { //if the status has changed, redraw the current frame
-			calcFrame();
-		}
-		return hasFocus = newFocus;
-	}
-	
 	/**
 	   The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
 	  
@@ -387,13 +373,13 @@ class FlxInputTextRTL extends FlxInputText
 	override function onKeyDown(e:KeyboardEvent) {}
 
 	/**
-	 * This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
-	 * `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
-	 * presses, so pay attention to that when overriding.
-	 * 
-	 * @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
-	 * @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
-	 */
+	    This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
+	    `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	    presses, so pay attention to that when overriding.
+	    
+	    @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
+	    @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
+	**/
 	function specialKeysDown(key:KeyCode, modifier:KeyModifier) {
 		//if the user didnt intend to edit the text, dont do anything
 		if (!hasFocus) return;
@@ -402,22 +388,29 @@ class FlxInputTextRTL extends FlxInputText
 		
 		//fix the caret if its broken
 		if (caretIndex < 0) caretIndex = 0;
+		trace(key);
 
-		//arrow keys (LEFT / RIGHT)
-		if (~/1073741904|1073741903/.match(key + ""))
+		//arrow keys (RIGHT / LEFT / DOWN / UP)
+		if (~/1073741903|1073741904|1073741905|1073741906/.match(key + ""))
 		{
-			// left arrow
-			if (key == 1073741904)
-			{
-				if (caretIndex > 0) {
+			switch key {
+				case 1073741903: { //right arrow
+					if (caretIndex < text.length) {
+						caretIndex++;
+					}
+				}
+				case 1073741904: { //left arrow
+					if (caretIndex > 0) {
 					caretIndex--;
+					}
 				}
-			}
-			else // right arrow
-			{
-				if (caretIndex < text.length) {
-					caretIndex++;
+				case 1073741905: { //down arrow
+					//var textToCheck = text.substring(0, care)
 				}
+				case 1073741906: { //up arrow
+					
+				}
+				default:
 			}
 		}
 		// backspace key
@@ -467,6 +460,8 @@ class FlxInputTextRTL extends FlxInputText
 			caretIndex = 0;
 			text = text; // forces scroll update
 		}
+
+		text = WordWrapper.wrapVisual(this);
 	}
 
 	/**
@@ -497,6 +492,8 @@ class FlxInputTextRTL extends FlxInputText
 			
 			onChange(FlxInputText.INPUT_ACTION);
 		}
+
+		text =  WordWrapper.wrapVisual(this);
 	}
 }
 #end

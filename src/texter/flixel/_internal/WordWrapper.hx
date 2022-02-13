@@ -37,7 +37,6 @@ class WordWrapper {
 				currentWord += @:privateAccess textInput.getCharBoundaries(char).width;
             }
 			bounderySum += currentWord;
-            trace('length of word "${wordArray[i]}" is: ${currentWord}');
 			if (bounderySum > textInput.width) {
                 textWithNewLines += "\n";
                 bounderySum = currentWord;
@@ -45,7 +44,6 @@ class WordWrapper {
 			textWithNewLines += wordArray[i];
             currentWord = 0;
         }
-        trace(textWithNewLines);
 		return textWithNewLines;         
         
         

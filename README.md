@@ -42,26 +42,29 @@ Reguar FlxInputText with extended support for:
 
 | Feature | Works On JS | Works On Non-JS |More Details |
 |  :---:  |     :---:   |       :---:     |    :---:    |
-| General LTR typing for LTR languages | ✅ | ✅ | the actual letters/signs being typed |
-| General RTL typing for RTL languages | ✅ | ✅ | the actual letters/signs being typed with the RTL Marker (when needed) |
-| LTR Spacebar  | ✅ | ✅ | the regular `space` char - `" "` |
-| RTL Spacebar  | ✅ | ❌ | the regular `space` char for RTL languages with the RTL Marker - need to add RTL spacebar logic on non-JS targets |
-| LTR Backspace | ✅ | ✅ | the regular `backspace` deletion |
-| RTL Backspace | ✅ | ✅ | the regular `backspace` deletion for RTL languages |
-| LTR Delete    | ✅ | ✅ | the regular `delete` deletion |
-| RTL Delete    | ✅ | ✅ | the regular `delete` deletion for RTL languages |
-| LTR Caret     | ✅ | ✅ | the letter insertion/deletion point |
-| RTL Caret     | ✅ | ✅ | the letter insertion/deletion point|
-| Multiline text | ❌ | ✅❌ | expands the input text verticly to match the text size & create a  new line. on non-JS - caret gets stuck on the first line, on JS - crashes with `shader is null` |
-| Scrolling Single-Line text | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
-| Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
-| Up/Down Arrow Keys | ❌ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line,  on JS - multiline crashes the app |
-| LTR/RTL Enter | ❌ | ✅ | forces a new line and makes the caret appear on a side corresponding to the current language |
+| General LTR for LTR languages | ✅ | ✅ | the actual letters/signs being typed |
+| General RTL for RTL languages | ✅ | ✅ | the actual letters/signs being typed with the RTL Marker (when needed) |
+| LTR Spacebar                  | ✅ | ✅ | the regular `space` char - `" "` |
+| RTL Spacebar                  | ✅ | ❌ | the regular `space` char for RTL languages with the RTL Marker - need to add RTL spacebar logic on non-JS targets |
+| LTR Backspace                 | ✅ | ✅ | the regular `backspace` deletion |
+| RTL Backspace                 | ✅ | ✅ | the regular `backspace` deletion for RTL languages |
+| LTR Delete                    | ✅ | ✅ | the regular `delete` deletion |
+| RTL Delete                    | ✅ | ✅ | the regular `delete` deletion for RTL languages |
+| LTR Caret                     | ✅ | ✅ | the letter insertion/deletion point |
+| RTL Caret                     | ✅ | ✅ | the letter insertion/deletion point|
+| LTR WordWrapping              | ✅ | ✅ | when a word or a sentence is too long for the text input, it cuts it/escapes it to the next line |
+| RTL WordWrapping              | ✅ | ✅ | when a word or a sentence is too long for the text input, it cuts it/escapes it to the next line |
+| Multiline text                | ❌ | ✅❌ | expands the input text verticly to match the text size & create a  new line. on JS - crashes with `shader is null` |
+| Scrolling Single-Line text    | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
+| Left\Right Arrow Keys         | ✅ | ✅ | used to move the caret between letters/signs |
+| Up/Down Arrow Keys            | ❌ | ❌ | used to move the caret between lines. on JS - multiline crashes the app |
+| LTR/RTL Enter                 | ❌ | ✅ | forces a new line and makes the caret appear on a side corresponding to the current language |
 
 ### Bugs
+
 | Bug | Fixed On JS | Fixed On non-JS | More Details |
 |:---:|    :---:    |      :---:      |     :---:    |
 | First Char remains visible| ✅ | ✅ | A known problem that plagued FlxInputText on JS for a while - when deleting all of the chars from that text input, the first one will remain visible, even tho it doesn't exist |
-| Caret Stuck On First Line | ❌ | ❌ | when the text wraps itself and makes a new line, the caret remains on the last leter of the first line |
+| Caret Stuck On First Line | ❌ | ✅❌ | when the text wraps itself and makes a new line, the caret remains on the last leter of the first line |
 | Next Bug Here |  |  | Bug Description Here |
 

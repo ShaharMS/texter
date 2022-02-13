@@ -1,5 +1,8 @@
 package texter.flixel._internal;
 
+import haxe.iterators.StringIteratorUnicode;
+import haxe.iterators.StringIterator;
+import flixel.util.FlxStringUtil;
 import flash.errors.Error;
 import flash.events.KeyboardEvent;
 import flash.geom.Rectangle;
@@ -459,6 +462,9 @@ class FlxInputText extends FlxText
 		#end
 	}
 
+	// -------------------
+	// HAS BEEN CHANGED
+	// ----------------------
 	private function getCharBoundaries(charIndex:Int):Rectangle
 	{
 		if (_charBoundaries != null && charIndex >= 0 && _charBoundaries.length > 0)
@@ -467,10 +473,22 @@ class FlxInputText extends FlxText
 			if (charIndex >= _charBoundaries.length)
 			{
 				_charBoundaries[_charBoundaries.length - 1].copyToFlash(r);
+				//checking what line the text is on
+				var textToCheck = text.substring(0, _charBoundaries.length); // <---------------- CHANGED HERE
+				var lines = 0;
+				for (unicode in new StringIteratorUnicode(textToCheck)) if (String.fromCharCode(unicode) == "\n") lines++;
+				r.y += lines * r.height;
+				_charBoundaries[_charBoundaries.length - 1].y = r.y; 
 			}
 			else
 			{
 				_charBoundaries[charIndex].copyToFlash(r);
+				//checking what line the text is on
+				var textToCheck = text.substring(0, charIndex + 1); // <---------------- CHANGED HERE
+				var lines = 0;
+				for (unicode in new StringIteratorUnicode(textToCheck)) if (String.fromCharCode(unicode) == "\n") lines++;
+				r.y = lines * r.height;
+				_charBoundaries[charIndex].y = r.y; 
 			}
 			return r;
 		}
@@ -524,6 +542,9 @@ class FlxInputText extends FlxText
 		return return_text;
 	}
 
+	// ----------------------------------
+	// HAS BEEN CHANGED
+	// ----------------------------------
 	private function getCharIndexAtPoint(X:Float, Y:Float):Int
 	{
 		var i:Int = 0;
@@ -554,7 +575,7 @@ class FlxInputText extends FlxText
 		{
 			for (r in _charBoundaries)
 			{
-				if (X >= r.left && X <= r.right)
+				if (X >= r.left && X <= r.right && Y >= r.top && Y <= r.bottom) // <----------------- CHANGE HERE
 				{
 					return i;
 				}
@@ -618,7 +639,7 @@ class FlxInputText extends FlxText
 
 		if (boundary != null)
 		{
-			// Checks if carret is out of textfield bounds
+			// Checks if caret is out of textfield bounds
 			// if it is update scroll, otherwise maintain the same scroll as last check.
 			var diffW:Int = 0;
 			if (boundary.right > lastScroll + textField.width - 2)
@@ -849,6 +870,9 @@ class FlxInputText extends FlxText
 		return alignStr;
 	}
 
+	// ----------------------------------
+	// HAS BEEN CHANGED
+	// ----------------------------------
 	private function set_caretIndex(newCaretIndex:Int):Int
 	{
 		var offx:Float = 0;
@@ -892,8 +916,9 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex);
 				if (boundaries != null)
 				{
-					caret.x = offx + boundaries.left + x;
-					caret.y = boundaries.top + y;
+					caret.x = boundaries.left + x;
+					caret.y = boundaries.top + y + 2;
+					trace(boundaries);
 				}
 			}
 			// Caret is to the right of text
@@ -902,14 +927,14 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = offx + boundaries.right + x;
-					caret.y = boundaries.top + y;
+					caret.x = boundaries.right + x;
+					caret.y = boundaries.top + y + 2;
 				}
 				// Text box is empty
 				else if (text.length == 0)
 				{
 					// 2 px gutters
-					caret.x = x + offx + 2;
+					caret.x = x + 2;
 					caret.y = y + 2;
 				}
 			}
@@ -923,7 +948,7 @@ class FlxInputText extends FlxText
 		if ((lines == 1) && (caret.x + caret.width) > (x + width))
 		{
 			caret.x = x + width - 2;
-		}
+		}		
 
 		return caretIndex;
 	}
