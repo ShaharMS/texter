@@ -13,9 +13,17 @@ for about 2 months I tried to find some existing (decent) RTL support, but didnt
 It might seem like im exaggerating, but trust me, it took me a **while** to make progress. but when I did start making (good) progress,
 I figured I'm not the only person that needs those fixes, **and thats how and why I created this library.**
 
+### **Can I Help/Contribute?**
+Of course! Any help is greatly appreciated! You can help with: 
+- fixing bugs
+- writing/fixing documentation
+- making code more readable/simpler & shorter (don't worry, I think my code is pretty understandable ;) )
+- writing code for the library
+- adding projects that you think are useful 
 
+And more that pops up in you mind!
 
-## Roadmap
+# Roadmap
 
 My memory is kinda trash, so i thought of making a roadmap for me and you to know whats supported and whats yet to be 
 supported (I promise you i need this more then you 😂)
@@ -25,7 +33,7 @@ supported (I promise you i need this more then you 😂)
  - ✅❌ - partially complete, probably works but might be wonky
 ---
 
-### **FlxInputTextRTL**
+## **FlxInputTextRTL**
 
 Reguar FlxInputText with extended support for:
  - All languages
@@ -49,7 +57,10 @@ Reguar FlxInputText with extended support for:
 | Left\Right Arrow Keys | ✅ | ✅ | used to move the caret between letters/signs |
 | Up/Down Arrow Keys | ❌ | ❌ | used to move the caret between lines. on non-JS - doesnt work because the caret is always on the first line |
 | LTR/RTL Enter | ❌ | ❌ | forces a new line and makes the caret appear on a side corresponding to the current language. On non-JS - isnt supported since multiline isnt supported yet|
-| First Char Deletion Bug Fixed | ✅ | ✅ | on JS (and for some time on non-JS) there was a bug that made the forst character in the FlxInputTExt still appear inside the input, but not exist |
 
-
+### Bugs
+| Bug | Fixed On JS | Fixed On non-JS | More Details |
+|:---:|    :---:    |      :---:      |     :---:    |
+| First Char remains visible| ✅ | ✅ | A known problem that plagued FlxInputText on JS for a while - when deleting all of the chars from that text input, the first one will remain visible, even tho it doesn't exist |
+| Next Bug Here |  |  | Bug Description Here |
 
