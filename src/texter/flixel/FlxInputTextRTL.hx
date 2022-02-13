@@ -1,8 +1,6 @@
 package texter.flixel;
 
-import js.Lib;
 using flixel.util.FlxStringUtil;
-import flixel.FlxSprite;
 import flixel.util.FlxColor;
 #if js
 import haxe.Timer;
@@ -253,7 +251,6 @@ class FlxInputTextRTL extends FlxInputText
 						if(FlxG.keys.pressed.DELETE) {
 							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 							onChange(FlxInputText.DELETE_ACTION);
-							//text = WordWrapper.wrapVisual(this);
 							text = text;
 							if (text == "") refresh();
 						} else t.stop();
@@ -262,11 +259,10 @@ class FlxInputTextRTL extends FlxInputText
 			}
 		}
 		else if (char == "enter" && wordWrap) text += "\n";
-		else if (char == " ") { //TODO
+		else if (char == " ") { //TODO - RTL spacebar logic on JS
 			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 				text = insertSubstring(text, char, caretIndex);
 				caretIndex++;
-				//text = WordWrapper.wrapVisual(this);
 				text = text;
 			}			
 			Timer.delay(() -> {
@@ -277,7 +273,6 @@ class FlxInputTextRTL extends FlxInputText
 						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
 							text = insertSubstring(text, char, caretIndex);
 							caretIndex++;
-							//text = WordWrapper.wrapVisual(this);
 							text = text;
 						}						
 					} else t.stop();
@@ -287,7 +282,7 @@ class FlxInputTextRTL extends FlxInputText
 	}
 
 	/**
-	 	JS FlxInputTExt has problems with the first char not disappearing
+	 	JS FlxInputText has problems with the first char not disappearing
 		when you delete all of the chars. a lazy and temporary solution is
 		to just refresh the FlxInputTextRTL
 	**/
@@ -404,6 +399,7 @@ class FlxInputTextRTL extends FlxInputText
 		if (!hasFocus) return;
 		//those keys break the caret and places it in caretIndex -1
 		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
+		
 		//fix the caret if its broken
 		if (caretIndex < 0) caretIndex = 0;
 
@@ -454,6 +450,10 @@ class FlxInputTextRTL extends FlxInputText
 				onChange(FlxInputText.DELETE_ACTION);
 				text = text;
 			}
+		}
+		else if (key == 13) { 		
+			caretIndex++;
+			text = insertSubstring(text, "\n", caretIndex - 1);
 		}
 		// end key
 		else if (key == 36)

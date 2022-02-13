@@ -4,7 +4,6 @@ import openfl.Lib;
 import flixel.text.FlxText;
 import flixel.FlxG;
 import openfl.text.TextField;
-import js.Browser;
 import haxe.Timer;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
