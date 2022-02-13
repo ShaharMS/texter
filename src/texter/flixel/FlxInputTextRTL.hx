@@ -461,7 +461,7 @@ class FlxInputTextRTL extends FlxInputText
 			text = text; // forces scroll update
 		}
 
-		text = WordWrapper.wrapVisual(this);
+		//text = WordWrapper.wrapVisual(this);
 	}
 
 	/**
@@ -493,7 +493,7 @@ class FlxInputTextRTL extends FlxInputText
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 
-		text =  WordWrapper.wrapVisual(this);
+		//text =  WordWrapper.wrapVisual(this);
 	}
 }
 #end
