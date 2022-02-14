@@ -476,7 +476,7 @@ class FlxInputText extends FlxText
 				//checking what line the text is on
 				var textToCheck = text.substring(0, _charBoundaries.length); // <---------------- CHANGED HERE
 				var lines = 0;
-				for (unicode in new StringIteratorUnicode(textToCheck)) if (String.fromCharCode(unicode) == "\n") lines++;
+				for (unicode in 0...textToCheck.length) if (String.fromCharCode(unicode) == "\n") lines++;
 				r.y += lines * r.height;
 				_charBoundaries[_charBoundaries.length - 1].y = r.y; 
 			}
@@ -486,9 +486,21 @@ class FlxInputText extends FlxText
 				//checking what line the text is on
 				var textToCheck = text.substring(0, charIndex + 1); // <---------------- CHANGED HERE
 				var lines = 0;
-				for (unicode in new StringIteratorUnicode(textToCheck)) if (String.fromCharCode(unicode) == "\n") lines++;
+				for (unicode in 0...textToCheck.length) if (String.fromCharCode(unicode) == "\n") lines++;
 				r.y = lines * r.height;
 				_charBoundaries[charIndex].y = r.y; 
+				//charBoundery x value is incorrect, lets fix it
+				var __charIndex = charIndex;
+				var letters:Array<Int> = []; //the amount of letters in a line
+				while (text.charAt(__charIndex) != "\n") {
+					if (__charIndex <= 0) break;
+					letters.push(__charIndex);				
+					__charIndex--;
+				}
+				var totalLettersWidth:Float = 0; //will be the final letter's X value
+				for (letter in letters) totalLettersWidth += _charBoundaries[letter].width;
+				r.x = totalLettersWidth + 2;
+				_charBoundaries[charIndex].x = r.x;
 			}
 			return r;
 		}
@@ -891,7 +903,7 @@ class FlxInputText extends FlxText
 				offx = (textField.width - 2 - textField.textWidth) / 2 + textField.scrollH / 2;
 				#end
 				if (offx <= 1)
-					offx = 0; // hack, fix ofset rounding alignment.
+					offx = 0; // hack, fix offset rounding alignment.
 
 			default:
 				offx = 0;

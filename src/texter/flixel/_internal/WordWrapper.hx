@@ -1,6 +1,7 @@
 package texter.flixel._internal;
 
 using texter.flixel._internal.WordWrapper;
+
 typedef DualInt = {
     public var int1:Int;
     public var int2:Int;
@@ -12,7 +13,7 @@ function formatDualInt(dual:DualInt):String {
 
 class WordWrapper {
     
-    public static var splitOnChars:Array<String> = [" ", "-", "\t"];
+    public static var splitOnChars:Array<String> = [" ", "-", "\t", "\n"];
 
     public static function wrapVisual(textInput:FlxInputText):String {
         //trying to split the string into words
@@ -44,11 +45,9 @@ class WordWrapper {
 			textWithNewLines += wordArray[i];
             currentWord = 0;
         }
+        
 		return textWithNewLines;         
         
-        
-
-        return "";
     }
 
     public static function warpByWords(text:String, length:Int):String {

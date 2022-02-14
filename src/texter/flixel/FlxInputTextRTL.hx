@@ -357,6 +357,7 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
+		textField.wordWrap = false;
 
 		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
@@ -388,7 +389,6 @@ class FlxInputTextRTL extends FlxInputText
 		
 		//fix the caret if its broken
 		if (caretIndex < 0) caretIndex = 0;
-		trace(key);
 
 		//arrow keys (RIGHT / LEFT / DOWN / UP)
 		if (~/1073741903|1073741904|1073741905|1073741906/.match(key + ""))
@@ -461,7 +461,13 @@ class FlxInputTextRTL extends FlxInputText
 			text = text; // forces scroll update
 		}
 
-		//text = WordWrapper.wrapVisual(this);
+		var caretDiff = text.length - caretIndex;
+		text = WordWrapper.wrapVisual(this);
+		//fix after wordWrapping:
+		while (caretDiff < text.length - caretIndex) {
+			caretIndex++;
+			caretDiff++;
+		}
 	}
 
 	/**
@@ -493,7 +499,13 @@ class FlxInputTextRTL extends FlxInputText
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 
-		//text =  WordWrapper.wrapVisual(this);
+		var caretDiff = text.length - caretIndex;
+		text =  WordWrapper.wrapVisual(this);
+		while (caretDiff < text.length - caretIndex)
+		{
+			caretIndex++;
+			caretDiff++;
+		}
 	}
 }
 #end
