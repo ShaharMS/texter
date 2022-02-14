@@ -35,7 +35,7 @@ class WordWrapper {
         var currentWord:Float = 0;
         for (i in 0...wordArray.length) {
             for (char in indexArray[i].int1...indexArray[i].int2 + 1) {
-				currentWord += @:privateAccess textInput.getCharBoundaries(char).width;
+				currentWord += @:privateAccess if (cast(textInput.getCharBoundaries(char).width, Null<Float>) != null) textInput.getCharBoundaries(char).width else 0;
             }
 			bounderySum += currentWord;
 			if (bounderySum > textInput.width) {

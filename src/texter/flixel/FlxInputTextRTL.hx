@@ -357,7 +357,6 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
-		textField.wordWrap = false;
 
 		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
@@ -405,9 +404,49 @@ class FlxInputTextRTL extends FlxInputText
 					}
 				}
 				case 1073741905: { //down arrow
-					//var textToCheck = text.substring(0, care)
+					//count the amount of letters in a line, and just add them to the caretIndex
+					trace("down");
+					var lettersInTheLine = 0;
+					var caretIndexReference = caretIndex;
+					var startY = getCharBoundaries(caretIndexReference).y;
+					//escape the caret reference to the first letter in the line, count from there
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+					{
+						caretIndexReference--;
+						if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
+					}
+
+					caretIndexReference++;
+
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
+						caretIndexReference++;					
+						lettersInTheLine++;
+					}
+					caretIndex += lettersInTheLine;
+					//now try to get the wanted caret index at the next line
+
 				}
-				case 1073741906: { //up arrow
+				case 1073741906: { 
+					//count the amount of letters in a line, and just subtract them from the caretIndex
+					var lettersInTheLine = 0;
+					var caretIndexReference = caretIndex;
+					var startY = getCharBoundaries(caretIndexReference).y;
+					//escape the caret reference to the first letter in the line, count from there
+						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+						{
+							caretIndexReference--;
+							if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
+						}
+
+					caretIndexReference++;
+
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
+						caretIndexReference++;
+						lettersInTheLine++;
+					}
+
+					caretIndex -= lettersInTheLine;
+					//now try to get the wanted caret index at the previous line
 					
 				}
 				default:
@@ -460,14 +499,6 @@ class FlxInputTextRTL extends FlxInputText
 			caretIndex = 0;
 			text = text; // forces scroll update
 		}
-
-		var caretDiff = text.length - caretIndex;
-		text = WordWrapper.wrapVisual(this);
-		//fix after wordWrapping:
-		while (caretDiff < text.length - caretIndex) {
-			caretIndex++;
-			caretDiff++;
-		}
 	}
 
 	/**
@@ -497,14 +528,6 @@ class FlxInputTextRTL extends FlxInputText
 			text = text; // forces scroll update
 			
 			onChange(FlxInputText.INPUT_ACTION);
-		}
-
-		var caretDiff = text.length - caretIndex;
-		text =  WordWrapper.wrapVisual(this);
-		while (caretDiff < text.length - caretIndex)
-		{
-			caretIndex++;
-			caretDiff++;
 		}
 	}
 }

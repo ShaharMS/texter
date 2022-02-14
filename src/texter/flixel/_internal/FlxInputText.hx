@@ -469,42 +469,9 @@ class FlxInputText extends FlxText
 	{
 		if (_charBoundaries != null && charIndex >= 0 && _charBoundaries.length > 0)
 		{
-			var r:Rectangle = new Rectangle();
-			if (charIndex >= _charBoundaries.length)
-			{
-				_charBoundaries[_charBoundaries.length - 1].copyToFlash(r);
-				//checking what line the text is on
-				var textToCheck = text.substring(0, _charBoundaries.length); // <---------------- CHANGED HERE
-				var lines = 0;
-				for (unicode in 0...textToCheck.length) if (String.fromCharCode(unicode) == "\n") lines++;
-				r.y += lines * r.height;
-				_charBoundaries[_charBoundaries.length - 1].y = r.y; 
-			}
-			else
-			{
-				_charBoundaries[charIndex].copyToFlash(r);
-				//checking what line the text is on
-				var textToCheck = text.substring(0, charIndex + 1); // <---------------- CHANGED HERE
-				var lines = 0;
-				for (unicode in 0...textToCheck.length) if (String.fromCharCode(unicode) == "\n") lines++;
-				r.y = lines * r.height;
-				_charBoundaries[charIndex].y = r.y; 
-				//charBoundery x value is incorrect, lets fix it
-				var __charIndex = charIndex;
-				var letters:Array<Int> = []; //the amount of letters in a line
-				while (text.charAt(__charIndex) != "\n") {
-					if (__charIndex <= 0) break;
-					letters.push(__charIndex);				
-					__charIndex--;
-				}
-				var totalLettersWidth:Float = 0; //will be the final letter's X value
-				for (letter in letters) totalLettersWidth += _charBoundaries[letter].width;
-				r.x = totalLettersWidth + 2;
-				_charBoundaries[charIndex].x = r.x;
-			}
-			return r;
+			return if (textField.getCharBoundaries(charIndex) != null) textField.getCharBoundaries(charIndex) else new Rectangle();
 		}
-		return null;
+		return new Rectangle();
 	}
 
 	private override function set_text(Text:String):String
@@ -564,47 +531,23 @@ class FlxInputText extends FlxText
 		X += textField.scrollH + 2;
 		#end
 
-		// offset X according to text alignment when there is no scroll.
-		if (_charBoundaries != null && _charBoundaries.length > 0)
-		{
-			if (textField.textWidth <= textField.width)
-			{
-				switch (getAlignStr())
-				{
-					case RIGHT:
-						X = X - textField.width + textField.textWidth
-							;
-					case CENTER:
-						X = X - textField.width / 2 + textField.textWidth / 2
-							;
-					default:
-				}
-			}
-		}
-
 		// place caret at matching char position
-		if (_charBoundaries != null)
+		if (text.length > 0)
 		{
-			for (r in _charBoundaries)
+			_charBoundaries = [for (i in 0...text.length) new FlxRect().copyFromFlash(getCharBoundaries(i))];
+			for (i in 0...text.length)
 			{
-				if (X >= r.left && X <= r.right && Y >= r.top && Y <= r.bottom) // <----------------- CHANGE HERE
+				var r = getCharBoundaries(i);
+				if (X >= r.x && X <= r.right && Y >= r.y && Y <= r.bottom) // <----------------- CHANGE HERE
 				{
 					return i;
 				}
-				i++;
+				
 			}
+			return text.length;
 		}
-
-		// place caret at rightmost position
-		if (_charBoundaries != null && _charBoundaries.length > 0)
-		{
-			if (X > textField.textWidth)
-			{
-				return _charBoundaries.length;
-			}
-		}
-
 		// place caret at leftmost position
+		_charBoundaries = [];
 		return 0;
 	}
 
@@ -930,7 +873,6 @@ class FlxInputText extends FlxText
 				{
 					caret.x = boundaries.left + x;
 					caret.y = boundaries.top + y + 2;
-					trace(boundaries);
 				}
 			}
 			// Caret is to the right of text

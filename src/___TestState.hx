@@ -17,7 +17,7 @@ class ___TestState extends FlxState {
     public override function create() {
         super.create();
 		add(new FlxSprite().makeGraphic(1000, 1000, 0x0000FFFF));
-        add(new FlxInputTextRTL(0, 300, 400, "", 20));
+        add(new FlxInputTextRTL(0, 100, 800, "", 50));
     }
 
     public override function update(elapsed:Float) {

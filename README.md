@@ -54,10 +54,10 @@ Reguar FlxInputText with extended support for:
 | RTL Caret                     | ✅ | ✅ | the letter insertion/deletion point|
 | LTR WordWrapping              | ✅ | ✅ | when a word or a sentence is too long for the text input, it cuts it/escapes it to the next line |
 | RTL WordWrapping              | ✅ | ✅ | when a word or a sentence is too long for the text input, it cuts it/escapes it to the next line |
-| Multiline text                | ❌ | ✅❌ | expands the input text verticly to match the text size & create a  new line. on JS - crashes with `shader is null` |
+| Multiline text                | ❌ | ✅ | expands the input text verticly to match the text size & create a  new line. on JS - crashes with `shader is null` |
 | Scrolling Single-Line text    | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
 | Left\Right Arrow Keys         | ✅ | ✅ | used to move the caret between letters/signs |
-| Up/Down Arrow Keys            | ❌ | ❌ | used to move the caret between lines. on JS - multiline crashes the app |
+| Up/Down Arrow Keys            | ❌ | ✅ | used to move the caret between lines. on JS - multiline crashes the app |
 | LTR/RTL Enter                 | ❌ | ✅ | forces a new line and makes the caret appear on a side corresponding to the current language |
 
 ### Bugs
@@ -65,6 +65,6 @@ Reguar FlxInputText with extended support for:
 | Bug | Fixed On JS | Fixed On non-JS | More Details |
 |:---:|    :---:    |      :---:      |     :---:    |
 | First Char remains visible| ✅ | ✅ | A known problem that plagued FlxInputText on JS for a while - when deleting all of the chars from that text input, the first one will remain visible, even tho it doesn't exist |
-| Caret Stuck On First Line | ❌ | ✅❌ | when the text wraps itself and makes a new line, the caret remains on the last leter of the first line |
+| Caret Stuck On First Line | ❌ | ✅ | when the text wraps itself and makes a new line, the caret remains on the last letter of the first line |
 | Next Bug Here |  |  | Bug Description Here |
 
