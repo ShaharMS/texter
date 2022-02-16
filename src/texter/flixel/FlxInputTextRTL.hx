@@ -1,7 +1,6 @@
 package texter.flixel;
 
-using flixel.util.FlxStringUtil;
-import flixel.util.FlxColor;
+#if flixel
 #if js
 import haxe.Timer;
 import flixel.FlxG;
@@ -15,7 +14,6 @@ import openfl.events.KeyboardEvent;
 import texter.GeneralCharMaps;
 #end
 import texter.flixel._internal.FlxInputText;
-import texter.flixel._internal.WordWrapper;
 
 #if js
 /**
@@ -44,7 +42,7 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
@@ -354,7 +352,7 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true) {
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
 
@@ -531,4 +529,5 @@ class FlxInputTextRTL extends FlxInputText
 		}
 	}
 }
+#end
 #end

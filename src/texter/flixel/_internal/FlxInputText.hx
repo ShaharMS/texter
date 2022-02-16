@@ -1,5 +1,5 @@
 package texter.flixel._internal;
-
+#if flixel
 import haxe.iterators.StringIteratorUnicode;
 import haxe.iterators.StringIterator;
 import flixel.util.FlxStringUtil;
@@ -33,7 +33,7 @@ import flixel.util.FlxTimer;
  * @link http://creativecommons.org/licenses/by/3.0/us/
  * 
  * 
- * **WARNING** - used here as an engine, so some features may be disabled. do not use
+ * **WARNING** - used here as an engine, so some features may be altered
  */
 class FlxInputText extends FlxText
 {
@@ -997,3 +997,4 @@ typedef NamedString =
 	name:String,
 	value:String
 }
+#end

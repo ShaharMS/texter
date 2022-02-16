@@ -1,5 +1,5 @@
 package texter.flixel;
-
+#if flixel
 import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.text.FlxText;
@@ -75,3 +75,4 @@ class FlxTextButton extends FlxText {
 
 
 }
+#end

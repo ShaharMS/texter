@@ -1,5 +1,5 @@
 package texter.flixel;
-
+#if (flixel && false)
 import flixel.group.FlxSpriteGroup;
 
 
@@ -22,3 +22,4 @@ class FlxSuperText extends FlxSpriteGroup {
 		super.draw();
 	}
 }
+#end

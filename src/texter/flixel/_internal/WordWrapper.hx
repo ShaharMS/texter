@@ -1,5 +1,7 @@
 package texter.flixel._internal;
 
+import openfl.utils.ByteArray;
+import lime.app.Future;
 using texter.flixel._internal.WordWrapper;
 
 typedef DualInt = {
@@ -15,7 +17,12 @@ class WordWrapper {
     
     public static var splitOnChars:Array<String> = [" ", "-", "\t", "\n"];
 
-    public static function wrapVisual(textInput:FlxInputText):String {
+    /**
+     * Takes in a `FlxInputTextRTL` instance, gets its text and tries to wrap it.
+     * @param textInput an instance of FlxInputTextRTL
+     * @return the same text, but with the `"\n"` (newline) char where a line needs to be broken
+     */
+    public static function wrapVisual(textInput:#if flixel FlxInputText #elseif openfl TextField #else Dynamic):String {
         //trying to split the string into words
 		var wordArray:Array<String> = [];
         var indexArray:Array<DualInt> = [];

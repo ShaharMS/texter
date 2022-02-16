@@ -1,13 +1,10 @@
 {
     "name": "texter",
-    "classPath": "src",
+    "classPath": "src/",
     "license": "MIT",
-    "releasenote": "more text input support",
+    "releasenote": "FlxInputText - now with RTL!",
     "contributors": ["ShaharMS"],
-    "version": "1.2.1",
-    "dependencies": {
-        "flixel": ""
-    },
-    "tags": ["text", "input", "rtl", "ltr", "char"]
-    
+    "version": "1.0.0",
+    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl"],
+    "description": "adding more support for general text input/regular text in multiple libraries such as Flixel, OpenFL and more (to be added!)"
 }
