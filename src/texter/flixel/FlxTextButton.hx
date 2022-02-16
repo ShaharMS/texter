@@ -27,6 +27,7 @@ class FlxTextButton extends FlxText {
         this.text = text;
         this.font = font;
         
+        
     }
     public function enable() {
         buttonActive = true;

@@ -17,7 +17,9 @@ class ___TestState extends FlxState {
     public override function create() {
         super.create();
 		add(new FlxSprite().makeGraphic(1000, 1000, 0x0000FFFF));
-        add(new FlxInputTextRTL(0, 100, 800, "", 50));
+        var t = new FlxInputTextRTL(0, 100, 800, "", 50);
+        #if !js t.font = "assets/VarelaRound.ttf"; #end
+        add(t);
     }
 
     public override function update(elapsed:Float) {
