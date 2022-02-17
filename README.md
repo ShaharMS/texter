@@ -59,8 +59,18 @@ Reguar FlxInputText with extended support for:
 | Left\Right Arrow Keys         | ✅ | ✅ | used to move the caret between letters/signs |
 | Up/Down Arrow Keys            | ❌ | ✅ | used to move the caret between lines. on JS - multiline crashes the app |
 | LTR/RTL Enter                 | ❌ | ✅ | forces a new line and makes the caret appear on a side corresponding to the current language |
+| LTR WordWrapping              | ❌ | ✅ | when the sentence/word is too long for a multiline text input, some words will be escaped to the next line |
+| RTL WordWrapping              | ❌ | ❌ |  when the sentence/word is too long for a multiline text input, some words will be escaped to the next line, but the escaped words will be from the left side, not the right side |
 
 ### Bugs
+
+#### Active bugs will be listed here.
+
+solved bugs will remain on the list until about a month passes and no new discoveries were made about the bug.
+
+when adding a bug to the list, make sure to follow the correct format of:
+
+`| actual bug | ❌\✅ (is it fixed for JS) | ❌\✅ (is it fixed for non-JS) | a good description for the bug -  should be very detailed |`
 
 | Bug | Fixed On JS | Fixed On non-JS | More Details |
 |:---:|    :---:    |      :---:      |     :---:    |
