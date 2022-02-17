@@ -1,10 +1,5 @@
-import openfl.events.TextEvent;
-
-import openfl.text.TextField;
-
 package texter.flixel;
 
-import flixel.util.FlxStringUtil;
 #if flixel
 #if js
 import haxe.Timer;
@@ -182,14 +177,10 @@ class FlxInputTextRTL extends FlxInputText
 				//text = WordWrapper.wrapVisual(this);
 				text = text;
 			}
-			trace(isRTL(textInput.value));
+			
 		}, true);
 	}
 
-	function isRTL(s)
-	{
-		return ~/\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC/.match(s);
-	};
 	/**
 	 * Were getting the text from an invisible input text and it isnt openFL/flixel related.
 	 * we have to keep it selected
@@ -343,13 +334,6 @@ class FlxInputTextRTL extends FlxInputText
 {
 
 	/**
-		# DO NOT CHANGE THIS TEXT'S VALUE/FIELDS
-		---
-		### this TextField instance is used to get the correct letter & sentence orientation.
-	**/
-	var textReferencer(default, never):TextField;
-
-	/**
 	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 	 * 
 	 * - multilne
@@ -371,13 +355,9 @@ class FlxInputTextRTL extends FlxInputText
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true) {
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
-		textReferencer = new TextField();
-		textReferencer.text = "";
-	}
 
-	override function set_hasFocus(newFocus:Bool):Bool {
-		textReferencer.
-		return super.set_hasFocus(newFocus);
+		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
+		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
 	}
 
 	/**
@@ -389,6 +369,165 @@ class FlxInputTextRTL extends FlxInputText
 	  | **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	 **/
 	override function onKeyDown(e:KeyboardEvent) {}
+
+	/**
+	    This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
+	    `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	    presses, so pay attention to that when overriding.
+	    
+	    @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
+	    @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
+	**/
+	function specialKeysDown(key:KeyCode, modifier:KeyModifier) {
+		//if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus) return;
+		//those keys break the caret and places it in caretIndex -1
+		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
+		
+		//fix the caret if its broken
+		if (caretIndex < 0) caretIndex = 0;
+
+		//arrow keys (RIGHT / LEFT / DOWN / UP)
+		if (~/1073741903|1073741904|1073741905|1073741906/.match(key + ""))
+		{
+			switch key {
+				case 1073741903: { //right arrow
+					if (caretIndex < text.length) {
+						caretIndex++;
+					}
+				}
+				case 1073741904: { //left arrow
+					if (caretIndex > 0) {
+					caretIndex--;
+					}
+				}
+				case 1073741905: { //down arrow
+					//count the amount of letters in a line, and just add them to the caretIndex
+					trace("down");
+					var lettersInTheLine = 0;
+					var caretIndexReference = caretIndex;
+					var startY = getCharBoundaries(caretIndexReference).y;
+					//escape the caret reference to the first letter in the line, count from there
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+					{
+						caretIndexReference--;
+						if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
+					}
+
+					caretIndexReference++;
+
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
+						caretIndexReference++;					
+						lettersInTheLine++;
+					}
+					caretIndex += lettersInTheLine;
+					//now try to get the wanted caret index at the next line
+
+				}
+				case 1073741906: { 
+					//count the amount of letters in a line, and just subtract them from the caretIndex
+					var lettersInTheLine = 0;
+					var caretIndexReference = caretIndex;
+					var startY = getCharBoundaries(caretIndexReference).y;
+					//escape the caret reference to the first letter in the line, count from there
+						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+						{
+							caretIndexReference--;
+							if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
+						}
+
+					caretIndexReference++;
+
+					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
+						caretIndexReference++;
+						lettersInTheLine++;
+					}
+
+					caretIndex -= lettersInTheLine;
+					//now try to get the wanted caret index at the previous line
+					
+				}
+				default:
+			}
+		}
+		// backspace key
+		else if (key == 8)
+		{
+			if (caretIndex > 0)
+			{
+				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1))
+					|| GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				} else {
+					caretIndex--;
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				}
+				
+				onChange(FlxInputText.BACKSPACE_ACTION);
+			}
+		}
+		// delete key
+		else if (key == 127)
+		{
+			if (text.length > 0 && caretIndex < text.length)
+			{
+				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1)) || GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
+					caretIndex--;
+				} else {
+					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				}
+				onChange(FlxInputText.DELETE_ACTION);
+				text = text;
+			}
+		}
+		else if (key == 13) { 		
+			caretIndex++;
+			text = insertSubstring(text, "\n", caretIndex - 1);
+		}
+		// end key
+		else if (key == 36)
+		{
+			caretIndex = text.length;
+			text = text; // forces scroll update
+		}
+		// home key
+		else if (key == 35)
+		{
+			caretIndex = 0;
+			text = text; // forces scroll update
+		}
+	}
+
+	/**
+	 * This function replaces `onKeyDown` with support for RTL & LTR letter input
+	 * `regularKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	 * presses, so pay attention to that when overriding.
+	 * @param letter the letter outputted from the current key-press according to lime's `window.onTextInput`
+	 */
+	function regularKeysDown(letter:String) {
+		// if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus) return;
+		//if the caret is broken for some reason, fix it
+		if (caretIndex < 0) caretIndex = 0;
+		//set up the letter - remove null chars, add rtl mark to letters from RTL languages
+		var t:String = "";
+		if (letter != null) {
+			if (GeneralCharMaps.rtlLetterArray.contains(letter)) { t = "‏" + letter;}
+			else t = letter;
+		} else "";
+
+		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
+		{
+			caretIndex++;
+			
+			text = insertSubstring(text, t, caretIndex - 1);
+
+			text = text; // forces scroll update
+			
+			onChange(FlxInputText.INPUT_ACTION);
+		}
+	}
 }
 #end
 #end
