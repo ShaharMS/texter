@@ -45,7 +45,7 @@ Reguar FlxInputText with extended support for:
 | General LTR for LTR languages | ✅ | ✅ | the actual letters/signs being typed |
 | General RTL for RTL languages | ✅ | ✅ | the actual letters/signs being typed with the RTL Marker (when needed) |
 | LTR Spacebar                  | ✅ | ✅ | the regular `space` char - `" "` |
-| RTL Spacebar                  | ✅ | ❌ | the regular `space` char for RTL languages with the RTL Marker - need to add RTL spacebar logic on non-JS targets |
+| RTL Spacebar                  | ✅ | ✅ | the regular `space` char for RTL languages with the RTL Marker - need to add RTL spacebar logic on non-JS targets |
 | LTR Backspace                 | ✅ | ✅ | the regular `backspace` deletion |
 | RTL Backspace                 | ✅ | ✅ | the regular `backspace` deletion for RTL languages |
 | LTR Delete                    | ✅ | ✅ | the regular `delete` deletion |

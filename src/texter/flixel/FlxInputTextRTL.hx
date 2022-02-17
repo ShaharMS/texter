@@ -361,12 +361,12 @@ class FlxInputTextRTL extends FlxInputText
 	}
 
 	/**
-	   The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
+	   	The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
 	  
-	  | Function | Job |
-	  | --- | --- |
-	  | **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
-	  | **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
+	  	| Function | Job |
+	  	| --- | --- |
+	  	| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
+	  	| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	 **/
 	override function onKeyDown(e:KeyboardEvent) {}
 
@@ -513,7 +513,10 @@ class FlxInputTextRTL extends FlxInputText
 		//set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "";
 		if (letter != null) {
-			if (GeneralCharMaps.rtlLetterArray.contains(letter)) { t = "‏" + letter;}
+			if (GeneralCharMaps.rtlLetterArray.contains(letter) || (letter == " " && GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))))
+			{ 
+				t = "‏" + letter;
+			}
 			else t = letter;
 		} else "";
 

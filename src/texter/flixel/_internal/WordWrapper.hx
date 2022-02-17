@@ -22,7 +22,7 @@ class WordWrapper {
      * @param textInput an instance of FlxInputTextRTL
      * @return the same text, but with the `"\n"` (newline) char where a line needs to be broken
      */
-    public static function wrapVisual(textInput:#if flixel FlxInputText #elseif openfl TextField #else Dynamic):String {
+    public static function wrapVisual(textInput:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
         //trying to split the string into words
 		var wordArray:Array<String> = [];
         var indexArray:Array<DualInt> = [];
