@@ -12,6 +12,7 @@ import lime.ui.KeyCode;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
 import texter.GeneralCharMaps;
+import texter.flixel._internal.WordWrapper;
 #end
 import texter.flixel._internal.FlxInputText;
 
@@ -333,6 +334,9 @@ class FlxInputTextRTL extends FlxInputText
 class FlxInputTextRTL extends FlxInputText 
 {
 
+	public var alwaysWrapRTL(default, set):Bool;
+
+	var currentlyRTL:Bool = false;
 	/**
 	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 	 * 
@@ -497,6 +501,10 @@ class FlxInputTextRTL extends FlxInputText
 			caretIndex = 0;
 			text = text; // forces scroll update
 		}
+		if (currentlyRTL || alwaysWrapRTL) { 
+			text = WordWrapper.wrapRTL(this);
+			text = text; //update scroll
+		}
 	}
 
 	/**
@@ -516,8 +524,17 @@ class FlxInputTextRTL extends FlxInputText
 			if (GeneralCharMaps.rtlLetterArray.contains(letter) || (letter == " " && GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))))
 			{ 
 				t = "‏" + letter;
+				var trimmed = StringTools.replace(text, "‏", "");
+				if (trimmed == "") alignment = RIGHT;
+				currentlyRTL = true;
 			}
-			else t = letter;
+			else
+			{
+				t = letter;
+				var trimmed = StringTools.replace(text, "‏", "");
+				if (trimmed == "") alignment = LEFT;
+				currentlyRTL = false;
+			} 
 		} else "";
 
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
@@ -530,6 +547,14 @@ class FlxInputTextRTL extends FlxInputText
 			
 			onChange(FlxInputText.INPUT_ACTION);
 		}
+		if (currentlyRTL || alwaysWrapRTL)
+		{
+			WordWrapper.wrapRTL(this);
+		}
+	}
+
+	function set_alwaysWrapRTL(value:Bool):Bool {
+		return value;
 	}
 }
 #end

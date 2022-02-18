@@ -22,7 +22,7 @@ class WordWrapper {
      * @param textInput an instance of FlxInputTextRTL
      * @return the same text, but with the `"\n"` (newline) char where a line needs to be broken
      */
-    public static function wrapVisual(textInput:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
+    public static function wrapRTL(textInput:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
         //trying to split the string into words
 		var wordArray:Array<String> = [];
         var indexArray:Array<DualInt> = [];
@@ -37,22 +37,18 @@ class WordWrapper {
         }
         //wordArray is now consisting of: WORD + SPACE, WORD + SPACE
 		var textWithNewLines:String = "";
-       
-        var bounderySum:Float = 0;
-        var currentWord:Float = 0;
-        for (i in 0...wordArray.length) {
-            for (char in indexArray[i].int1...indexArray[i].int2 + 1) {
-				currentWord += @:privateAccess if (cast(textInput.getCharBoundaries(char).width, Null<Float>) != null) textInput.getCharBoundaries(char).width else 0;
+        var checkingChar = textInput.text.length - 1;
+        while (checkingChar >= 0) {
+            for (i in indexArray[checkingChar].int1...indexArray[checkingChar].int2) {
+                @:privateAccess {
+                    if (textInput.getCharBoundaries(i).x < (textInput.x + 2)) {
+                        for (escapeChar in indexArray[checkingChar].int1...textInput.text.length) {
+                        }
+                    }
+                }
             }
-			bounderySum += currentWord;
-			if (bounderySum > textInput.width) {
-                textWithNewLines += "\n";
-                bounderySum = currentWord;
-            }
-			textWithNewLines += wordArray[i];
-            currentWord = 0;
         }
-        
+
 		return textWithNewLines;         
         
     }

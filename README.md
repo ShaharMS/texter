@@ -52,7 +52,7 @@ Reguar FlxInputText with extended support for:
 | RTL Delete                    | ✅ | ✅ | the regular `delete` deletion for RTL languages |
 | LTR Caret                     | ✅ | ✅ | the letter insertion/deletion point |
 | RTL Caret                     | ✅ | ✅ | the letter insertion/deletion point|
-| Multiline text                | ❌ | ✅ | expands the input text verticly to match the text size & create a  new line. on JS - crashes with `shader is null` |
+| Multiline text                | ❌ | ✅ | expands the input verticly and escapes words to the next line|
 | Scrolling Single-Line text    | ✅ | ✅ | doesnt expand the input, but moves the text so the caret will be visible |
 | Left\Right Arrow Keys         | ✅ | ✅ | used to move the caret between letters/signs |
 | Up/Down Arrow Keys            | ❌ | ✅ | used to move the caret between lines. on JS - multiline crashes the app |
