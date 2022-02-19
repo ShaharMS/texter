@@ -1,7 +1,5 @@
 # texter
 
-
-
 ## I'll start with a story
 
 About 5 month ago, just a month after I started programming in haxeflixel, I wanted to make an app that needed text input, specificly of type RTL.
@@ -22,6 +20,10 @@ Of course! Any help is greatly appreciated! You can help with:
 - adding projects that you think are useful 
 
 And more that pops up in you mind!
+
+# Installation
+
+
 
 # Roadmap
 
@@ -60,19 +62,8 @@ Reguar FlxInputText with extended support for:
 | LTR WordWrapping              | ❌ | ✅ | when the sentence/word is too long for a multiline text input, some words will be escaped to the next line |
 | RTL WordWrapping              | ❌ | ❌ |  when the sentence/word is too long for a multiline text input, some words will be escaped to the next line, but the escaped words will be from the left side, not the right side |
 
-### Bugs
 
-#### Active bugs will be listed here.
+# About Copying
 
-solved bugs will remain on the list until about a month passes and no new discoveries were made about the bug.
-
-when adding a bug to the list, make sure to follow the correct format of:
-
-`| actual bug | ❌\✅ (is it fixed for JS) | ❌\✅ (is it fixed for non-JS) | a good description for the bug -  should be very detailed |`
-
-| Bug | Fixed On JS | Fixed On non-JS | More Details |
-|:---:|    :---:    |      :---:      |     :---:    |
-| First Char remains visible| ✅ | ✅ | A known problem that plagued FlxInputText on JS for a while - when deleting all of the chars from that text input, the first one will remain visible, even tho it doesn't exist |
-| Caret Stuck On First Line | ❌ | ✅ | when the text wraps itself and makes a new line, the caret remains on the last letter of the first line |
-| Next Bug Here |  |  | Bug Description Here |
-
+### You might have noticed that some files look like copies from libs like **OpenFL** or **HaxeFlixel**.
+ No, i did not want to do this originally, but some core files had to be modified (because extending those classes didnt work) in order to make things work as expected. You can see I'm fully open about this, because I want those changes to appear in the actual lib's source code, but i dont have time for all of the pull request stuff. I'd be happy to recive help in that department :)
