@@ -16,28 +16,36 @@ class WordWrapper {
     public static var splitOnChars:Array<String> = [" ", "-", "\t", "\n", "\r"];
 
     /**
-     * Takes in a `FlxInputTextRTL` instance, gets its text and tries to wrap it.
+     * Takes in a `FlxInputTextRTL` instance, gets its text and tries to wrap it **correctly**.
+     * this algorithm just flips the lins of text to get the correct lineup. the unmodified text should
+     * be stored inside `textInputRtl.internalString`
      * @param textInput an instance of FlxInputTextRTL
-     * @return the same text, but with the `"\n"` (newline) char where a line needs to be broken
      */
     public static function wrapRTL(textInput:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
-        //trying to split the string into words
-        var pureTextCopy = textInput.text;
-		var wordArray:Array<WordWithIndex> = [], lastCheck = 0;
-        for (i in 0...textInput.text.length) {
-			if (textInput.text.charAt(i) == " " || i == textInput.text.length - 1) {
-                var word = textInput.text.substring(lastCheck, i + 1);
-                wordArray.push({word: word ,int1: lastCheck, int2: i + 1});
-                lastCheck = i + 1;
+
+		var modifiedText:String = textInput.text, lastLineCheckedHeight:Null<Float> = 2.0, lineSeperators:Array<Int> = [], i = textInput.text.length - 1;
+        while (i >= 0) {
+			if (i == textInput.text.length - 1) {
+				lastLineCheckedHeight = textInput.getCharBoundaries(i).y;
+                i--;
+                continue;
             }
+            if (textInput.getCharBoundaries(i).y  == lastLineCheckedHeight || textInput.text.charAt(i) == " ") {
+                i--;
+				continue;
+            }
+            lineSeperators.push(i);
+            lastLineCheckedHeight = textInput.getCharBoundaries(i).y;
+            i--;
         }
-        //wordArray is now consisting of: [WORD + SPACE, WORD + SPACE,...]
-		var modifiedText:String = textInput.text, lastLineCheckedHeight:Null<Float> = 0.0, linesLengths:Array<Int> = [], lastLine:String = "";
-		var lineSeperator = "ㅤ";
-        for (i in 0...textInput.text.length) {
-            if (textInput.getCharBoundaries(i).y == lastLineCheckedHeight || textInput.text.charAt(i) == " ") continue;
-            modifiedText = modifiedText.substring(0, i) + lineSeperator + modifiedText.substring(i, textInput.text.length - 1);
+        if (lineSeperators.length == 0) return modifiedText;
+        var lastSep = 0, textCorrection:Array<String> = [];
+        for (sep in lineSeperators) {
+            textCorrection.push(modifiedText.substring(lastSep, sep + 1));
+            lastSep = sep + 1;
         }
+        textCorrection.reverse();
+        modifiedText = textCorrection.join(" ");
 		return modifiedText;
         
     }

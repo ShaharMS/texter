@@ -1,5 +1,6 @@
 package texter.flixel;
 
+import texter.bidi.UnicodeBidiAlgorithm;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -369,16 +370,6 @@ class FlxInputTextRTL extends FlxInputText
 	var currentlyRTL:Bool = false;
 
 	/**
-		will be used for copy-paste support and easier RTL string manipulation.
-
-		for now, i can't find a way to wrap RTL correctly, other then just moving some
-		text around, which is what ill do for the forst release build. if you have a
-		better working solution, please submit an issue/pull request/notify me on github
-		or discord.
-	**/
-	var internalString(default, null):String = "";
-
-	/**
 	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 	 * 
 	 * - multilne
@@ -514,7 +505,6 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
-					internalString = internalString.substring(0, caretIndex) + internalString.substring(caretIndex + 1);
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
 				else
@@ -541,7 +531,6 @@ class FlxInputTextRTL extends FlxInputText
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
 				onChange(FlxInputText.DELETE_ACTION);
-				text = text;
 			}
 		}
 		else if (key == 13)
@@ -552,12 +541,7 @@ class FlxInputTextRTL extends FlxInputText
 		else if (key == 36) caretIndex = text.length; // end key
 		else if (key == 35) caretIndex = 0; // home key
 		
-		internalString = text;
-		text = text; // forces scroll update
-		if (currentlyRTL || alwaysWrapRTL) {
-			text = WordWrapper.wrapRTL(this);
-			text = text;
-		}
+		//text = UnicodeBidiAlgorithm.display(text);
 	}
 
 	/**
@@ -595,24 +579,17 @@ class FlxInputTextRTL extends FlxInputText
 				currentlyRTL = false;
 			}
 		}
-		else
-			"";
+		else "";
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
 			caretIndex++;
 
 			text = insertSubstring(text, t, caretIndex - 1);
 
-			text = text; // forces scroll update
-
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 
-		internalString = text;
-		if (currentlyRTL || alwaysWrapRTL) {
-			text = WordWrapper.wrapRTL(this);
-			text = text;
-		}
+		//text = UnicodeBidiAlgorithm.display(text);
 	}
 
 	function set_alwaysWrapRTL(value:Bool):Bool
