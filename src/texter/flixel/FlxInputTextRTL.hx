@@ -2,16 +2,16 @@ package texter.flixel;
 
 #if flixel
 #if js
-import haxe.Timer;
 import flixel.FlxG;
-import openfl.geom.Rectangle;
 import flixel.text.FlxText.FlxTextAlign;
+import haxe.Timer;
+import openfl.geom.Rectangle;
 #else
-import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
-import texter.GeneralCharMaps;
+import texter.CharTools;
 import texter.flixel._internal.WordWrapper;
 #end
 import texter.flixel._internal.FlxInputText;
@@ -43,7 +43,8 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK,
+			BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
@@ -128,7 +129,7 @@ class FlxInputTextRTL extends FlxInputText
 				trueWidth += char;
 			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width])
 				tWidth += char;
-			if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex - 1)))
+			if (CharTools.rtlLetterArray.contains(text.charAt(caretIndex - 1)))
 				caret.x = tWidth - trueWidth + 2;
 		}
 
@@ -140,16 +141,17 @@ class FlxInputTextRTL extends FlxInputText
 
 		return caretIndex;
 	}
+
 	/**
-	   The original `onKeyDown` from `FlxInputText` is replaced with four functions - 
-	  
-	  | Function | Job |
-	  | --- | --- |
-	  | **`getInput()`** | used to set up the input element with which were going to listen to text input from |
-	  | **`updateInput()`** | called every frame, selects the input element to continue listening for text input |
-	  | **`typeChar(String)`** | called when special keys (spacebar, backspace...) are pressed since `getInput()` can't listen to those |
-	  | **`update(Float)`** | called every frame, checks if one of the special keys (spacebar, backspace...) is pressed to call `typeChar(String)` |
-	 **/
+		 The original `onKeyDown` from `FlxInputText` is replaced with four functions - 
+
+		| Function | Job |
+		| --- | --- |
+		| **`getInput()`** | used to set up the input element with which were going to listen to text input from |
+		| **`updateInput()`** | called every frame, selects the input element to continue listening for text input |
+		| **`typeChar(String)`** | called when special keys (spacebar, backspace...) are pressed since `getInput()` can't listen to those |
+		| **`update(Float)`** | called every frame, checks if one of the special keys (spacebar, backspace...) is pressed to call `typeChar(String)` |
+	**/
 	override function onKeyDown(e:flash.events.KeyboardEvent) {}
 
 	/**
@@ -171,14 +173,15 @@ class FlxInputTextRTL extends FlxInputText
 		js.Browser.document.body.appendChild(textInput);
 		textInput.addEventListener('input', (e:js.html.InputEvent) ->
 		{
-			if (caretIndex < 0) caretIndex = 0;
-			if (textInput.value.length > 0 && (maxLength == 0 || (text.length + textInput.value.length) < maxLength)) {
+			if (caretIndex < 0)
+				caretIndex = 0;
+			if (textInput.value.length > 0 && (maxLength == 0 || (text.length + textInput.value.length) < maxLength))
+			{
 				text = insertSubstring(text, textInput.value, caretIndex);
 				caretIndex++;
-				//text = WordWrapper.wrapVisual(this);
+				// text = WordWrapper.wrapVisual(this);
 				text = text;
 			}
-			
 		}, true);
 	}
 
@@ -188,34 +191,38 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	function updateFocus()
 	{
-		if (hasFocus) {
+		if (hasFocus)
+		{
 			textInput.focus();
 			textInput.select();
 		}
 	}
 
-	
 	/**
-	   Used to get special char inputs:
-	  
-	  | Type | Action |
-	  | --- | --- |
-	  | **`"bsp"`** | Backspace Action |
-	  | **`"del"`** | Delete Action |
-	  | **`" "`** | Spacebar Action |
-	  | **`"enter"`** | Enter Action |
+		 Used to get special char inputs:
 
-	  @param char Should be one of the `Type`s, not case sensitive
-	 **/
-	function typeChar(?char:String = "") {
+		| Type | Action |
+		| --- | --- |
+		| **`"bsp"`** | Backspace Action |
+		| **`"del"`** | Delete Action |
+		| **`" "`** | Spacebar Action |
+		| **`"enter"`** | Enter Action |
+
+		@param char Should be one of the `Type`s, not case sensitive
+	**/
+	function typeChar(?char:String = "")
+	{
 		char = char.toLowerCase();
-		if (char == "bsp") {
-			if (caretIndex > 0) {
+		if (char == "bsp")
+		{
+			if (caretIndex > 0)
+			{
 				caretIndex--;
 				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				onChange(FlxInputText.BACKSPACE_ACTION);
 				text = text;
-				if (text == "") refresh();
+				if (text == "")
+					refresh();
 				Timer.delay(() ->
 				{
 					var t:Timer;
@@ -228,7 +235,8 @@ class FlxInputTextRTL extends FlxInputText
 							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 							onChange(FlxInputText.BACKSPACE_ACTION);
 							text = text;
-							if (text == "") refresh();
+							if (text == "")
+								refresh();
 						}
 						else
 							t.stop();
@@ -236,107 +244,140 @@ class FlxInputTextRTL extends FlxInputText
 				}, 500);
 			}
 		}
-		else if (char == "del") {
+		else if (char == "del")
+		{
 			if (text.length > 0 && caretIndex < text.length)
 			{
 				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				onChange(FlxInputText.DELETE_ACTION);
 				text = text;
-				if (text == "") refresh();
-				Timer.delay(() -> {
+				if (text == "")
+					refresh();
+				Timer.delay(() ->
+				{
 					var t:Timer;
 					t = new Timer(16);
-					t.run = () -> {
-						if(FlxG.keys.pressed.DELETE) {
+					t.run = () ->
+					{
+						if (FlxG.keys.pressed.DELETE)
+						{
 							text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 							onChange(FlxInputText.DELETE_ACTION);
 							text = text;
-							if (text == "") refresh();
-						} else t.stop();
+							if (text == "")
+								refresh();
+						}
+						else
+							t.stop();
 					};
 				}, 500);
 			}
 		}
-		else if (char == "enter" && wordWrap) text += "\n";
-		else if (char == " ") { //TODO - RTL spacebar logic on JS
-			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+		else if (char == "enter" && wordWrap)
+			text += "\n";
+		else if (char == " ")
+		{ // TODO - RTL spacebar logic on JS
+			if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength))
+			{
 				text = insertSubstring(text, char, caretIndex);
 				caretIndex++;
 				text = text;
-			}			
-			Timer.delay(() -> {
+			}
+			Timer.delay(() ->
+			{
 				var t:Timer;
 				t = new Timer(16);
-				t.run = () -> {
-					if(FlxG.keys.pressed.BACKSPACE) {
-						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength)) {
+				t.run = () ->
+				{
+					if (FlxG.keys.pressed.BACKSPACE)
+					{
+						if (char.length > 0 && (maxLength == 0 || (text.length + char.length) < maxLength))
+						{
 							text = insertSubstring(text, char, caretIndex);
 							caretIndex++;
 							text = text;
-						}						
-					} else t.stop();
+						}
+					}
+					else
+						t.stop();
 				};
 			}, 500);
 		}
 	}
 
 	/**
-	 	JS FlxInputText has problems with the first char not disappearing
+			 	JS FlxInputText has problems with the first char not disappearing
 		when you delete all of the chars. a lazy and temporary solution is
 		to just refresh the FlxInputTextRTL
 	**/
-	function refresh() {
-		var nText = new FlxInputTextRTL(
-			this.x,
-			this.y, 
-			Std.int(this.width),
-			"",
-			this.size,
-			this.color,
-			this.backgroundColor,
-			this.embedded);
-		Timer.delay(() -> nText.hasFocus = true , 20);
+	function refresh()
+	{
+		var nText = new FlxInputTextRTL(this.x, this.y, Std.int(this.width), "", this.size, this.color, this.backgroundColor, this.embedded);
+		Timer.delay(() -> nText.hasFocus = true, 20);
 		nText.passwordMode = this.passwordMode;
 		nText.filterMode = this.filterMode;
 		FlxG.state.insert(FlxG.state.members.indexOf(this) + 1, nText);
 		FlxG.state.remove(this);
-		
 	}
 
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		updateFocus();
-		if (hasFocus) {
-			if (FlxG.keys.justPressed.SPACE) typeChar(" ");
-			if (FlxG.keys.justPressed.ENTER) typeChar("enter"); 
-			else if (FlxG.keys.justPressed.BACKSPACE) { if (text == "") refresh() else typeChar("bsp");}
-			else if (FlxG.keys.justPressed.DELETE) typeChar("del");
-			if (FlxG.keys.justPressed.LEFT) if (caretIndex > 0) caretIndex--;
-			else if (FlxG.keys.justPressed.RIGHT) if (caretIndex < text.length) caretIndex ++;			
+		if (hasFocus)
+		{
+			if (FlxG.keys.justPressed.SPACE)
+				typeChar(" ");
+			if (FlxG.keys.justPressed.ENTER)
+				typeChar("enter");
+			else if (FlxG.keys.justPressed.BACKSPACE)
+			{
+				if (text == "")
+					refresh()
+				else
+					typeChar("bsp");
+			}
+			else if (FlxG.keys.justPressed.DELETE)
+				typeChar("del");
+			if (FlxG.keys.justPressed.LEFT)
+				if (caretIndex > 0)
+					caretIndex--;
+				else if (FlxG.keys.justPressed.RIGHT)
+					if (caretIndex < text.length)
+						caretIndex++;
 			if (FlxG.keys.justPressed.UP && wordWrap) {}
 			else if (FlxG.keys.justPressed.DOWN && wordWrap) {}
-			if (FlxG.keys.justPressed.HOME) caretIndex = 0;
-			else if (FlxG.keys.justPressed.END) caretIndex = text.length;
-			
+			if (FlxG.keys.justPressed.HOME)
+				caretIndex = 0;
+			else if (FlxG.keys.justPressed.END)
+				caretIndex = text.length;
 		}
 	}
-
-	
 }
 #else
+
 /**
  * Reguar FlxInputText with extended support for:
  * - All languages
  * - Bi-directional text
  * - Multilne (Almost!)
  */
-class FlxInputTextRTL extends FlxInputText 
+class FlxInputTextRTL extends FlxInputText
 {
-
 	public var alwaysWrapRTL(default, set):Bool;
 
 	var currentlyRTL:Bool = false;
+
+	/**
+		will be used for copy-paste support and easier RTL string manipulation.
+
+		for now, i can't find a way to wrap RTL correctly, other then just moving some
+		text around, which is what ill do for the forst release build. if you have a
+		better working solution, please submit an issue/pull request/notify me on github
+		or discord.
+	**/
+	var internalString(default, null):String = "";
+
 	/**
 	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 	 * 
@@ -356,7 +397,9 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8,startEnglish:Bool = true, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true) {
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, startEnglish:Bool = true,
+			TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
+	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
 
@@ -365,92 +408,102 @@ class FlxInputTextRTL extends FlxInputText
 	}
 
 	/**
-	   	The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
-	  
-	  	| Function | Job |
-	  	| --- | --- |
-	  	| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
-	  	| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
-	 **/
+		 	The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
+
+			| Function | Job |
+			| --- | --- |
+			| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
+			| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
+	**/
 	override function onKeyDown(e:KeyboardEvent) {}
 
 	/**
-	    This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
-	    `specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
-	    presses, so pay attention to that when overriding.
-	    
-	    @param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
-	    @param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
-	**/
-	function specialKeysDown(key:KeyCode, modifier:KeyModifier) {
-		//if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
-		//those keys break the caret and places it in caretIndex -1
-		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
-		
-		//fix the caret if its broken
-		if (caretIndex < 0) caretIndex = 0;
+		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
+		`specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+		presses, so pay attention to that when overriding.
 
-		//arrow keys (RIGHT / LEFT / DOWN / UP)
+		@param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
+		@param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
+	**/
+	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
+	{
+		// if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus)
+			return;
+		// those keys break the caret and places it in caretIndex -1
+		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey)
+			return;
+
+		// fix the caret if its broken
+		if (caretIndex < 0)
+			caretIndex = 0;
+
+		// arrow keys (RIGHT / LEFT / DOWN / UP)
 		if (~/1073741903|1073741904|1073741905|1073741906/.match(key + ""))
 		{
-			switch key {
-				case 1073741903: { //right arrow
-					if (caretIndex < text.length) {
-						caretIndex++;
+			switch key
+			{
+				case 1073741903:
+					{ // right arrow
+						if (caretIndex < text.length)
+						{
+							caretIndex++;
+						}
 					}
-				}
-				case 1073741904: { //left arrow
-					if (caretIndex > 0) {
-					caretIndex--;
+				case 1073741904:
+					{ // left arrow
+						if (caretIndex > 0)
+						{
+							caretIndex--;
+						}
 					}
-				}
-				case 1073741905: { //down arrow
-					//count the amount of letters in a line, and just add them to the caretIndex
-					trace("down");
-					var lettersInTheLine = 0;
-					var caretIndexReference = caretIndex;
-					var startY = getCharBoundaries(caretIndexReference).y;
-					//escape the caret reference to the first letter in the line, count from there
-					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
-					{
-						caretIndexReference--;
-						if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
-					}
-
-					caretIndexReference++;
-
-					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
-						caretIndexReference++;					
-						lettersInTheLine++;
-					}
-					caretIndex += lettersInTheLine;
-					//now try to get the wanted caret index at the next line
-
-				}
-				case 1073741906: { 
-					//count the amount of letters in a line, and just subtract them from the caretIndex
-					var lettersInTheLine = 0;
-					var caretIndexReference = caretIndex;
-					var startY = getCharBoundaries(caretIndexReference).y;
-					//escape the caret reference to the first letter in the line, count from there
+				case 1073741905:
+					{ // down arrow
+						// count the amount of letters in a line, and just add them to the caretIndex
+						var lettersInTheLine = 0, caretIndexReference = caretIndex, startY = getCharBoundaries(caretIndexReference).y;
+						// escape the caret reference to the first letter in the line, count from there
 						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
 						{
 							caretIndexReference--;
-							if (getCharBoundaries(caretIndexReference).width == 0) lettersInTheLine++;
+							if (getCharBoundaries(caretIndexReference).width == 0)
+								lettersInTheLine++;
 						}
 
-					caretIndexReference++;
-
-					while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length) {
 						caretIndexReference++;
-						lettersInTheLine++;
-					}
 
-					caretIndex -= lettersInTheLine;
-					//now try to get the wanted caret index at the previous line
-					
-				}
+						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
+						{
+							caretIndexReference++;
+							lettersInTheLine++;
+						}
+						caretIndex += lettersInTheLine;
+						// now try to get the wanted caret index at the next line
+					}
+				case 1073741906:
+					{
+						// count the amount of letters in a line, and just subtract them from the caretIndex
+						var lettersInTheLine = 0;
+						var caretIndexReference = caretIndex;
+						var startY = getCharBoundaries(caretIndexReference).y;
+						// escape the caret reference to the first letter in the line, count from there
+						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+						{
+							caretIndexReference--;
+							if (getCharBoundaries(caretIndexReference).width == 0)
+								lettersInTheLine++;
+						}
+
+						caretIndexReference++;
+
+						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
+						{
+							caretIndexReference++;
+							lettersInTheLine++;
+						}
+
+						caretIndex -= lettersInTheLine;
+						// now try to get the wanted caret index at the previous line
+					}
 				default:
 			}
 		}
@@ -459,14 +512,17 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (caretIndex > 0)
 			{
-				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1))
-					|| GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				{
+					internalString = internalString.substring(0, caretIndex) + internalString.substring(caretIndex + 1);
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-				} else {
+				}
+				else
+				{
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
-				
+
 				onChange(FlxInputText.BACKSPACE_ACTION);
 			}
 		}
@@ -475,35 +531,32 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (text.length > 0 && caretIndex < text.length)
 			{
-				if (GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex + 1)) || GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))) {
+				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				{
 					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
 					caretIndex--;
-				} else {
+				}
+				else
+				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
 				onChange(FlxInputText.DELETE_ACTION);
 				text = text;
 			}
 		}
-		else if (key == 13) { 		
+		else if (key == 13)
+		{
 			caretIndex++;
 			text = insertSubstring(text, "\n", caretIndex - 1);
 		}
-		// end key
-		else if (key == 36)
-		{
-			caretIndex = text.length;
-			text = text; // forces scroll update
-		}
-		// home key
-		else if (key == 35)
-		{
-			caretIndex = 0;
-			text = text; // forces scroll update
-		}
-		if (currentlyRTL || alwaysWrapRTL) { 
+		else if (key == 36) caretIndex = text.length; // end key
+		else if (key == 35) caretIndex = 0; // home key
+		
+		internalString = text;
+		text = text; // forces scroll update
+		if (currentlyRTL || alwaysWrapRTL) {
 			text = WordWrapper.wrapRTL(this);
-			text = text; //update scroll
+			text = text;
 		}
 	}
 
@@ -513,49 +566,60 @@ class FlxInputTextRTL extends FlxInputText
 	 * presses, so pay attention to that when overriding.
 	 * @param letter the letter outputted from the current key-press according to lime's `window.onTextInput`
 	 */
-	function regularKeysDown(letter:String) {
+	function regularKeysDown(letter:String)
+	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
-		//if the caret is broken for some reason, fix it
-		if (caretIndex < 0) caretIndex = 0;
-		//set up the letter - remove null chars, add rtl mark to letters from RTL languages
+		if (!hasFocus)
+			return;
+		// if the caret is broken for some reason, fix it
+		if (caretIndex < 0)
+			caretIndex = 0;
+		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "";
-		if (letter != null) {
-			if (GeneralCharMaps.rtlLetterArray.contains(letter) || (letter == " " && GeneralCharMaps.rtlLetterArray.contains(text.charAt(caretIndex))))
-			{ 
+		if (letter != null)
+		{
+			if (CharTools.rtlLetters.match(letter) || (letter == " " && CharTools.rtlLetters.match(text.charAt(caretIndex))))
+			{
 				t = "‏" + letter;
 				var trimmed = StringTools.replace(text, "‏", "");
-				if (trimmed == "") alignment = RIGHT;
+				if (trimmed == "")
+					alignment = RIGHT;
 				currentlyRTL = true;
 			}
 			else
 			{
 				t = letter;
 				var trimmed = StringTools.replace(text, "‏", "");
-				if (trimmed == "") alignment = LEFT;
+				if (trimmed == "")
+					alignment = LEFT;
 				currentlyRTL = false;
-			} 
-		} else "";
-
+			}
+		}
+		else
+			"";
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
 			caretIndex++;
-			
+
 			text = insertSubstring(text, t, caretIndex - 1);
 
 			text = text; // forces scroll update
-			
+
 			onChange(FlxInputText.INPUT_ACTION);
 		}
-		if (currentlyRTL || alwaysWrapRTL)
-		{
-			WordWrapper.wrapRTL(this);
+
+		internalString = text;
+		if (currentlyRTL || alwaysWrapRTL) {
+			text = WordWrapper.wrapRTL(this);
+			text = text;
 		}
 	}
 
-	function set_alwaysWrapRTL(value:Bool):Bool {
+	function set_alwaysWrapRTL(value:Bool):Bool
+	{
 		return value;
 	}
 }
 #end
+
 #end
