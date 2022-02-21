@@ -1,6 +1,5 @@
 package texter.flixel;
 
-import texter.bidi.UnicodeBidiAlgorithm;
 #if flixel
 #if js
 import flixel.FlxG;

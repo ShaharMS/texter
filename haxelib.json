@@ -2,7 +2,7 @@
     "name": "texter",
     "classPath": "src/",
     "license": "MIT",
-    "releasenote": "FlxInputText - now with fixed caret & RTL!",
+    "releasenote": "FlxInputText - now with a fixed caret, BiDirectional text and multi-lang input! check out FlxInputTextRTL",
     "contributors": ["ShaharMS"],
     "version": "1.0.0",
     "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
