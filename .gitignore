@@ -1,5 +1,4 @@
 export
 .vscode
 src/___TextState.hx
-src/Main.hx
 assets

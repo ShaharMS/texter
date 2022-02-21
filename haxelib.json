@@ -2,9 +2,9 @@
     "name": "texter",
     "classPath": "src/",
     "license": "MIT",
-    "releasenote": "FlxInputText - now with RTL!",
+    "releasenote": "FlxInputText - now with fixed caret & RTL!",
     "contributors": ["ShaharMS"],
     "version": "1.0.0",
-    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl"],
-    "description": "adding more support for general text input/regular text in multiple libraries such as Flixel, OpenFL and more (to be added!)"
+    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
+    "description": "adding more support for general text input/regular text in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
 }

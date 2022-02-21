@@ -23,7 +23,15 @@ And more that pops up in you mind!
 
 # Installation
 
+#### to install the stable version:
+```
+haxelib install texter
+```
 
+#### to istall the newer - but maybe unstable git version - 
+```
+haxelib git texter https://github.com/ShaharMS/texter.git
+```
 
 # Roadmap
 

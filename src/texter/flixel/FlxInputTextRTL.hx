@@ -13,7 +13,6 @@ import lime.ui.KeyModifier;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
 import texter.CharTools;
-import texter.flixel._internal.WordWrapper;
 #end
 import texter.flixel._internal.FlxInputText;
 using StringTools;
