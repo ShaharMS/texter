@@ -21,37 +21,19 @@ class WordWrapper {
      * be stored inside `textInputRtl.internalString`
      * @param textInput an instance of FlxInputTextRTL
      */
-    public static function wrapRTL(textInput:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
+    public static function wrapRTL(textField:#if flixel FlxInputText #elseif openfl TextField #else Any #end):String {
 
-		var modifiedText:String = textInput.text, lastLineCheckedHeight:Null<Float> = 2.0, lineSeperators:Array<Int> = [], i = textInput.text.length - 1;
-        while (i >= 0) {
-			if (i == textInput.text.length - 1) {
-				lastLineCheckedHeight = textInput.getCharBoundaries(i).y;
-                i--;
-                continue;
-            }
-            if (textInput.getCharBoundaries(i).y  == lastLineCheckedHeight || textInput.text.charAt(i) == " ") {
-                i--;
-				continue;
-            }
-            lineSeperators.push(i);
-            lastLineCheckedHeight = textInput.getCharBoundaries(i).y;
-            i--;
+		var modifiedText:String = "";
+		for (i in 0...textField.textField.numLines) {
+			var line = textField.textField.getLineText(i);
+            if (line == null) continue;
+			modifiedText = modifiedText.insertSubstring(line, 0);
+
         }
-        if (lineSeperators.length == 0) return modifiedText;
-        var lastSep = 0, textCorrection:Array<String> = [];
-        for (sep in lineSeperators) {
-            textCorrection.push(modifiedText.substring(lastSep, sep + 1));
-            lastSep = sep + 1;
-        }
-        textCorrection.reverse();
-        modifiedText = textCorrection.join(" ");
+        textField.text = modifiedText;
+        textField.text = textField.text;
 		return modifiedText;
         
-    }
-
-    public static function warpByWords(text:String, length:Int):String {
-        return "";
     }
 
     public static function indexOfAny(string:String, splitOnStrings:Array<String>, ?startIndex:Int = 0):Int {
@@ -68,4 +50,17 @@ class WordWrapper {
     public static inline function containsWhiteSpace(string:String):Bool {
 		return if (StringTools.trim(string).length != string.length) false else true;
     }
+
+	public static function insertSubstring(Original:String, Insert:String, Index:Int):String
+	{
+		if (Index != Original.length)
+		{
+			Original = Original.substring(0, Index) + (Insert) + (Original.substring(Index));
+		}
+		else
+		{
+			Original = Original + (Insert);
+		}
+		return Original;
+	}
 }

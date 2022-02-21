@@ -19,11 +19,10 @@ class ___TestState extends FlxState {
     public override function create() {
         super.create();
         t = new FlxInputTextRTL(0,0, 800, "text", 50);
-        t.font = "assets/VarelaRound.ttf";
+        t.font = "assets/VarelaRound-Regular.ttf";
 		t.color = 0x000000FF;
         t.backgroundColor = 0xFFFFFFFF;
         add(t);
-		new FlxTimer().start(1, (ti) -> trace(WordWrapper.wrapRTL(t)),0);
     }
 
     public override function update(elapsed:Float) {

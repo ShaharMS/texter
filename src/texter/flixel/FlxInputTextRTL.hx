@@ -16,7 +16,7 @@ import texter.CharTools;
 import texter.flixel._internal.WordWrapper;
 #end
 import texter.flixel._internal.FlxInputText;
-
+using StringTools;
 #if js
 /**
  * FlxInputText with support for RTL languages.
@@ -540,8 +540,7 @@ class FlxInputTextRTL extends FlxInputText
 		}
 		else if (key == 36) caretIndex = text.length; // end key
 		else if (key == 35) caretIndex = 0; // home key
-		
-		//text = UnicodeBidiAlgorithm.display(text);
+
 	}
 
 	/**
@@ -553,31 +552,24 @@ class FlxInputTextRTL extends FlxInputText
 	function regularKeysDown(letter:String)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus)
-			return;
+		if (!hasFocus) return;
 		// if the caret is broken for some reason, fix it
-		if (caretIndex < 0)
-			caretIndex = 0;
+		if (caretIndex < 0) caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "";
 		if (letter != null)
 		{
-			if (CharTools.rtlLetters.match(letter) || (letter == " " && CharTools.rtlLetters.match(text.charAt(caretIndex))))
+			if (CharTools.rtlLetters.match(letter))
 			{
-				t = "‏" + letter;
-				var trimmed = StringTools.replace(text, "‏", "");
-				if (trimmed == "")
-					alignment = RIGHT;
+				t = "‮" + letter;
 				currentlyRTL = true;
 			}
-			else
+			else if (currentlyRTL)
 			{
-				t = letter;
-				var trimmed = StringTools.replace(text, "‏", "");
-				if (trimmed == "")
-					alignment = LEFT;
+				t = "‬" + letter;
 				currentlyRTL = false;
 			}
+			else t = letter;
 		}
 		else "";
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
@@ -588,8 +580,6 @@ class FlxInputTextRTL extends FlxInputText
 
 			onChange(FlxInputText.INPUT_ACTION);
 		}
-
-		//text = UnicodeBidiAlgorithm.display(text);
 	}
 
 	function set_alwaysWrapRTL(value:Bool):Bool
