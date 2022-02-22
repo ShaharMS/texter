@@ -375,7 +375,9 @@ class FlxInputTextRTL extends FlxInputText
 	 * - LTR & RTL support both in the same text input
 	 * - fully working caret
 	 * 
-	 * And more (probably forgot some things ;) )
+	 * for more info about supported features check the link below:
+	 * 
+	 * https://github.com/ShaharMS/texter#roadmap
 	 * 
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
@@ -397,12 +399,12 @@ class FlxInputTextRTL extends FlxInputText
 	}
 
 	/**
-		 	The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
+		The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
 
-			| Function | Job |
-			| --- | --- |
-			| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
-			| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
+		| Function | Job |
+		| --- | --- |
+		| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
+		| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	**/
 	override function onKeyDown(e:KeyboardEvent) {}
 
@@ -535,6 +537,7 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			caretIndex++;
 			text = insertSubstring(text, "\n", caretIndex - 1);
+			onChange(FlxInputText.ENTER_ACTION);
 		}
 		else if (key == 36) caretIndex = text.length; // end key
 		else if (key == 35) caretIndex = 0; // home key
