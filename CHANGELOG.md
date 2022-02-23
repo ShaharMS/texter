@@ -4,6 +4,7 @@
 
 - **CharTools** 
     - added chars for text direction manipulation.
+    - added more regular chars
     - added documentation
 
 - **FlxTextButton** 
@@ -27,7 +28,7 @@
     - fixed a crash when pressing spacebar twice and then enter
     - fixed text background expanding too far vertically when pressing enter
     - `getCharBoundaries()` is now supposed to report accurate boundaries for the specified char
-    - text input slowdown when many chars displayed is now fixed
+    - fixed text input slowdown when many chars displayed
 
 
 1.0.0 (February 21, 2022) - **Official Release!**

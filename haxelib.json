@@ -5,7 +5,7 @@
     "releasenote": "CharTools - added documentation for existing fields ",
     
     "contributors": ["ShaharMS"],
-    "version": "1.0.1",
+    "version": "1.1.0",
     "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
     "description": "adding more support for general text input/regular text in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
 }
