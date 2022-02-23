@@ -54,6 +54,7 @@ Reguar FlxInputText with extended support for:
 |  :---:  |     :---:   |       :---:     |    :---:    |
 | General LTR for LTR languages | ✅ | ✅ | the actual letters/signs being typed |
 | General RTL for RTL languages | ✅ | ✅ | the actual letters/signs being typed with the RTL Marker (when needed) |
+| Unicode BiDi Algorithm (UBA)  | ✅ | ✅❌ | when a user tries to type in both a LTR language and a RTL language, the text input should be able to handle that correctly with alignments, moving the caret and placing certine unicode chars differently |
 | LTR Spacebar                  | ✅ | ✅ | the regular `space` char - `" "` |
 | RTL Spacebar                  | ✅ | ✅ | the regular `space` char for RTL languages with the RTL Marker |
 | LTR Backspace                 | ✅ | ✅ | the regular `backspace` deletion |
@@ -69,6 +70,8 @@ Reguar FlxInputText with extended support for:
 | LTR/RTL Enter                 | ❌ | ✅ | forces a new line and makes the caret appear on a side corresponding to the current language |
 | LTR WordWrapping              | ❌ | ✅ | when the sentence/word is too long for a multiline text input, some words will be escaped to the next line |
 | RTL WordWrapping              | ❌ | ❌ |  when the sentence/word is too long for a multiline text input, some words will be escaped to the next line, but the escaped words will be from the left side, not the right side |
+| Selection | ❌ | ❌ | when dragging & pressing the mouse across the text, a visual selection background should appear. that background tells you those char could be delted, copied, pasted over/moved |
+| Text Copy/Paste | ❌ | ❌ | when pressing `ctrl` + `c` - copy the selected text. when pressing `ctrl` + `v` - paste text from the clipboard |
 
 
 # About Copying

@@ -1,8 +1,5 @@
 package texter.flixel._internal;
 #if flixel
-import haxe.iterators.StringIteratorUnicode;
-import haxe.iterators.StringIterator;
-import flixel.util.FlxStringUtil;
 import flash.errors.Error;
 import flash.events.KeyboardEvent;
 import flash.geom.Rectangle;

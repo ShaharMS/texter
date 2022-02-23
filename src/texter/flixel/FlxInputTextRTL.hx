@@ -1,6 +1,5 @@
 package texter.flixel;
 
-import haxe.macro.Expr.Case;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -407,8 +406,7 @@ class FlxInputTextRTL extends FlxInputText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, startEnglish:Bool = true,
-			TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
@@ -443,87 +441,78 @@ class FlxInputTextRTL extends FlxInputText
 	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus)
-			return;
-		// those keys break the caret and places it in caretIndex -1
-		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey)
-			return;
+		if (!hasFocus) return;
+		// those keys break the caret and place it in caretIndex -1
+		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
 
 		// fix the caret if its broken
 		if (caretIndex < 0)
 			caretIndex = 0;
-
-		// arrow keys (RIGHT / LEFT / DOWN / UP)
-		if (~/1073741903|1073741904|1073741905|1073741906/.match(key + ""))
+	
+		if (key == KeyCode.RIGHT)
 		{
-			switch key
+			if (caretIndex < text.length)
 			{
-				case 1073741903:
-					{ // right arrow
-						if (caretIndex < text.length)
-						{
-							caretIndex++;
-						}
-					}
-				case 1073741904:
-					{ // left arrow
-						if (caretIndex > 0)
-						{
-							caretIndex--;
-						}
-					}
-				case 1073741905:
-					{ // down arrow
-						// count the amount of letters in a line, and just add them to the caretIndex
-						var lettersInTheLine = 0, caretIndexReference = caretIndex, startY = getCharBoundaries(caretIndexReference).y;
-						// escape the caret reference to the first letter in the line, count from there
-						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
-						{
-							caretIndexReference--;
-							if (getCharBoundaries(caretIndexReference).width == 0)
-								lettersInTheLine++;
-						}
-
-						caretIndexReference++;
-
-						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
-						{
-							caretIndexReference++;
-							lettersInTheLine++;
-						}
-						caretIndex += lettersInTheLine;
-						// now try to get the wanted caret index at the next line
-					}
-				case 1073741906:
-					{
-						// count the amount of letters in a line, and just subtract them from the caretIndex
-						var lettersInTheLine = 0;
-						var caretIndexReference = caretIndex;
-						var startY = getCharBoundaries(caretIndexReference).y;
-						// escape the caret reference to the first letter in the line, count from there
-						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
-						{
-							caretIndexReference--;
-							if (getCharBoundaries(caretIndexReference).width == 0)
-								lettersInTheLine++;
-						}
-
-						caretIndexReference++;
-
-						while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
-						{
-							caretIndexReference++;
-							lettersInTheLine++;
-						}
-
-						caretIndex -= lettersInTheLine;
-						// now try to get the wanted caret index at the previous line
-					}
-				default:
+				caretIndex++;
 			}
 		}
-		// backspace key
-		else if (key == 8)
+		if (key == KeyCode.LEFT)
+		{
+			if (caretIndex > 0)
+			{
+				caretIndex--;
+			}
+		}
+		if (key == KeyCode.DOWN)
+		{ 
+			// count the amount of letters in a line, and just add them to the caretIndex
+			var lettersInTheLine = 0, caretIndexReference = caretIndex, startY = getCharBoundaries(caretIndexReference).y;
+			// escape the caret reference to the first letter in the line, count from there
+			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+			{
+				caretIndexReference--;
+				if (getCharBoundaries(caretIndexReference).width == 0)
+					lettersInTheLine++;
+			}
+
+			caretIndexReference++;
+
+			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
+			{
+				caretIndexReference++;
+				lettersInTheLine++;
+			}
+			caretIndex += lettersInTheLine;
+			// now try to get the wanted caret index at the next line
+		}
+		if (key == KeyCode.UP)
+		{
+			// count the amount of letters in a line, and just subtract them from the caretIndex
+			var lettersInTheLine = 0;
+			var caretIndexReference = caretIndex;
+			var startY = getCharBoundaries(caretIndexReference).y;
+			// escape the caret reference to the first letter in the line, count from there
+			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
+			{
+				caretIndexReference--;
+				if (getCharBoundaries(caretIndexReference).width == 0)
+					lettersInTheLine++;
+			}
+
+			caretIndexReference++;
+
+			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
+			{
+				caretIndexReference++;
+				lettersInTheLine++;
+			}
+
+			caretIndex -= lettersInTheLine;
+			// now try to get the wanted caret index at the previous line
+		}
+
+
+		else if (key == KeyCode.BACKSPACE)
 		{
 			if (caretIndex > 0)
 			{
@@ -540,8 +529,7 @@ class FlxInputTextRTL extends FlxInputText
 				onChange(FlxInputText.BACKSPACE_ACTION);
 			}
 		}
-		// delete key
-		else if (key == 127)
+		else if (key == KeyCode.DELETE)
 		{
 			if (text.length > 0 && caretIndex < text.length)
 			{
@@ -571,10 +559,9 @@ class FlxInputTextRTL extends FlxInputText
 				caretIndex = insertionIndex + 1;
 			}
 			onChange(FlxInputText.ENTER_ACTION);
-			//TODO #3 - handle RTL enter
 		}
-		else if (key == 36) caretIndex = text.length; // end key
-		else if (key == 35) caretIndex = 0; // home key
+		else if (key == KeyCode.END) caretIndex = text.length;
+		else if (key == KeyCode.HOME) caretIndex = 0;
 
 	}
 

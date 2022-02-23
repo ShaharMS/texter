@@ -1,4 +1,4 @@
-1.1.0 (February 22, 2022)
+1.1.0 (February 24, 2022)
 --- 
 ### New Features:
 
@@ -14,6 +14,7 @@
 
 - **FlxInputTextRTL**
     - added `inputMode` field to enable/disable text input
+    - text background now matches the size of the font
 
 ### Bug Fixes:
 
@@ -25,6 +26,26 @@
     - fixed caret positioning reseting to (0,0) when pressing spacebar twice in a row
     - fixed a crash when pressing spacebar twice and then enter
     - fixed text background expanding too far vertically when pressing enter
+    - `getCharBoundaries()` is now supposed to report accurate boundaries for the specified char
+    - text input slowdown when many chars displayed is now fixed
 
+
+1.0.0 (February 21, 2022) - **Official Release!**
+---
+### New Features:
+
+- **CharTools**
+    - added an EReg of RTL letters
+    - added an EReg of numeric chars
+
+- **FlxInputTextRTL**
+    - added multi-language support
+    - added RTL support
+    - added BiDi support (Bi-Directional text support)
+    - added support for more unicodes
+
+- **FlxTextButton** - **new class!** features:
+    - simplified button methods & fields with FlxText base
+    - easy button disabling/enabling
 
 

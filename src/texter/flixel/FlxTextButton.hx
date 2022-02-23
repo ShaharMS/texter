@@ -2,6 +2,8 @@ package texter.flixel;
 
 #if flixel
 import flixel.group.FlxSpriteGroup;
+import flixel.ui.FlxButton;
+import flixel.FlxG;
 
 /**
  * A text that calls a function when clicked
@@ -62,7 +64,6 @@ class FlxTextButton extends FlxSpriteGroup {
 
         label = new FlxInputTextRTL(0,0, width, text, size);
         add(label);
-        
     }
 
 	function get_labelType():LabelType {
@@ -86,8 +87,25 @@ class FlxTextButton extends FlxSpriteGroup {
 	}
 
 	function get_status():Int {
-		throw new haxe.exceptions.NotImplementedException();
+        #if FLX_MOUSE
+		if (FlxG.mouse.overlaps(this) && FlxG.mouse.pressed) return FlxButton.PRESSED;
+        if (FlxG.mouse.overlaps(this)) return FlxButton.HIGHLIGHT;
+        return FlxButton.NORMAL;
+        #else
+        for (touch in FlxG.touches.list) {
+            if (touch.overlaps(this)) return FlxButton.PRESSED;
+            return FlxButton.NORMAL;
+        }
+        #end
 	}
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        #if !mobile
+        if (FlxG.keys.justPressed.ENTER && label.hasFocus) onEnter();
+        if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased) onClick();
+        #end
+    }
 }
 
 enum LabelType
