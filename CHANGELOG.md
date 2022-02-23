@@ -24,7 +24,7 @@
     - fixed caret positioning reseting to (0,0) when pressing enter
     - fixed caret positioning reseting to (0,0) when pressing spacebar twice in a row
     - fixed a crash when pressing spacebar twice and then enter
-    -
+    - fixed text background expanding too far vertically when pressing enter
 
 
 

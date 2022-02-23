@@ -1,4 +1,6 @@
 package;
+import flixel.util.FlxColor;
+import flixel.FlxSprite;
 import texter.flixel.FlxInputTextRTL;
 import flixel.FlxState;
 class ___TestState extends FlxState {

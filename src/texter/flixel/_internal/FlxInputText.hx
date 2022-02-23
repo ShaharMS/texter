@@ -496,10 +496,12 @@ class FlxInputText extends FlxText
 			charBoundaries = textField.getCharBoundaries(charIndex);
 			charBoundaries.x += widthDiff * charBoundaries.width;
 		}
-		trace(charBoundaries);
 		return charBoundaries;
 	}
 
+	// ----------------------------------
+	// HAS BEEN CHANGED
+	// ----------------------------------
 	private override function set_text(Text:String):String
 	{
 		#if !js
@@ -517,31 +519,6 @@ class FlxInputText extends FlxText
 
 		var numChars:Int = Text.length;
 		prepareCharBoundaries(numChars);
-		textField.text = "";
-		var textH:Float = 0;
-		var textW:Float = 0;
-		var lastW:Float = 0;
-
-		// Flash textFields have a "magic number" 2 pixel gutter all around
-		// It does not seem to vary with font, size, border, etc, and does not seem to be customizable.
-		// We simply reproduce this behavior here
-		var magicX:Float = 2;
-		var magicY:Float = 2;
-
-		for (i in 0...numChars)
-		{
-			textField.appendText(Text.substr(i, 1)); // add a character
-			textW = textField.textWidth; // count up total text width
-			if (i == 0)
-			{
-				textH = textField.textHeight; // count height after first char
-			}
-			_charBoundaries[i].x = magicX + lastW; // place x at end of last character
-			_charBoundaries[i].y = magicY; // place y at zero
-			_charBoundaries[i].width = (textW - lastW); // place width at (width so far) minus (last char's end point)
-			_charBoundaries[i].height = textH;
-			lastW = textW;
-		}
 		textField.text = Text;
 		onSetTextCheck();
 		return return_text;
@@ -644,6 +621,9 @@ class FlxInputText extends FlxText
 		#end
 	}
 
+	// ----------------------------------
+	// HAS BEEN CHANGED
+	// ----------------------------------
 	/**
 	 * Draws the frame of animation for the input text.
 	 *
@@ -652,12 +632,14 @@ class FlxInputText extends FlxText
 	private override function calcFrame(RunOnCpp:Bool = false):Void
 	{
 		super.calcFrame(RunOnCpp);
-
+		
+		var calculatedHeightRect = getCharBoundaries(text.length - 1); 
+		if (calculatedHeightRect.y == 0 || calculatedHeightRect.height == 0) calculatedHeightRect.height = height;
 		if (fieldBorderSprite != null)
 		{
 			if (fieldBorderThickness > 0)
 			{
-				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(height + fieldBorderThickness * 2), fieldBorderColor);
+				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(calculatedHeightRect.y + calculatedHeightRect.height + fieldBorderThickness * 2), fieldBorderColor);
 				fieldBorderSprite.x = x - fieldBorderThickness;
 				fieldBorderSprite.y = y - fieldBorderThickness;
 			}
@@ -671,7 +653,7 @@ class FlxInputText extends FlxText
 		{
 			if (background)
 			{
-				backgroundSprite.makeGraphic(Std.int(width), Std.int(height), backgroundColor);
+				backgroundSprite.makeGraphic(Std.int(width), Std.int(calculatedHeightRect.y + calculatedHeightRect.height), backgroundColor);
 				backgroundSprite.x = x;
 				backgroundSprite.y = y;
 			}
