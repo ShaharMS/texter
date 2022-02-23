@@ -20,7 +20,7 @@ class CharTools {
 	/**
 	 	An `EReg` of all numbers (0-9).
 
-		usage:
+		usage: 
 		```haxe
 			CharTools.numericChars.match(yourNumberAsAString)
 		```

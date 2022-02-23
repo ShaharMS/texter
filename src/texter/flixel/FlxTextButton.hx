@@ -1,18 +1,12 @@
 package texter.flixel;
-import flixel.group.FlxSpriteGroup;
+
 #if flixel
-import flixel.ui.FlxButton;
-import flixel.FlxG;
-import flixel.text.FlxText;
-import flixel.FlxSprite;
-import flixel.util.FlxColor;
+import flixel.group.FlxSpriteGroup;
 
 /**
  * A text that calls a function when clicked
  * Behaves like a regular `FlxText`, but
  * with extra button functions.
- * 
- * INCOMPLETE - works but lacks features
  */
 class FlxTextButton extends FlxSpriteGroup {
 
@@ -54,7 +48,7 @@ class FlxTextButton extends FlxSpriteGroup {
     public var onEnter:Void -> Void;
 
     
-    public function new(x:Float = 0, y:Float = 0, text:String = "", size:Int = 8, ?OnClick:Void -> Void = null, ?OnEnter:Void -> Void = null) {
+    public function new(x:Float = 0, y:Float = 0, width:Int = 0, text:String = "", size:Int = 8, ?OnClick:Void -> Void = null, ?OnEnter:Void -> Void = null) {
         super(x,y);
         if (OnClick == null) 
             onClick == () -> return; 
@@ -65,18 +59,30 @@ class FlxTextButton extends FlxSpriteGroup {
 			onEnter == () -> return;
 		else
 			onEnter = OnEnter;
-        label.color = color;
-        label.size = size;
-        label.text = text;
+
+        label = new FlxInputTextRTL(0,0, width, text, size);
+        add(label);
         
     }
 
 	function get_labelType():LabelType {
-		throw new haxe.exceptions.NotImplementedException();
+		return switch label.inputMode {
+            case "input": INPUT;
+            case _: REGULAR;
+        }
 	}
 
 	function set_labelType(value:LabelType):LabelType {
-		throw new haxe.exceptions.NotImplementedException();
+		switch value {
+            case INPUT: {
+                label.inputMode = "input";
+                return INPUT;
+            }
+            case REGULAR: {
+                label.inputMode = "regular";
+                return REGULAR;
+            }
+        }
 	}
 
 	function get_status():Int {

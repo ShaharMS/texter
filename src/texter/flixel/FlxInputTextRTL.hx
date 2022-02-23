@@ -1,5 +1,6 @@
 package texter.flixel;
 
+import haxe.macro.Expr.Case;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -363,7 +364,25 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText
 {
-	public var alwaysWrapRTL(default, set):Bool;
+
+	/**
+	 * whether text input for this `FlxInputTextRTL` is enabled. 
+	 * 
+	 * this field is not CaSe SeNsItIvE, and accepts more then 1 "key" for a mode:
+	 * 
+	 * | Key | Mode |
+	 * | --- | ---  |
+	 * | `i`, `input`,  `inputmode`, `ipt`, `input mode` | `input` mode (text input will recive focus when clicked) |
+	 * | `r`, `regular`, `regularmode`, `reg`, `rgm`, `text`, `txt`, `t`, `textmode`, `regular mode`, `text mode` | `regular` mode (text input won't recive focus when clicked) |
+	 * 
+	 * **Notice** - 
+	 * - Manually giving focus to the text input won't work either 
+	 * - setting this field won't modify the text input's focus at runtime 
+	 * (setting `inputMode` to `regular` won't remove focus automatically,
+	 * and setting it to `input` won't give it focus automatically)
+	 */
+	public var inputMode(default, set):String = "input";
+
 
 	var currentlyRTL:Bool = false;
 
@@ -396,6 +415,11 @@ class FlxInputTextRTL extends FlxInputText
 
 		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
+	}
+
+	override function set_hasFocus(newFocus:Bool):Bool {
+		if (inputMode == "input") return super.set_hasFocus(newFocus);
+		return false;
 	}
 
 	/**
@@ -536,8 +560,18 @@ class FlxInputTextRTL extends FlxInputText
 		else if (key == 13)
 		{
 			caretIndex++;
-			text = insertSubstring(text, "\n", caretIndex - 1);
+			if (!currentlyRTL) {
+				text = insertSubstring(text, "\n", caretIndex - 1);
+			} else {
+				var insertionIndex = caretIndex;
+				//starts a search for the last RTL char and places the "\n" there
+				//if the string ends and theres still no last RTl char, "\n" will be insterted at length.
+				while (CharTools.rtlLetters.match(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length) insertionIndex ++;
+				text = insertSubstring(text, "\n", insertionIndex);
+				caretIndex = insertionIndex + 1;
+			}
 			onChange(FlxInputText.ENTER_ACTION);
+			//TODO #3 - handle RTL enter
 		}
 		else if (key == 36) caretIndex = text.length; // end key
 		else if (key == 35) caretIndex = 0; // home key
@@ -583,9 +617,11 @@ class FlxInputTextRTL extends FlxInputText
 		}
 	}
 
-	function set_alwaysWrapRTL(value:Bool):Bool
-	{
-		return value;
+	function set_inputMode(mode:String):String {
+		return switch mode.toLowerCase() {
+			case "i" | "input" | "inputmode" | "ipt" | "input mode": "input";
+			case _: "regular";
+		}
 	}
 }
 #end

@@ -467,11 +467,37 @@ class FlxInputText extends FlxText
 	// ----------------------
 	private function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		if (_charBoundaries != null && charIndex >= 0 && _charBoundaries.length > 0)
-		{
-			return if (textField.getCharBoundaries(charIndex) != null) textField.getCharBoundaries(charIndex) else new Rectangle();
+		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0) return new Rectangle();
+		
+		var charBoundaries:Rectangle = new Rectangle(), actualIndex = charIndex;
+
+		if (textField.getCharBoundaries(charIndex) != null) {
+			charBoundaries = textField.getCharBoundaries(charIndex);
+		} else if (text.charAt(charIndex) == "\n") {
+			var diff = 1; //this is going to be used when a user presses enter twice to display the caret at the correct height
+			while (text.charAt(charIndex - 1) == "\n") {
+				charIndex--;
+				diff++;
+			}
+			//if this is a spacebar, we cant use textField.getCharBoundaries() since itll return null
+			charBoundaries = getCharBoundaries(charIndex - 1);
+			charBoundaries.y += diff * charBoundaries.height;
+			charBoundaries.x = 2;
+			charBoundaries.width = 0;
+		} else if (text.charAt(charIndex) == " ") {
+			//we know that it doesnt matter how many spacebars are pressed,
+			//the first one after a char/ at the start of the text
+			//is always defined and has the correct boundaries
+			var widthDiff = 0;
+			while (text.charAt(charIndex - 1) == " " && charIndex != 0) {
+				charIndex--;
+				widthDiff++;
+			}
+			charBoundaries = textField.getCharBoundaries(charIndex);
+			charBoundaries.x += widthDiff * charBoundaries.width;
 		}
-		return new Rectangle();
+		trace(charBoundaries);
+		return charBoundaries;
 	}
 
 	private override function set_text(Text:String):String
@@ -871,7 +897,7 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.left + x;
+					caret.x = boundaries.left + x; 
 					caret.y = boundaries.top + y + 2;
 				}
 			}
@@ -884,7 +910,6 @@ class FlxInputText extends FlxText
 					caret.x = boundaries.right + x;
 					caret.y = boundaries.top + y + 2;
 				}
-				// Text box is empty
 				else if (text.length == 0)
 				{
 					// 2 px gutters
