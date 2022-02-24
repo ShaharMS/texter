@@ -32,7 +32,7 @@ class CharTools {
 
 		usage:
 		```haxe
-		CharTools.punctuationMarks.match(yourTextWith)
+		CharTools.punctuationMarks.match(yourTextWithyes)
 		```
 	**/
 	public static var punctuationMarks(default, null):EReg = ~//g;

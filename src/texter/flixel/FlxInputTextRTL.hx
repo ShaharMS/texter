@@ -1,5 +1,6 @@
 package texter.flixel;
 
+import flixel.util.FlxStringUtil;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -363,6 +364,7 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText
 {
+
 	/**
 	    Whether the text is aligned according to the first typed character:
 	    
@@ -372,8 +374,24 @@ class FlxInputTextRTL extends FlxInputText
 	**/
 	public var autoAlign(default, set):Bool = true;
 
+	/**
+	 * Specifies the direction of the starting character inside this text input.
+	 * 
+	 * the text direction will only be set according to `openingDirection` if `autoAlign` is set to true.
+	 * 
+	 * `openingDirection` is decided after the first strongly typed character is typed. a table to help:
+	 * 
+	 * | Character Group | Type | Direction |
+	 * |	   --- 	     | ---  |    ---    |
+	 * | punctuation marks (see `CharTools.punctuationMarks`) | softly typed | UNDEFINED |
+	 * | LTR languages (English, Spanish, French, German...) | strongly typed | LTR |
+	 * | RTL languages (Arabic, Hebrew, Sorani, Urdu...) | strongly typed | RTL |
+	 * 
+	 */
+	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
 	var currentlyRTL:Bool = false;
+	var startedTypingRTL:Bool = false;
 
 	/**
 	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
@@ -409,7 +427,7 @@ class FlxInputTextRTL extends FlxInputText
 		| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
 		| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	**/
-	override function onKeyDown(e:KeyboardEvent) {}
+	override function onKeyDown(e:KeyboardEvent) return;
 
 	/**
 		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
@@ -566,7 +584,10 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				t = CharTools.RLO + letter;
 				currentlyRTL = true;
-				if (autoAlign && text.length == 0) alignment = RIGHT;
+				if (text.length == 0) {
+					if (autoAlign) alignment = RIGHT;
+					openingDirection = RTL;
+				}
 			}
 			else if (currentlyRTL)
 			{
@@ -587,11 +608,14 @@ class FlxInputTextRTL extends FlxInputText
 			}
 			else {
 				t = letter;
-				if (autoAlign && text.length == 0) alignment = LEFT;
+				if (text.length == 0) {
+					if (autoAlign) alignment = LEFT;
+					if (t.indexOf(",.<>/?:;'\\[]{}()!@#$%^&*`~|+=_-") != -1) openingDirection = UNDETERMINED else openingDirection = LTR;
+				}
 			}
 		}
 		else "";
-		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
+		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength)) 
 		{
 			//TODO - better caret handling
 			caretIndex++;
@@ -615,4 +639,9 @@ class FlxInputTextRTL extends FlxInputText
 }
 #end
 
+enum TextDirection {
+	RTL;
+	LTR;
+	UNDETERMINED;
+}
 #end

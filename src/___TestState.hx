@@ -11,4 +11,9 @@ class ___TestState extends FlxState {
         t.label.font = "assets/V.ttf";
         add(t);
     }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        trace(t.label.openingDirection);
+    }
 }

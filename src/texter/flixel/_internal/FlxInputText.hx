@@ -479,7 +479,7 @@ class FlxInputText extends FlxText
 			//if this is a spacebar, we cant use textField.getCharBoundaries() since itll return null
 			charBoundaries = getCharBoundaries(charIndex - 1);
 			charBoundaries.y += diff * charBoundaries.height;
-			charBoundaries.x = 2;
+			if (alignment == RIGHT) charBoundaries.x = x + width - 2 else charBoundaries.x = 2;
 			charBoundaries.width = 0;
 		} else if (text.charAt(charIndex) == " ") {
 			//we know that it doesnt matter how many spacebars are pressed,
