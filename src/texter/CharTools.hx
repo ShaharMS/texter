@@ -28,14 +28,24 @@ class CharTools {
 	public static var numericChars(default, null):EReg = ~/1|2|3|4|5|6|7|8|9|0/g;
 
 	/**
+	 	An `EReg` of all **common** punctuation marks
+
+		usage:
+		```haxe
+		CharTools.punctuationMarks.match(yourTextWith)
+		```
+	**/
+	public static var punctuationMarks(default, null):EReg = ~//g;
+	
+	/**
 	 * The `newline` char used to add an enter to a string of text
 	 */
-	public static var NEWLINE:String = "\n";
+	public static var NEWLINE(default, never):String = "\n";
 
 	/**
 	 * The `tab` char used to add a wide space - tab - to a string of text
 	 */
-	public static var TAB:String = "\t";
+	public static var TAB(default, never):String = "\t";
 	
 	/**
 	 * The `Right to Left Mark` Char.
