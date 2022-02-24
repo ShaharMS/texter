@@ -15,7 +15,8 @@
 
 - **FlxInputTextRTL**
     - added `inputMode` field to enable/disable text input
-    - text background now matches the size of the font
+    - added `autoAlign` field to enable alignment based on the first char
+    - text background now matches the size of the font isntead of being a fixed size
 
 ### Bug Fixes:
 

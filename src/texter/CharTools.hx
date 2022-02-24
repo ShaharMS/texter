@@ -35,7 +35,7 @@ class CharTools {
 	/**
 	 * The `tab` char used to add a wide space - tab - to a string of text
 	 */
-	public static var TAB:String = "\t"
+	public static var TAB:String = "\t";
 	
 	/**
 	 * The `Right to Left Mark` Char.

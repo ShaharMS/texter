@@ -382,6 +382,15 @@ class FlxInputTextRTL extends FlxInputText
 	 */
 	public var inputMode(default, set):String = "input";
 
+	/**
+	    Whether the text is aligned according to the first typed character:
+	    
+	     - if the character is from a RTL language - `alignment` will be set to `RIGHT`
+		 - if the character is from any othe language - `alignment` will be set to `LEFT`
+	    
+	**/
+	public var autoAlign(default, set):Bool = true;
+
 
 	var currentlyRTL:Bool = false;
 
@@ -578,27 +587,37 @@ class FlxInputTextRTL extends FlxInputText
 		// if the caret is broken for some reason, fix it
 		if (caretIndex < 0) caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
-		var t:String = "";
+		var t:String = "", hasConverted:Bool = false;
 		if (letter != null)
 		{
-			if (CharTools.rtlLetters.match(letter))
+			if (CharTools.rtlLetters.match(letter) || (currentlyRTL && letter == " "))
 			{
-				t = "‮" + letter;
+				t = CharTools.RLO + letter;
 				currentlyRTL = true;
+				if (autoAlign && text.length == 0) alignment = RIGHT;
 			}
 			else if (currentlyRTL)
 			{
-				t = "‬" + letter;
+				t = CharTools.PDF + letter;
 				currentlyRTL = false;
+				hasConverted = true;
+				caretIndex++;
+				// after conversion, the caret needs to move itself to he end of the RTL text 
+				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length) caretIndex++; 
 			}
-			else t = letter;
+			else {
+				t = letter;
+				if (autoAlign && text.length == 0) alignment = LEFT;
+			}
 		}
 		else "";
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
+			//TODO - better caret handling
 			caretIndex++;
 
 			text = insertSubstring(text, t, caretIndex - 1);
+			if (hasConverted) caretIndex++;
 
 			onChange(FlxInputText.INPUT_ACTION);
 		}
@@ -609,6 +628,15 @@ class FlxInputTextRTL extends FlxInputText
 			case "i" | "input" | "inputmode" | "ipt" | "input mode": "input";
 			case _: "regular";
 		}
+	}
+
+	function set_autoAlign(value:Bool):Bool {
+		if (!CharTools.rtlLetters.match(text.charAt(0))) {
+			alignment = LEFT;
+		} else {
+			alignment = RIGHT;
+		}
+		return value;
 	}
 }
 #end
