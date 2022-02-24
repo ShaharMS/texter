@@ -8,7 +8,7 @@ import flixel.group.FlxSpriteGroup;
  * 
  * uses FlxInputTextRTL under the hood to support both RTL and LTR input.
  * 
- * INCOMPLETE - waiting for FlxInputTextRTL
+ * INCOMPLETE - waiting for FlxInputTextRTL's RTL WordWrap
  */
 class FlxSuperText extends FlxSpriteGroup {
 

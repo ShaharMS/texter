@@ -7,19 +7,10 @@ import flixel.FlxG;
 
 /**
  * A text that calls a function when clicked
- * Behaves like a regular `FlxText`, but
+ * Behaves like a regular `FlxInputTextRTL`, but
  * with extra button functions.
  */
 class FlxTextButton extends FlxSpriteGroup {
-
-    /**
-        The type of the label:
-        
-        - `LabelType.INPUT` - the button will be able to recieve text input and the `enter` button will trigger its callback.
-        - `LabelType.REGULAR` - the button will behave like a bormal button, with mouse clicks being the trigger for the
-        `onClick()` function and `onEnter()` being disabled.
-    **/
-    public var labelType(get, set):LabelType;
 
     /**
         An Instance of FlxInputTextRTL, will handle the
@@ -65,26 +56,6 @@ class FlxTextButton extends FlxSpriteGroup {
         label = new FlxInputTextRTL(0,0, width, text, size);
         add(label);
     }
-
-	function get_labelType():LabelType {
-		return switch label.inputMode {
-            case "input": INPUT;
-            case _: REGULAR;
-        }
-	}
-
-	function set_labelType(value:LabelType):LabelType {
-		switch value {
-            case INPUT: {
-                label.inputMode = "input";
-                return INPUT;
-            }
-            case REGULAR: {
-                label.inputMode = "regular";
-                return REGULAR;
-            }
-        }
-	}
 
 	function get_status():Int {
         #if FLX_MOUSE

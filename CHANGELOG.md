@@ -14,9 +14,13 @@
     - will also use `FlxInputTextRTL` at its core to support input for the button's text.
 
 - **FlxInputTextRTL**
-    - added `inputMode` field to enable/disable text input
     - added `autoAlign` field to enable alignment based on the first char
     - text background now matches the size of the font isntead of being a fixed size
+
+- **README**
+    - fixed typos
+    - moved the roadmap to `Roadmaps.md`
+    
 
 ### Bug Fixes:
 
@@ -29,18 +33,18 @@
     - fixed a crash when pressing spacebar twice and then enter
     - fixed text background expanding too far vertically when pressing enter
     - `getCharBoundaries()` is now supposed to report accurate boundaries for the specified char
-    - fixed text input slowdown when many chars displayed
+    - fixed text input slowdown when many chars are displayed
 
 
 1.0.0 (February 21, 2022) - **Official Release!**
 ---
 ### New Features:
 
-- **CharTools**
+- **CharTools** - **new class!** features:
     - added an EReg of RTL letters
     - added an EReg of numeric chars
 
-- **FlxInputTextRTL**
+- **FlxInputTextRTL** - **new class!** features:
     - added multi-language support
     - added RTL support
     - added BiDi support (Bi-Directional text support)

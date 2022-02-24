@@ -2,7 +2,7 @@
     "name": "texter",
     "classPath": "src/",
     "license": "MIT",
-    "releasenote": "CharTools - added documentation for existing fields ",
+    "releasenote": "fixed problems with FlxInputTextRTL, added docs & fields to CharTools, FlxTextButton now supports input",
     
     "contributors": ["ShaharMS"],
     "version": "1.1.0",

@@ -363,25 +363,6 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText
 {
-
-	/**
-	 * whether text input for this `FlxInputTextRTL` is enabled. 
-	 * 
-	 * this field is not CaSe SeNsItIvE, and accepts more then 1 "key" for a mode:
-	 * 
-	 * | Key | Mode |
-	 * | --- | ---  |
-	 * | `i`, `input`,  `inputmode`, `ipt`, `input mode` | `input` mode (text input will recive focus when clicked) |
-	 * | `r`, `regular`, `regularmode`, `reg`, `rgm`, `text`, `txt`, `t`, `textmode`, `regular mode`, `text mode` | `regular` mode (text input won't recive focus when clicked) |
-	 * 
-	 * **Notice** - 
-	 * - Manually giving focus to the text input won't work either 
-	 * - setting this field won't modify the text input's focus at runtime 
-	 * (setting `inputMode` to `regular` won't remove focus automatically,
-	 * and setting it to `input` won't give it focus automatically)
-	 */
-	public var inputMode(default, set):String = "input";
-
 	/**
 	    Whether the text is aligned according to the first typed character:
 	    
@@ -401,11 +382,7 @@ class FlxInputTextRTL extends FlxInputText
 	 * - multiple languages
 	 * - LTR & RTL support both in the same text input
 	 * - fully working caret
-	 * 
-	 * for more info about supported features check the link below:
-	 * 
-	 * https://github.com/ShaharMS/texter#roadmap
-	 * 
+	 *
 	 * @param	X				The X position of the text.
 	 * @param	Y				The Y position of the text.
 	 * @param	Width			The width of the text object (height is determined automatically).
@@ -422,11 +399,6 @@ class FlxInputTextRTL extends FlxInputText
 
 		Lib.application.window.onTextInput.add(regularKeysDown, false, 1);
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
-	}
-
-	override function set_hasFocus(newFocus:Bool):Bool {
-		if (inputMode == "input") return super.set_hasFocus(newFocus);
-		return false;
 	}
 
 	/**
@@ -587,7 +559,7 @@ class FlxInputTextRTL extends FlxInputText
 		// if the caret is broken for some reason, fix it
 		if (caretIndex < 0) caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
-		var t:String = "", hasConverted:Bool = false;
+		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
 		if (letter != null)
 		{
 			if (CharTools.rtlLetters.match(letter) || (currentlyRTL && letter == " "))
@@ -601,8 +573,16 @@ class FlxInputTextRTL extends FlxInputText
 				t = CharTools.PDF + letter;
 				currentlyRTL = false;
 				hasConverted = true;
+
+				// after conversion, the caret needs to move itself to he end of the RTL text.
+				// the last spacebar also needs to be moved
+				if (text.charAt(caretIndex) == " ") {
+					t = CharTools.PDF + " " + letter;
+					text = text.substring(0, caretIndex) + text.substring(caretIndex, text.length);
+					addedSpace = true;
+				}
 				caretIndex++;
-				// after conversion, the caret needs to move itself to he end of the RTL text 
+				
 				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length) caretIndex++; 
 			}
 			else {
@@ -618,15 +598,9 @@ class FlxInputTextRTL extends FlxInputText
 
 			text = insertSubstring(text, t, caretIndex - 1);
 			if (hasConverted) caretIndex++;
+			if (addedSpace) caretIndex++;
 
 			onChange(FlxInputText.INPUT_ACTION);
-		}
-	}
-
-	function set_inputMode(mode:String):String {
-		return switch mode.toLowerCase() {
-			case "i" | "input" | "inputmode" | "ipt" | "input mode": "input";
-			case _: "regular";
 		}
 	}
 
