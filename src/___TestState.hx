@@ -14,6 +14,5 @@ class ___TestState extends FlxState {
 
     override function update(elapsed:Float) {
         super.update(elapsed);
-        trace(t.label.openingDirection);
     }
 }
