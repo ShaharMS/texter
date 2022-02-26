@@ -1,5 +1,6 @@
 package texter.flixel;
 
+import openfl.errors.RangeError;
 import flixel.util.FlxStringUtil;
 #if flixel
 #if js
@@ -453,53 +454,22 @@ class FlxInputTextRTL extends FlxInputText
 		if (key == KeyCode.LEFT && caretIndex > 0) caretIndex--;
 		if (key == KeyCode.DOWN)
 		{ 
-			// count the amount of letters in a line, and just add them to the caretIndex
-			var lettersInTheLine = 0, caretIndexReference = caretIndex, startY = getCharBoundaries(caretIndexReference).y;
-			// escape the caret reference to the first letter in the line, count from there
-			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
-			{
-				caretIndexReference--;
-				if (getCharBoundaries(caretIndexReference).width == 0)
-					lettersInTheLine++;
-			}
-
-			caretIndexReference++;
-
-			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
-			{
-				caretIndexReference++;
-				lettersInTheLine++;
-			}
-			caretIndex += lettersInTheLine;
-			// now try to get the wanted caret index at the next line
+			//we want to count the amount of letters in the next line and just add them to caretIndex
+			var currentLine = textField.getLineIndexOfChar(caretIndex), nextLineLength:Int;
+			try {
+				nextLineLength = textField.getLineLength(currentLine);
+				caretIndex += nextLineLength;
+			} catch(e:RangeError) {trace(e);}
 		}
-		if (key == KeyCode.UP)
-		{
-			// count the amount of letters in a line, and just subtract them from the caretIndex
-			var lettersInTheLine = 0;
-			var caretIndexReference = caretIndex;
-			var startY = getCharBoundaries(caretIndexReference).y;
-			// escape the caret reference to the first letter in the line, count from there
-			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference >= 0)
-			{
-				caretIndexReference--;
-				if (getCharBoundaries(caretIndexReference).width == 0)
-					lettersInTheLine++;
-			}
-
-			caretIndexReference++;
-
-			while (getCharBoundaries(caretIndexReference).y == startY && caretIndexReference <= text.length)
-			{
-				caretIndexReference++;
-				lettersInTheLine++;
-			}
-
-			caretIndex -= lettersInTheLine;
-			// now try to get the wanted caret index at the previous line
+		if (key == KeyCode.UP)  {
+			//felt clever for that solution - well find the caret index at the point (caret.x, caret.y + caret.height) which needs to be in the next line.
+			//TODO `getCharIndexAtPoint()` reports incorrect index when not pressing directly on the text, but in he text's same line
+			var currentLine = textField.getLineIndexOfChar(caretIndex), prevLineLength:Int;
+			try {
+				prevLineLength = textField.getLineLength(currentLine);
+				caretIndex -= prevLineLength;
+			} catch(e:RangeError) {trace(e);}
 		}
-
-
 		else if (key == KeyCode.BACKSPACE)
 		{
 			if (caretIndex > 0)
@@ -539,7 +509,8 @@ class FlxInputTextRTL extends FlxInputText
 			if (!currentlyRTL) {
 				text = insertSubstring(text, "\n", caretIndex - 1);
 			} else {
-				var insertionIndex = caretIndex;
+				var insertionIndex = 0;
+				insertionIndex = caretIndex;
 				//starts a search for the last RTL char and places the "\n" there
 				//if the string ends and theres still no last RTl char, "\n" will be insterted at length.
 				while (CharTools.rtlLetters.match(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length) insertionIndex ++;
