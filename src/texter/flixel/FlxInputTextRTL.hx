@@ -1,7 +1,5 @@
 package texter.flixel;
 
-import openfl.errors.RangeError;
-import flixel.util.FlxStringUtil;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -459,7 +457,7 @@ class FlxInputTextRTL extends FlxInputText
 			try {
 				nextLineLength = textField.getLineLength(currentLine);
 				caretIndex += nextLineLength;
-			} catch(e:RangeError) {trace(e);}
+			} catch(e:openfl.errors.RangeError) {trace(e);}
 		}
 		if (key == KeyCode.UP)  {
 			//felt clever for that solution - well find the caret index at the point (caret.x, caret.y + caret.height) which needs to be in the next line.
@@ -468,7 +466,7 @@ class FlxInputTextRTL extends FlxInputText
 			try {
 				prevLineLength = textField.getLineLength(currentLine);
 				caretIndex -= prevLineLength;
-			} catch(e:RangeError) {trace(e);}
+			} catch(e:openfl.errors.RangeError) {trace(e);}
 		}
 		else if (key == KeyCode.BACKSPACE)
 		{

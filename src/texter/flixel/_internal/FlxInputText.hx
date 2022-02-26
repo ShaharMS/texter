@@ -538,11 +538,18 @@ class FlxInputText extends FlxText
 			for (i in 0...text.length)
 			{
 				var r = getCharBoundaries(i);
-				if (X >= r.x && X <= r.right && Y >= r.y && Y <= r.bottom) // <----------------- CHANGE HERE
+				if ((X >= r.x && X <= r.right && Y >= r.y && Y <= r.bottom)) // <----------------- CHANGE HERE
 				{
 					return i;
 				}
 				
+			}
+			//the mouse might have been pressed between the lines
+			for (i in 0...text.length) {
+				var r = getCharBoundaries(i);
+				if (Y >= r.y && y <= r.bottom) {
+					return textField.getLineLength(textField.getLineOffset(i - 1));
+				}
 			}
 			return text.length;
 		}
@@ -873,10 +880,10 @@ class FlxInputText extends FlxText
 			// Caret is not to the right of text
 			if (caretIndex < text.length)
 			{
-				boundaries = getCharBoundaries(caretIndex);
+				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.left + x; 
+					caret.x = boundaries.right + x; 
 					caret.y = boundaries.top + y + 2;
 				}
 			}
@@ -892,8 +899,8 @@ class FlxInputText extends FlxText
 				else if (text.length == 0)
 				{
 					// 2 px gutters
-					caret.x = x + 2;
-					caret.y = y + 2;
+					caret.x = x + 4;
+					caret.y = y + 4;
 				}
 			}
 		}
