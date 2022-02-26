@@ -370,46 +370,48 @@ class FlxInputTextRTL extends FlxInputText
 	    
 	     - if the character is from a RTL language - `alignment` will be set to `RIGHT`
 		 - if the character is from any othe language - `alignment` will be set to `LEFT`
+
+		`autoAlign` does not default to a certine direction when set to `false`. it will
+		use the last direction it remembers when this `FlxInputTextRTL` was created/when `autoAlign` was still true;
 	    
 	**/
 	public var autoAlign(default, set):Bool = true;
 
 	/**
-	 * Specifies the direction of the starting character inside this text input.
-	 * 
-	 * the text direction will only be set according to `openingDirection` if `autoAlign` is set to true.
-	 * 
-	 * `openingDirection` is decided after the first strongly typed character is typed. a table to help:
-	 * 
-	 * | Character Group | Type | Direction |
-	 * |	   --- 	     | ---  |    ---    |
-	 * | punctuation marks (see `CharTools.punctuationMarks`) | softly typed | UNDEFINED |
-	 * | LTR languages (English, Spanish, French, German...) | strongly typed | LTR |
-	 * | RTL languages (Arabic, Hebrew, Sorani, Urdu...) | strongly typed | RTL |
-	 * 
-	 */
+		Specifies the direction of the starting character inside this text input.
+		
+		the text direction will only be set according to `openingDirection` if `autoAlign` is set to true.
+		
+		`openingDirection` is decided after the first strongly typed character is typed. a table to help:
+		
+		| Character Group | Type | Direction |
+		|	  :---:	     | :---:|  :---:  |
+		| punctuation marks (see `CharTools.punctuationMarks`) | softly typed | UNDEFINED |
+		| LTR languages (English, Spanish, French, German...) | strongly typed | LTR |
+		| RTL languages (Arabic, Hebrew, Sorani, Urdu...) | strongly typed | RTL |
+	**/
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
 	var currentlyRTL:Bool = false;
 	var startedTypingRTL:Bool = false;
 
 	/**
-	 * Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
-	 * 
-	 * - multilne
-	 * - multiple languages
-	 * - LTR & RTL support both in the same text input
-	 * - fully working caret
-	 *
-	 * @param	X				The X position of the text.
-	 * @param	Y				The Y position of the text.
-	 * @param	Width			The width of the text object (height is determined automatically).
-	 * @param	Text			The actual text you would like to display initially.
-	 * @param   size			Initial size of the font
-	 * @param	TextColor		The color of the text
-	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
-	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
-	 */
+		Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
+
+		- multilne
+		- multiple languages
+		- LTR & RTL support both in the same text input
+		- fully working caret
+
+		@param	X				The X position of the text.
+		@param	Y				The Y position of the text.
+		@param	Width			The width of the text object (height is determined automatically).
+		@param	Text			The actual text you would like to display initially.
+		@param   size			Initial size of the font
+		@param	TextColor		The color of the text
+		@param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
+		@param	EmbeddedFont	Whether this text field uses embedded fonts or not
+	**/
 	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
@@ -445,23 +447,10 @@ class FlxInputTextRTL extends FlxInputText
 		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
 
 		// fix the caret if its broken
-		if (caretIndex < 0)
-			caretIndex = 0;
+		if (caretIndex < 0) caretIndex = 0;
 	
-		if (key == KeyCode.RIGHT)
-		{
-			if (caretIndex < text.length)
-			{
-				caretIndex++;
-			}
-		}
-		if (key == KeyCode.LEFT)
-		{
-			if (caretIndex > 0)
-			{
-				caretIndex--;
-			}
-		}
+		if (key == KeyCode.RIGHT && caretIndex < text.length) caretIndex++;
+		if (key == KeyCode.LEFT && caretIndex > 0) caretIndex--;
 		if (key == KeyCode.DOWN)
 		{ 
 			// count the amount of letters in a line, and just add them to the caretIndex
@@ -629,6 +618,7 @@ class FlxInputTextRTL extends FlxInputText
 	}
 
 	function set_autoAlign(value:Bool):Bool {
+		if (!value) return value;
 		if (!CharTools.rtlLetters.match(text.charAt(0))) {
 			alignment = LEFT;
 		} else {
