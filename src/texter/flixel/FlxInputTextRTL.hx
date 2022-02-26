@@ -440,8 +440,7 @@ class FlxInputTextRTL extends FlxInputText
 		@param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
 		@param modifier information about modifying buttons and if theyre on or not - `ctrl`, `shift`, `alt`, `capslock`...
 	**/
-	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
-	{
+	function specialKeysDown(key:KeyCode, modifier:KeyModifier) {
 		// if the user didnt intend to edit the text, dont do anything
 		if (!hasFocus) return;
 		// those keys break the caret and place it in caretIndex -1
@@ -452,29 +451,13 @@ class FlxInputTextRTL extends FlxInputText
 	
 		if (key == KeyCode.RIGHT && caretIndex < text.length) caretIndex++;
 		if (key == KeyCode.LEFT && caretIndex > 0) caretIndex--;
-		if (key == KeyCode.DOWN)
-		{ 
-			//we want to count the amount of letters in the next line and just add them to caretIndex
-			var currentLine = textField.getLineIndexOfChar(caretIndex), nextLineLength:Int;
-			try {
-				nextLineLength = textField.getLineLength(currentLine);
-				caretIndex += nextLineLength;
-			} catch(e:RangeError) {trace(e);}
-		}
-		if (key == KeyCode.UP)  {
-			//felt clever for that solution - well find the caret index at the point (caret.x, caret.y + caret.height) which needs to be in the next line.
-			//TODO `getCharIndexAtPoint()` reports incorrect index when not pressing directly on the text, but in he text's same line
-			var currentLine = textField.getLineIndexOfChar(caretIndex), prevLineLength:Int;
-			try {
-				prevLineLength = textField.getLineLength(currentLine);
-				caretIndex -= prevLineLength;
-			} catch(e:RangeError) {trace(e);}
-		}
+		if (key == KeyCode.DOWN) {}//Disabled for now 
+		if (key == KeyCode.UP) {}//Disabled for now
 		else if (key == KeyCode.BACKSPACE)
 		{
 			if (caretIndex > 0)
 			{
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (currentlyRTL)
 				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
@@ -491,8 +474,11 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (text.length > 0 && caretIndex < text.length)
 			{
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (currentlyRTL)
 				{
+					if (text.charAt(caretIndex - 1) == CharTools.RLO || text.charAt(caretIndex - 1) == CharTools.PDF) {
+						
+					}
 					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
 					caretIndex--;
 				}
@@ -505,12 +491,12 @@ class FlxInputTextRTL extends FlxInputText
 		}
 		else if (key == 13)
 		{
-			caretIndex++;
+			
 			if (!currentlyRTL) {
 				text = insertSubstring(text, "\n", caretIndex - 1);
+				caretIndex++;
 			} else {
-				var insertionIndex = 0;
-				insertionIndex = caretIndex;
+				var insertionIndex = caretIndex;
 				//starts a search for the last RTL char and places the "\n" there
 				//if the string ends and theres still no last RTl char, "\n" will be insterted at length.
 				while (CharTools.rtlLetters.match(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length) insertionIndex ++;
@@ -519,8 +505,8 @@ class FlxInputTextRTL extends FlxInputText
 			}
 			onChange(FlxInputText.ENTER_ACTION);
 		}
-		else if (key == KeyCode.END) caretIndex = text.length;
-		else if (key == KeyCode.HOME) caretIndex = 0;
+		else if (key == KeyCode.END) caretIndex = if (openingDirection != RTL) text.length else 0;
+		else if (key == KeyCode.HOME) caretIndex = if (openingDirection != RTL) 0 else text.length;
 
 	}
 
@@ -561,9 +547,7 @@ class FlxInputTextRTL extends FlxInputText
 					t = CharTools.PDF + " " + letter;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex, text.length);
 					addedSpace = true;
-				}
-				caretIndex++;
-				
+				}			
 				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length) caretIndex++; 
 			}
 			else {
@@ -577,11 +561,8 @@ class FlxInputTextRTL extends FlxInputText
 		else "";
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength)) 
 		{
-			//TODO - better caret handling
-			caretIndex++;
-
-			text = insertSubstring(text, t, caretIndex - 1);
-			if (hasConverted) caretIndex++;
+			text = insertSubstring(text, t, caretIndex);
+			if (!currentlyRTL) caretIndex += t.length;
 			if (addedSpace) caretIndex++;
 
 			onChange(FlxInputText.INPUT_ACTION);
