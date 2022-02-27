@@ -490,7 +490,7 @@ class FlxInputText extends FlxText
 				charIndex--;
 				widthDiff++;
 			}
-			charBoundaries = textField.getCharBoundaries(charIndex);
+			charBoundaries = textField.getCharBoundaries(charIndex - 1);
 			charBoundaries.x += widthDiff * charBoundaries.width;
 		}
 		return charBoundaries;
@@ -547,6 +547,7 @@ class FlxInputText extends FlxText
 			var i = 0;
 			while (i < text.length) {
 				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
+				if (r == null) return 0;
 				if (Y >= r.y && Y <= r.bottom) {
 					if (i == 0) i--;
 					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
