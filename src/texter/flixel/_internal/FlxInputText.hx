@@ -534,7 +534,6 @@ class FlxInputText extends FlxText
 		// place caret at matching char position
 		if (text.length > 0)
 		{
-			_charBoundaries = [for (i in 0...text.length) new FlxRect().copyFromFlash(getCharBoundaries(i))];
 			for (i in 0...text.length)
 			{
 				var r = getCharBoundaries(i);
@@ -545,16 +544,18 @@ class FlxInputText extends FlxText
 				
 			}
 			//the mouse might have been pressed between the lines
-			for (i in 0...text.length) {
-				var r = getCharBoundaries(i);
-				if (Y >= r.y && y <= r.bottom) {
-					return textField.getLineLength(textField.getLineOffset(i - 1));
+			var i = 0;
+			while (i < text.length) {
+				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
+				if (Y >= r.y && Y <= r.bottom) {
+					if (i == 0) i--;
+					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
 				}
+				i++;
 			}
 			return text.length;
 		}
 		// place caret at leftmost position
-		_charBoundaries = [];
 		return 0;
 	}
 
