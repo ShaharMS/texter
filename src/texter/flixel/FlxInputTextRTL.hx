@@ -452,21 +452,23 @@ class FlxInputTextRTL extends FlxInputText
 		if (key == KeyCode.LEFT && caretIndex > 0) caretIndex--;
 		if (key == KeyCode.DOWN)
 		{ 
-			//we want to count the amount of letters in the next line and just add them to caretIndex
-			var currentLine = textField.getLineIndexOfChar(caretIndex), nextLineLength:Int;
-			try {
-				nextLineLength = textField.getLineLength(currentLine);
-				caretIndex += nextLineLength;
-			} catch(e:openfl.errors.RangeError) {trace(e);}
+			//here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
+			var currentLine = textField.getLineIndexOfChar(caretIndex), letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
+			//here we get stats about the next line and where to put the caret
+			var firstCharInNextLine = textField.getLineOffset(currentLine + 1), nextLine = textField.getLineLength(currentLine + 1);
+			if (firstCharInNextLine == -1) return;
+			if (letterLineIndex > nextLine) letterLineIndex = nextLine;
+			caretIndex = textField.getLineOffset(currentLine + 1) + letterLineIndex;
+			
 		}
 		if (key == KeyCode.UP)  {
-			//felt clever for that solution - well find the caret index at the point (caret.x, caret.y + caret.height) which needs to be in the next line.
-			//TODO `getCharIndexAtPoint()` reports incorrect index when not pressing directly on the text, but in he text's same line
-			var currentLine = textField.getLineIndexOfChar(caretIndex), prevLineLength:Int;
-			try {
-				prevLineLength = textField.getLineLength(currentLine);
-				caretIndex -= prevLineLength;
-			} catch(e:openfl.errors.RangeError) {trace(e);}
+			//here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
+			var currentLine = textField.getLineIndexOfChar(caretIndex), letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
+			//here we get stats about the next line and where to put the caret
+			var firstCharInPrevLine = textField.getLineOffset(currentLine - 1), nextLine = textField.getLineLength(currentLine - 1);
+			if (firstCharInPrevLine == -1) return;
+			if (letterLineIndex > nextLine) letterLineIndex = nextLine - 1;
+			caretIndex = textField.getLineOffset(currentLine - 1) + letterLineIndex;
 		}
 		else if (key == KeyCode.BACKSPACE)
 		{
