@@ -483,15 +483,19 @@ class FlxInputText extends FlxText
 			charBoundaries.width = 0;
 		} else if (text.charAt(charIndex) == " ") {
 			//we know that it doesnt matter how many spacebars are pressed,
-			//the first one after a char/ at the start of the text
+			//the first one after a char/at the start of the text
 			//is always defined and has the correct boundaries
-			var widthDiff = 0;
+			var widthDiff = 0, originalIndex = charIndex;
 			while (text.charAt(charIndex - 1) == " " && charIndex != 0) {
 				charIndex--;
 				widthDiff++;
 			}
-			charBoundaries = textField.getCharBoundaries(charIndex - 1);
-			charBoundaries.x += widthDiff * charBoundaries.width;
+			charBoundaries = textField.getCharBoundaries(charIndex);
+			// removing this makes pressing between word-wrapped lines crash
+			if (charBoundaries == null) charBoundaries = textField.getCharBoundaries(charIndex - 1); 
+			charBoundaries.x += widthDiff * charBoundaries.width - (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex)) ;
+			//guessing line height differences when lots of spacebars are pressed and are being wordwrapped
+			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
 		}
 		return charBoundaries;
 	}
@@ -640,14 +644,12 @@ class FlxInputText extends FlxText
 	private override function calcFrame(RunOnCpp:Bool = false):Void
 	{
 		super.calcFrame(RunOnCpp);
-		
-		var calculatedHeightRect = getCharBoundaries(text.length - 1); 
-		if (calculatedHeightRect.y == 0 || calculatedHeightRect.height == 0) calculatedHeightRect.height = height;
+
 		if (fieldBorderSprite != null)
 		{
 			if (fieldBorderThickness > 0)
 			{
-				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(calculatedHeightRect.y + calculatedHeightRect.height + fieldBorderThickness * 2), fieldBorderColor);
+				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(height + fieldBorderThickness * 2), fieldBorderColor);
 				fieldBorderSprite.x = x - fieldBorderThickness;
 				fieldBorderSprite.y = y - fieldBorderThickness;
 			}
@@ -661,7 +663,7 @@ class FlxInputText extends FlxText
 		{
 			if (background)
 			{
-				backgroundSprite.makeGraphic(Std.int(width), Std.int(calculatedHeightRect.y + calculatedHeightRect.height), backgroundColor);
+				backgroundSprite.makeGraphic(Std.int(width), Std.int(height), backgroundColor);
 				backgroundSprite.x = x;
 				backgroundSprite.y = y;
 			}

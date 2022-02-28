@@ -4,10 +4,10 @@ package texter;
  * `CharTools` is a class that gives you tools
  * to work with `Char`s and `String`s.
  */
-class CharTools {
-
+class CharTools
+{
 	/**
-	 	An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
+			 	An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
 		contains 1 or more chars from a RTL (right-to-left) language.
 
 		usage:
@@ -15,10 +15,11 @@ class CharTools {
 			CharTools.rtlLetters.match(yourRtlLetterOrString)
 		```
 	**/
-	public static var rtlLetters(default, null):EReg = ~/ش|س|ز|ر|ذ|د|خ|ح|ج|ث|ت|ب|ا|ء|ي|و|ه|ن|م|ل|ك|ق|ف|غ|ع|ظ|ط|ض|ص|ى|ئ|ؤ|ة|إ|أ|ٱ|آ|ז|ס|ב|ה|נ|מ|צ|ת|ץ|ש|ד|ג|כ|ע|י|ח|ל|ך|ף|ק|ר|א|ט|ו|ן|ם|פ/gi;
-	
+	public static var rtlLetters(default,
+		null):EReg = ~/ش|س|ز|ر|ذ|د|خ|ح|ج|ث|ت|ب|ا|ء|ي|و|ه|ن|م|ل|ك|ق|ف|غ|ع|ظ|ط|ض|ص|ى|ئ|ؤ|ة|إ|أ|ٱ|آ|ז|ס|ב|ה|נ|מ|צ|ת|ץ|ש|ד|ג|כ|ע|י|ח|ל|ך|ף|ק|ר|א|ט|ו|ן|ם|פ/gi;
+
 	/**
-	 	An `EReg` of all numbers (0-9).
+			 	An `EReg` of all numbers (0-9).
 
 		usage: 
 		```haxe
@@ -28,15 +29,20 @@ class CharTools {
 	public static var numericChars(default, null):EReg = ~/[0-9]/g;
 
 	/**
-	 	An `Array<String>` of all **common** punctuation marks
+		An `Array<String>` of all **common** general text marks.
+		
+		contains common math & grammer related characters
 
 		usage:
 		```haxe
-		CharTools.punctuationMarks.contains(yourTextWithyesPunctuationMarks)
+		CharTools.generalMarks.contains(yourTextWithGeneralMarks)
 		```
 	**/
-	public static var punctuationMarks(default, null):Array<String> = ['!','"','#','$','%','&',"'",'(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','_','`','{','|','}','~'];
-	
+	public static var generalMarks(default, null):Array<String> = [
+		'!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|',
+		'}', '~', '^'
+	];
+
 	/**
 	 * The `newline` char used to add an enter to a string of text
 	 */
@@ -46,7 +52,7 @@ class CharTools {
 	 * The `tab` char used to add a wide space - tab - to a string of text
 	 */
 	public static var TAB(default, never):String = "\t";
-	
+
 	/**
 	 * The `Right to Left Mark` Char.
 	 * 
@@ -167,4 +173,3 @@ class CharTools {
 	 */
 	public static var PDI(default, never):String = "⁩";
 }
-

@@ -14,7 +14,9 @@ import openfl.events.KeyboardEvent;
 import texter.CharTools;
 #end
 import texter.flixel._internal.FlxInputText;
+
 using StringTools;
+
 #if js
 /**
  * FlxInputText with support for RTL languages.
@@ -363,29 +365,28 @@ class FlxInputTextRTL extends FlxInputText
  */
 class FlxInputTextRTL extends FlxInputText
 {
-
 	/**
-	    Whether the text is aligned according to the first typed character:
-	    
-	     - if the character is from a RTL language - `alignment` will be set to `RIGHT`
+		Whether the text is aligned according to the first typed character:
+
+		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`
 		 - if the character is from any othe language - `alignment` will be set to `LEFT`
 
 		`autoAlign` does not default to a certine direction when set to `false`. it will
 		use the last direction it remembers when this `FlxInputTextRTL` was created/when `autoAlign` was still true;
-	    
+
 	**/
 	public var autoAlign(default, set):Bool = true;
 
 	/**
 		Specifies the direction of the starting character inside this text input.
-		
+
 		the text direction will only be set according to `openingDirection` if `autoAlign` is set to true.
-		
+
 		`openingDirection` is decided after the first strongly typed character is typed. a table to help:
-		
+
 		| Character Group | Type | Direction |
 		|	  :---:	     | :---:|  :---:  |
-		| punctuation marks (see `CharTools.punctuationMarks`) | softly typed | UNDEFINED |
+		| punctuation marks (see `CharTools.generalMarks`) | softly typed | UNDEFINED |
 		| LTR languages (English, Spanish, French, German...) | strongly typed | LTR |
 		| RTL languages (Arabic, Hebrew, Sorani, Urdu...) | strongly typed | RTL |
 	**/
@@ -411,7 +412,8 @@ class FlxInputTextRTL extends FlxInputText
 		@param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 		@param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	**/
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK, BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK,
+			BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
@@ -428,7 +430,8 @@ class FlxInputTextRTL extends FlxInputText
 		| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
 		| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	**/
-	override function onKeyDown(e:KeyboardEvent) return;
+	override function onKeyDown(e:KeyboardEvent)
+		return;
 
 	/**
 		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
@@ -441,33 +444,38 @@ class FlxInputTextRTL extends FlxInputText
 	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
+		if (!hasFocus)
+			return;
 		// those keys break the caret and place it in caretIndex -1
-		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey) return;
+		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey)
+			return;
 
 		// fix the caret if its broken
-		if (caretIndex < 0) caretIndex = 0;
-	
-		if (key == KeyCode.RIGHT && caretIndex < text.length) caretIndex++;
-		if (key == KeyCode.LEFT && caretIndex > 0) caretIndex--;
+		if (caretIndex < 0)
+			caretIndex = 0;
+
+		if (key == KeyCode.RIGHT && caretIndex < text.length)
+			caretIndex++;
+		if (key == KeyCode.LEFT && caretIndex > 0)
+			caretIndex--;
 		if (key == KeyCode.DOWN)
-		{ 
-			//here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
-			var currentLine = textField.getLineIndexOfChar(caretIndex), letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
-			//here we get stats about the next line and where to put the caret
-			var firstCharInNextLine = textField.getLineOffset(currentLine + 1), nextLine = textField.getLineLength(currentLine + 1);
-			if (firstCharInNextLine == -1) return;
-			if (letterLineIndex > nextLine) letterLineIndex = nextLine;
+		{
+			// here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
+			var currentLine = textField.getLineIndexOfChar(caretIndex),
+				letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
+			// here we get stats about the next line and where to put the caret
+			if (letterLineIndex > textField.getLineLength(currentLine + 1))
+				letterLineIndex = textField.getLineLength(currentLine + 1);
 			caretIndex = textField.getLineOffset(currentLine + 1) + letterLineIndex;
-			
 		}
-		if (key == KeyCode.UP)  {
-			//here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
-			var currentLine = textField.getLineIndexOfChar(caretIndex), letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
-			//here we get stats about the next line and where to put the caret
-			var firstCharInPrevLine = textField.getLineOffset(currentLine - 1), nextLine = textField.getLineLength(currentLine - 1);
-			if (firstCharInPrevLine == -1) return;
-			if (letterLineIndex > nextLine) letterLineIndex = nextLine - 1;
+		if (key == KeyCode.UP)
+		{
+			// here we get the line the caret is on, the amount of letters in it and where is the caret relative to it
+			var currentLine = textField.getLineIndexOfChar(caretIndex),
+				letterLineIndex = caretIndex - textField.getLineOffset(currentLine);
+			// here we get stats about the next line and where to put the caret
+			if (letterLineIndex > textField.getLineLength(currentLine - 1))
+				letterLineIndex = textField.getLineLength(currentLine - 1);
 			caretIndex = textField.getLineOffset(currentLine - 1) + letterLineIndex;
 		}
 		else if (key == KeyCode.BACKSPACE)
@@ -506,22 +514,29 @@ class FlxInputTextRTL extends FlxInputText
 		else if (key == 13)
 		{
 			caretIndex++;
-			if (!currentlyRTL) {
+			if (!currentlyRTL)
+			{
 				text = insertSubstring(text, "\n", caretIndex - 1);
-			} else {
+			}
+			else
+			{
 				var insertionIndex = 0;
 				insertionIndex = caretIndex;
-				//starts a search for the last RTL char and places the "\n" there
-				//if the string ends and theres still no last RTl char, "\n" will be insterted at length.
-				while (CharTools.rtlLetters.match(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length) insertionIndex ++;
+				// starts a search for the last RTL char and places the "\n" there
+				// if the string ends and theres still no last RTl char, "\n" will be insterted at length.
+				while (CharTools.rtlLetters.match(text.charAt(insertionIndex))
+					|| text.charAt(insertionIndex) == " "
+					&& insertionIndex != text.length)
+					insertionIndex++;
 				text = insertSubstring(text, "\n", insertionIndex);
 				caretIndex = insertionIndex + 1;
 			}
 			onChange(FlxInputText.ENTER_ACTION);
 		}
-		else if (key == KeyCode.END) caretIndex = text.length;
-		else if (key == KeyCode.HOME) caretIndex = 0;
-
+		else if (key == KeyCode.END)
+			caretIndex = text.length;
+		else if (key == KeyCode.HOME)
+			caretIndex = 0;
 	}
 
 	/**
@@ -533,25 +548,31 @@ class FlxInputTextRTL extends FlxInputText
 	function regularKeysDown(letter:String)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
+		if (!hasFocus)
+			return;
 		// if the caret is broken for some reason, fix it
-		if (caretIndex < 0) caretIndex = 0;
+		if (caretIndex < 0)
+			caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
 		if (letter != null)
 		{
-			//logic for general RTL letters, spacebar, punctuation mark
-			if (CharTools.rtlLetters.match(letter) || (currentlyRTL && letter == " ") || (CharTools.punctuationMarks.contains(letter) && currentlyRTL))
+			// logic for general RTL letters, spacebar, punctuation mark
+			if (CharTools.rtlLetters.match(letter)
+				|| (currentlyRTL && letter == " ")
+				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
 				currentlyNumbers = false;
 				t = CharTools.RLO + letter;
 				currentlyRTL = true;
-				if (openingDirection == UNDETERMINED || text == "") {
-					if (autoAlign) alignment = RIGHT;
+				if (openingDirection == UNDETERMINED || text == "")
+				{
+					if (autoAlign)
+						alignment = RIGHT;
 					openingDirection = RTL;
-				} 
+				}
 			}
-			//logic for when the user converted from RTL to LTR
+			// logic for when the user converted from RTL to LTR
 			else if (currentlyRTL)
 			{
 				t = letter;
@@ -560,48 +581,60 @@ class FlxInputTextRTL extends FlxInputText
 
 				// after conversion, the caret needs to move itself to he end of the RTL text.
 				// the last spacebar also needs to be moved
-				if (text.charAt(caretIndex) == " ") {
+				if (text.charAt(caretIndex) == " ")
+				{
 					t = CharTools.PDF + " " + letter;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex, text.length);
 					addedSpace = true;
 				}
 				caretIndex++;
-				
-				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length) caretIndex++; 
+
+				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
+					caretIndex++;
 			}
-			//logic for everything else - LTR letters, special chars...
-			else {
+			// logic for everything else - LTR letters, special chars...
+			else
+			{
 				t = letter;
-				if (openingDirection == UNDETERMINED || text == "") {
-					if (autoAlign) alignment = LEFT;
-					if (CharTools.punctuationMarks.contains(t)) 
-						openingDirection = UNDETERMINED 
-					else 
+				if (openingDirection == UNDETERMINED || text == "")
+				{
+					if (autoAlign)
+						alignment = LEFT;
+					if (CharTools.generalMarks.contains(t))
+						openingDirection = UNDETERMINED
+					else
 						openingDirection = LTR;
-					
 				}
 			}
 		}
-		else "";
+		else
+			"";
 
-		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength)) 
+		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
-			//TODO - better caret handling
+			// TODO - better caret handling
 			caretIndex++;
 
 			text = insertSubstring(text, t, caretIndex - 1);
-			if (hasConverted) caretIndex++;
-			if (addedSpace) caretIndex++;
+			if (hasConverted)
+				caretIndex++;
+			if (addedSpace)
+				caretIndex++;
 
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 	}
 
-	function set_autoAlign(value:Bool):Bool {
-		if (!value) return value;
-		if (!CharTools.rtlLetters.match(text.charAt(0))) {
+	function set_autoAlign(value:Bool):Bool
+	{
+		if (!value)
+			return value;
+		if (!CharTools.rtlLetters.match(text.charAt(0)))
+		{
 			alignment = LEFT;
-		} else {
+		}
+		else
+		{
 			alignment = RIGHT;
 		}
 		return value;
@@ -609,7 +642,8 @@ class FlxInputTextRTL extends FlxInputText
 }
 #end
 
-enum TextDirection {
+enum TextDirection
+{
 	RTL;
 	LTR;
 	UNDETERMINED;

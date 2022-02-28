@@ -2,10 +2,10 @@
     "name": "texter",
     "classPath": "src/",
     "license": "MIT",
-    "releasenote": "fixed problems with FlxInputTextRTL, added docs & fields to CharTools, FlxTextButton now supports input",
-    
+    "releasenote": "fixed problems & bugs with FlxInputTextRTL, also added `openingDirection` field",
+    "url": "https://github.com/ShaharMS/texter",
     "contributors": ["ShaharMS"],
-    "version": "1.1.0",
+    "version": "1.1.1",
     "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
     "description": "adding more support for general text input/regular text in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
 }

@@ -7,6 +7,10 @@
 
 - Added field `openingDirection` to get the base direction of the text. is not related to `alignment`
 
+### CharTools
+
+- Added an `generalMarks` - an `Array<String>` of all **common** text marks (math/grammer characters)
+
 
 ### **Bug Fixes:**
 
@@ -14,13 +18,21 @@
 
 - Fixed `getCaretIndexAtPoint()` reporting incorrect index when pressing between the lines of text
 - Fixed a crash where `getCharBoundaries()` reports null for `rect.width`
+- Fixed a crash after trying to wordwrap lots of `spacebar`s
 - Fixed enter alignment being incorrect when the text is aligned to the right
 - Fixed `spacebar` not moving when switching between languages of different direction
 - Fixed `getCharBoundaries()` reporting inaccurate dimensions when pressing `spacebar`
 - Fixed text aligning & "sticking" to the left when softly typed chars are being typed
 - Fixed a crash when pressing between word-wrapped lines
-- added support for punctuation marks with RTL languages
+- Fixed misplacing of punctuation marks in RTL languages
 - Fixed caret sticking to the outline of the input text when `text = ""`
+- Fixed `up` & `down` keys behaving incorrectly
+- Fixed caret being **graphically** misplaces when lots of `spacebar`s are being typed
+- Fixed textbox cutting "tall" letters (`l`, `j`, `f`, `t`...)
+
+### CharTools
+
+- Changed `numericChars`'s `EReg` to `~/[0-9]/g`
 
 1.1.0 (February 24, 2022)
 --- 
