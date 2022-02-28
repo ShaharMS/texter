@@ -1,3 +1,17 @@
+1.1.1 (February 28, 2022)
+---
+### **Bug Fixes:**
+
+### FlxInputTextRTL
+
+- Fixed `getCaretIndexAtPoint()` reporting incorrect index when pressing between the lines of text
+- Fixed a crash where `getCharBoundaries()` reports null for `rect.width`
+- Fixed enter alignment being incorrect when the text is aligned to the right
+- Fixed `spacebar` not moving when switching between languages of different direction
+- Fixed `getCharBoundaries()` reporting inaccurate dimensions when pressing `spacebar`
+- Fixed text aligning & "sticking" to the left when softly typed chars are being typed
+- Fixed a crash when pressing between lines word-wrapped lines
+
 1.1.0 (February 24, 2022)
 --- 
 ### **New Features:**

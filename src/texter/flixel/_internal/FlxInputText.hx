@@ -550,6 +550,8 @@ class FlxInputText extends FlxText
 				if (r == null) return 0;
 				if (Y >= r.y && Y <= r.bottom) {
 					if (i == 0) i--;
+					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
+					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
 					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
 				}
 				i++;

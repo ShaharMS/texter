@@ -542,7 +542,7 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				t = CharTools.RLO + letter;
 				currentlyRTL = true;
-				if (text.length == 0) {
+				if (openingDirection == UNDETERMINED) {
 					if (autoAlign) alignment = RIGHT;
 					openingDirection = RTL;
 				}
@@ -566,7 +566,7 @@ class FlxInputTextRTL extends FlxInputText
 			}
 			else {
 				t = letter;
-				if (text.length == 0) {
+				if (openingDirection == UNDETERMINED) {
 					if (autoAlign) alignment = LEFT;
 					if (t.indexOf(",.<>/?:;'\\[]{}()!@#$%^&*`~|+=_-") != -1) openingDirection = UNDETERMINED else openingDirection = LTR;
 				}
