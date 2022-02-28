@@ -15,7 +15,7 @@ class CharTools {
 			CharTools.rtlLetters.match(yourRtlLetterOrString)
 		```
 	**/
-	public static var rtlLetters(default, null):EReg = ~/ش|س|ز|ر|ذ|د|خ|ح|ج|ث|ت|ب|ا|ء|ي|و|ه|ن|م|ل|ك|ق|ف|غ|ع|ظ|ط|ض|ص|ى|ئ|ؤ|ة|إ|أ|ٱ|آ|ז|ס|ב|ה|נ|מ|צ|ת|ץ|ש|ד|ג|כ|ע|י|ח|ל|ך|ף|ק|ר|א|ט|ו|ן|ם|פ/g;
+	public static var rtlLetters(default, null):EReg = ~/ش|س|ز|ر|ذ|د|خ|ح|ج|ث|ت|ب|ا|ء|ي|و|ه|ن|م|ل|ك|ق|ف|غ|ع|ظ|ط|ض|ص|ى|ئ|ؤ|ة|إ|أ|ٱ|آ|ז|ס|ב|ה|נ|מ|צ|ת|ץ|ש|ד|ג|כ|ע|י|ח|ל|ך|ף|ק|ר|א|ט|ו|ן|ם|פ/gi;
 	
 	/**
 	 	An `EReg` of all numbers (0-9).
@@ -25,17 +25,17 @@ class CharTools {
 			CharTools.numericChars.match(yourNumberAsAString)
 		```
 	**/
-	public static var numericChars(default, null):EReg = ~/1|2|3|4|5|6|7|8|9|0/g;
+	public static var numericChars(default, null):EReg = ~/[0-9]/g;
 
 	/**
-	 	An `EReg` of all **common** punctuation marks
+	 	An `Array<String>` of all **common** punctuation marks
 
 		usage:
 		```haxe
-		CharTools.punctuationMarks.match(yourTextWithyesPunctuationMarks)
+		CharTools.punctuationMarks.contains(yourTextWithyesPunctuationMarks)
 		```
 	**/
-	public static var punctuationMarks(default, null):EReg = ~//g;
+	public static var punctuationMarks(default, null):Array<String> = ['!','"','#','$','%','&',"'",'(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','_','`','{','|','}','~'];
 	
 	/**
 	 * The `newline` char used to add an enter to a string of text

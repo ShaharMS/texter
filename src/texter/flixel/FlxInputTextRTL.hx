@@ -392,7 +392,7 @@ class FlxInputTextRTL extends FlxInputText
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
 	var currentlyRTL:Bool = false;
-	var startedTypingRTL:Bool = false;
+	var currentlyNumbers:Bool = false;
 
 	/**
 		Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
@@ -538,18 +538,21 @@ class FlxInputTextRTL extends FlxInputText
 		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
 		if (letter != null)
 		{
-			if (CharTools.rtlLetters.match(letter) || (currentlyRTL && letter == " "))
+			//logic for general RTL letters, spacebar, punctuation mark
+			if (CharTools.rtlLetters.match(letter) || (currentlyRTL && letter == " ") || (CharTools.punctuationMarks.contains(letter) && currentlyRTL))
 			{
+				currentlyNumbers = false;
 				t = CharTools.RLO + letter;
 				currentlyRTL = true;
-				if (openingDirection == UNDETERMINED) {
+				if (openingDirection == UNDETERMINED || text == "") {
 					if (autoAlign) alignment = RIGHT;
 					openingDirection = RTL;
-				}
+				} 
 			}
+			//logic for when the user converted from RTL to LTR
 			else if (currentlyRTL)
 			{
-				t = CharTools.PDF + letter;
+				t = letter;
 				currentlyRTL = false;
 				hasConverted = true;
 
@@ -564,15 +567,21 @@ class FlxInputTextRTL extends FlxInputText
 				
 				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length) caretIndex++; 
 			}
+			//logic for everything else - LTR letters, special chars...
 			else {
 				t = letter;
-				if (openingDirection == UNDETERMINED) {
+				if (openingDirection == UNDETERMINED || text == "") {
 					if (autoAlign) alignment = LEFT;
-					if (t.indexOf(",.<>/?:;'\\[]{}()!@#$%^&*`~|+=_-") != -1) openingDirection = UNDETERMINED else openingDirection = LTR;
+					if (CharTools.punctuationMarks.contains(t)) 
+						openingDirection = UNDETERMINED 
+					else 
+						openingDirection = LTR;
+					
 				}
 			}
 		}
 		else "";
+
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength)) 
 		{
 			//TODO - better caret handling

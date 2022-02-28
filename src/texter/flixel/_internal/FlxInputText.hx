@@ -887,7 +887,7 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.right + x; 
+					caret.x = boundaries.right + x + 2; 
 					caret.y = boundaries.top + y + 2;
 				}
 			}
@@ -897,14 +897,14 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.right + x;
+					caret.x = boundaries.right + x + 2;
 					caret.y = boundaries.top + y + 2;
 				}
 				else if (text.length == 0)
 				{
 					// 2 px gutters
-					caret.x = x + 4;
-					caret.y = y + 4;
+					caret.x = x + 2;
+					caret.y = y + 2;
 				}
 			}
 		}

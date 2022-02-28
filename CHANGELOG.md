@@ -1,5 +1,13 @@
 1.1.1 (February 28, 2022)
 ---
+
+### **New Features:**
+
+### FlxInputTextRTL
+
+- Added field `openingDirection` to get the base direction of the text. is not related to `alignment`
+
+
 ### **Bug Fixes:**
 
 ### FlxInputTextRTL
@@ -10,7 +18,9 @@
 - Fixed `spacebar` not moving when switching between languages of different direction
 - Fixed `getCharBoundaries()` reporting inaccurate dimensions when pressing `spacebar`
 - Fixed text aligning & "sticking" to the left when softly typed chars are being typed
-- Fixed a crash when pressing between lines word-wrapped lines
+- Fixed a crash when pressing between word-wrapped lines
+- added support for punctuation marks with RTL languages
+- Fixed caret sticking to the outline of the input text when `text = ""`
 
 1.1.0 (February 24, 2022)
 --- 
