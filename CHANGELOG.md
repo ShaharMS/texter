@@ -1,3 +1,13 @@
+1.1.2 (February 29, 2022)
+---
+
+### **Bug Fixes:**
+
+- removed testing files 
+- fixed incorrect markdown syntax in CHANGELOG
+- `About Copying` in `README.md` has been removed since it isn't relevant
+- `LICENSE` file was chaned to `LICENSE.md`
+
 1.1.1 (February 28, 2022)
 ---
 
@@ -33,6 +43,7 @@
 ### CharTools
 
 - Changed `numericChars`'s `EReg` to `~/[0-9]/g`
+
 
 1.1.0 (February 24, 2022)
 --- 

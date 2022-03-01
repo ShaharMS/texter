@@ -32,8 +32,3 @@ haxelib install texter
 ```
 haxelib git texter https://github.com/ShaharMS/texter.git
 ```
-
-# About Copying
-
-### You might have noticed that some files look like copies from libs like **OpenFL** or **HaxeFlixel**.
- No, i did not want to do this originally, but some core files had to be modified (because extending those classes didnt work) in order to make things work as expected. You can see I'm fully open about this, because I want those changes to appear in the actual lib's source code, but i dont have time for all of the pull request stuff. I'd be happy to recive help in that department :)
