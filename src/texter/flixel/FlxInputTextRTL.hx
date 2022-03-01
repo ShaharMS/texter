@@ -392,6 +392,20 @@ class FlxInputTextRTL extends FlxInputText
 	**/
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
+	/**
+	 	When trying to word-wrap text written in RTL format, the text appears incorrectly - lines are reversed.
+		in order to fix that, we can get a correct version of the text and reverse it's lines.
+
+		if you want to get the actual text for copy/paste or information **When the textbox is typed in a RTL language**, take it from here.
+		otherwise, you'd be fine taking the text from `text`.
+
+		
+		**NOTICE** - RTL word-wrapping will only be used if `openingDirection` is set to `RTL`.
+		otherwise - even if the text is mostly RTL, LTR wordwrapping will be used.
+		it behaves like that for performance reasons.
+	**/
+	public var correctText(default, set):String;
+
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool = false;
 
@@ -638,6 +652,28 @@ class FlxInputTextRTL extends FlxInputText
 			alignment = RIGHT;
 		}
 		return value;
+	}
+
+	function set_correctText(value:String):String {
+		if (openingDirection == RTL) text = tryWordWrap(value) else text = value;
+		return value;
+		
+	}
+
+	/**
+	 * Will only be called if RTL wordwrapping is needed.
+	 * 
+	 * ```hx
+	 * this.text = tryWordWrap(correctText)
+	 * ```
+	 *  
+	 * @param text should be `this.correctText`
+	 *
+	 */
+	function tryWordWrap(text:String):String {
+		//in case this was called incorrectly
+		if (openingDirection != RTL) return text;
+		return "";
 	}
 }
 #end
