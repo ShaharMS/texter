@@ -392,20 +392,6 @@ class FlxInputTextRTL extends FlxInputText
 	**/
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
-	/**
-	 	When trying to word-wrap text written in RTL format, the text appears incorrectly - lines are reversed.
-		in order to fix that, we can get a correct version of the text and reverse it's lines.
-
-		if you want to get the actual text for copy/paste or information **When the textbox is typed in a RTL language**, take it from here.
-		otherwise, you'd be fine taking the text from `text`.
-
-		
-		**NOTICE** - RTL word-wrapping will only be used if `openingDirection` is set to `RTL`.
-		otherwise - even if the text is mostly RTL, LTR wordwrapping will be used.
-		it behaves like that for performance reasons.
-	**/
-	public var correctText(default, set):String;
-
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool = false;
 
@@ -421,7 +407,7 @@ class FlxInputTextRTL extends FlxInputText
 		@param	Y				The Y position of the text.
 		@param	Width			The width of the text object (height is determined automatically).
 		@param	Text			The actual text you would like to display initially.
-		@param   size			Initial size of the font
+		@param  size			Initial size of the font
 		@param	TextColor		The color of the text
 		@param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 		@param	EmbeddedFont	Whether this text field uses embedded fonts or not
@@ -444,8 +430,7 @@ class FlxInputTextRTL extends FlxInputText
 		| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
 		| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	**/
-	override function onKeyDown(e:KeyboardEvent)
-		return;
+	override function onKeyDown(e:KeyboardEvent) return;
 
 	/**
 		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
@@ -547,10 +532,8 @@ class FlxInputTextRTL extends FlxInputText
 			}
 			onChange(FlxInputText.ENTER_ACTION);
 		}
-		else if (key == KeyCode.END)
-			caretIndex = text.length;
-		else if (key == KeyCode.HOME)
-			caretIndex = 0;
+		else if (key == KeyCode.END) caretIndex = text.length;
+		else if (key == KeyCode.HOME) caretIndex = 0;
 	}
 
 	/**
@@ -562,11 +545,9 @@ class FlxInputTextRTL extends FlxInputText
 	function regularKeysDown(letter:String)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus)
-			return;
+		if (!hasFocus) return;
 		// if the caret is broken for some reason, fix it
-		if (caretIndex < 0)
-			caretIndex = 0;
+		if (caretIndex < 0) caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
 		if (letter != null)
@@ -581,8 +562,7 @@ class FlxInputTextRTL extends FlxInputText
 				currentlyRTL = true;
 				if (openingDirection == UNDETERMINED || text == "")
 				{
-					if (autoAlign)
-						alignment = RIGHT;
+					if (autoAlign) alignment = RIGHT;
 					openingDirection = RTL;
 				}
 			}
@@ -626,15 +606,10 @@ class FlxInputTextRTL extends FlxInputText
 
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
-			// TODO - better caret handling
 			caretIndex++;
-
 			text = insertSubstring(text, t, caretIndex - 1);
-			if (hasConverted)
-				caretIndex++;
-			if (addedSpace)
-				caretIndex++;
-
+			if (hasConverted) caretIndex++;
+			if (addedSpace) caretIndex++;
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 	}
@@ -654,26 +629,8 @@ class FlxInputTextRTL extends FlxInputText
 		return value;
 	}
 
-	function set_correctText(value:String):String {
-		if (openingDirection == RTL) text = tryWordWrap(value) else text = value;
-		return value;
-		
-	}
-
-	/**
-	 * Will only be called if RTL wordwrapping is needed.
-	 * 
-	 * ```hx
-	 * this.text = tryWordWrap(correctText)
-	 * ```
-	 *  
-	 * @param text should be `this.correctText`
-	 *
-	 */
-	function tryWordWrap(text:String):String {
-		//in case this was called incorrectly
-		if (openingDirection != RTL) return text;
-		return "";
+	override function calcFrame(RunOnCpp:Bool = false) {
+		super.calcFrame(RunOnCpp);
 	}
 }
 #end
