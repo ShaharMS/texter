@@ -1,14 +1,8 @@
-package texter;
+package texter.general;
 
-import haxe.PosInfos;
-import lime.utils.Log;
 import openfl.geom.Rectangle;
-import flixel.util.typeLimit.OneOfThree;
-import flixel.text.FlxText;
-import texter.flixel.FlxInputTextRTL;
-import openfl.text.TextField;
-import haxe.extern.EitherType;
-using texter.WordWrapper;
+using texter.general.WordWrapper;
+using texter.general.CharTools;
 
 /**
  * This class supplies wordWrapping utilities in various ways.
@@ -62,19 +56,6 @@ class WordWrapper {
             }
         }
         return text;
-    }
-
-    /**
-     * Converts any string to an array of letters in `String` format.
-     * @param string the string to process
-     * @return An array of letters & symbols
-     */
-    public static function toCharArray(string:String):Array<String> {
-        return [for (i in 0...string.length) string.charAt(i)];
-    }
-
-    public static function fromCharArray(charArray:Array<String>):String {
-        return charArray.join("");
     }
 
 	function indexOfAny(s:String, characters:Array<String>)

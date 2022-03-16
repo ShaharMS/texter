@@ -1,6 +1,5 @@
 package;
 
-import haxe.MainLoop;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 

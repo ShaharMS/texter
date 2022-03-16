@@ -1,4 +1,4 @@
-package texter;
+package texter.general;
 
 /**
  * `CharTools` is a class that gives you tools
@@ -172,4 +172,19 @@ class CharTools
 	 * and `LRI`
 	 */
 	public static var PDI(default, never):String = "⁩";
+
+	/**
+	 * Converts any string to an array of letters in `String` format.
+	 * @param string the string to process
+	 * @return An array of letters & symbols
+	 */
+	public static function toCharArray(string:String):Array<String>
+	{
+		return [for (i in 0...string.length) string.charAt(i)];
+	}
+
+	public static function fromCharArray(charArray:Array<String>):String
+	{
+		return charArray.join("");
+	}
 }
