@@ -1,3 +1,8 @@
+1.1.4 (March 20, 2022)
+---
+### **Bug Fix:**
+ - fixed pasting an image/empty text from the clipboard adding `null` to the text
+
 1.1.3 (March 20, 2022)
 ---
 ### **New Features:**

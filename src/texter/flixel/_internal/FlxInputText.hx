@@ -468,7 +468,7 @@ class FlxInputText extends FlxText
 	{
 		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0) return new Rectangle();
 		
-		var charBoundaries:Rectangle = new Rectangle(), actualIndex = charIndex;
+		var charBoundaries:Rectangle = new Rectangle();
 
 		if (textField.getCharBoundaries(charIndex) != null) {
 			charBoundaries = textField.getCharBoundaries(charIndex);
@@ -850,34 +850,12 @@ class FlxInputText extends FlxText
 	// ----------------------------------
 	private function set_caretIndex(newCaretIndex:Int):Int
 	{
-		var offx:Float = 0;
-
-		var alignStr:FlxTextAlign = getAlignStr();
-
-		switch (alignStr)
-		{
-			case RIGHT:
-				offx = textField.width - 2 - textField.textWidth - 2;
-				if (offx < 0)
-					offx = 0; // hack, fix negative offset.
-
-			case CENTER:
-				#if !js
-				offx = (textField.width - 2 - textField.textWidth) / 2 + textField.scrollH / 2;
-				#end
-				if (offx <= 1)
-					offx = 0; // hack, fix offset rounding alignment.
-
-			default:
-				offx = 0;
-		}
-
 		caretIndex = newCaretIndex;
 
 		// If caret is too far to the right something is wrong
 		if (caretIndex > (text.length + 1))
 		{
-			caretIndex = -1;
+			caretIndex = text.length;
 		}
 
 		// Caret is OK, proceed to position
@@ -891,8 +869,8 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.right + x + 2; 
-					caret.y = boundaries.top + y + 2;
+					caret.x = boundaries.right + x; 
+					caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
 				}
 			}
 			// Caret is to the right of text
@@ -901,8 +879,8 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.right + x + 2;
-					caret.y = boundaries.top + y + 2;
+					caret.x = boundaries.right + x;
+					caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
 				}
 				else if (text.length == 0)
 				{
@@ -921,7 +899,12 @@ class FlxInputText extends FlxText
 		if ((lines == 1) && (caret.x + caret.width) > (x + width))
 		{
 			caret.x = x + width - 2;
-		}		
+		}
+		//and that the caret is not above the textfield
+		if (caret.y < y) caret.y = y + 2;
+		//and that the caret is not stuck to the text box
+		if (caret.x == x) caret.x = x + 2;
+		
 
 		return caretIndex;
 	}
