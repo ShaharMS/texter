@@ -37,7 +37,7 @@ Reguar FlxInputText with extended support for:
 | RTL WordWrapping              | ❌ | ❌ |  when the sentence/word is too long for a multiline text input, some words will be escaped to the next line |
 | Unicode BiDi Algorithm (UBA)  | ✅ | ✅ | when a user tries to type in both a LTR language and a RTL language, the text input should be able to handle that correctly with alignments, moving the caret and placing certine unicode characters differently                                                           |
 | Selection                     | ❌ | ❌ | when dragging & pressing the mouse across the text, a visual selection background should appear. that background tells you those character could be delted, copied, pasted over/moved                                                                                     |
-| Text Copy/Paste               | ❌ | ❌ | when pressing `ctrl` + `c` - copy the selected text. when pressing `ctrl` + `v` - paste text from the clipboard |
+| Text Copy/Paste               | ❌ | ✅ | when pressing `ctrl` + `c` - copy the selected text. when pressing `ctrl` + `v` - paste text from the clipboard |
 
 ## **FlxTextButton**
 

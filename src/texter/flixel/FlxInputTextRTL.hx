@@ -1,5 +1,7 @@
 package texter.flixel;
 
+import flixel.FlxG;
+import openfl.desktop.Clipboard;
 #if flixel
 #if js
 import flixel.FlxG;
@@ -11,7 +13,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
-import texter.CharTools;
+import texter.general.CharTools;
 #end
 import texter.flixel._internal.FlxInputText;
 
@@ -422,6 +424,11 @@ class FlxInputTextRTL extends FlxInputText
 		Lib.application.window.onKeyDown.add(specialKeysDown, false, 2);
 	}
 
+	override function set_hasFocus(newFocus:Bool):Bool {
+		FlxG.sound.soundTrayEnabled = !newFocus;
+		return super.set_hasFocus(newFocus);
+	}
+
 	/**
 		The original `onKeyDown` from `FlxInputText` is replaced with two functions - 
 
@@ -445,6 +452,21 @@ class FlxInputTextRTL extends FlxInputText
 		// if the user didnt intend to edit the text, dont do anything
 		if (!hasFocus)
 			return;
+		// handle copy-paste
+		if (modifier.ctrlKey) {
+			if (key == KeyCode.V) {
+				//paste text
+				var clipboardText = Clipboard.generalClipboard.getData(TEXT_FORMAT);
+				if (clipboardText == null) return;
+				if (currentlyRTL) {
+					text = insertSubstring(text, clipboardText, caretIndex);
+				} else {
+					text = insertSubstring(text, clipboardText, caretIndex);
+					caretIndex += clipboardText.length;
+					if (caretIndex > text.length) caretIndex = text.length;
+				}
+			}
+		}
 		// those keys break the caret and place it in caretIndex -1
 		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey)
 			return;
@@ -532,8 +554,14 @@ class FlxInputTextRTL extends FlxInputText
 			}
 			onChange(FlxInputText.ENTER_ACTION);
 		}
-		else if (key == KeyCode.END) caretIndex = text.length;
-		else if (key == KeyCode.HOME) caretIndex = 0;
+		else if (key == KeyCode.END) {
+			caretIndex = text.length;
+			onChange(FlxInputText.END_ACTION);
+		}
+		else if (key == KeyCode.HOME) {
+			caretIndex = 0;
+			onChange(FlxInputText.HOME_ACTION);
+		}
 	}
 
 	/**
@@ -627,10 +655,6 @@ class FlxInputTextRTL extends FlxInputText
 			alignment = RIGHT;
 		}
 		return value;
-	}
-
-	override function calcFrame(RunOnCpp:Bool = false) {
-		super.calcFrame(RunOnCpp);
 	}
 }
 #end

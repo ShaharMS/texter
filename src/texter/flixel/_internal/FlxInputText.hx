@@ -48,6 +48,8 @@ class FlxInputText extends FlxText
 	public static inline var DELETE_ACTION:String = "delete"; // press delete
 	public static inline var ENTER_ACTION:String = "enter"; // press enter
 	public static inline var INPUT_ACTION:String = "input"; // manually edit
+	public static inline var HOME_ACTION:String = "home"; //press home
+	public static inline var END_ACTION:String = "end"; //press end
 
 	/**
 	 * This regular expression will filter out (remove) everything that matches.
@@ -462,7 +464,7 @@ class FlxInputText extends FlxText
 	// -------------------
 	// HAS BEEN CHANGED
 	// ----------------------
-	private function getCharBoundaries(charIndex:Int):Rectangle
+	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
 		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0) return new Rectangle();
 		
@@ -528,7 +530,7 @@ class FlxInputText extends FlxText
 	// ----------------------------------
 	// HAS BEEN CHANGED
 	// ----------------------------------
-	private function getCharIndexAtPoint(X:Float, Y:Float):Int
+	public function getCharIndexAtPoint(X:Float, Y:Float):Int
 	{
 		var i:Int = 0;
 		#if !js

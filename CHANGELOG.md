@@ -1,3 +1,25 @@
+1.1.3 (March 20, 2022)
+---
+### **New Features:**
+
+ - moved `CharTools` and `WordWrapper` into the folder `general`
+
+### FlxInputTextRTL
+
+ - added support for pasting text from the clipboard (LTR text only)
+ - added event dispatching for when `home` and `end` buttons are pressed
+ - `getCharBoundaries` is now a public field, and was optimized a bit more to report more acurate bounds
+ - `getCaretIndexAtPoint` is now a public field and should be more accurate 
+
+
+### **Bug Fixes:**
+
+### FlxInputTextRTL
+
+ - fixed sound tray activating when pressing `-` or `=` while having focus
+ - fixed `getCharBoundraies` crashing when the text contains only `space` chars & `enter`s
+
+
 1.1.2 (February 29, 2022)
 ---
 
