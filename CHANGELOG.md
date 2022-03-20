@@ -1,3 +1,12 @@
+1.1.5
+---
+### **Bug Fixes:**
+
+### FlxInputText
+
+ - removed unnecesarry field from `getCharBoundaries`
+ - fixed issues with care positioning
+
 1.1.4 (March 20, 2022)
 ---
 ### **Bug Fix:**
