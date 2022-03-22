@@ -8,7 +8,7 @@ class ___TestState extends FlxState {
 	var t:FlxTextButton;
     override function create() {
         super.create();
-        
+        var mdString
     }
 
     override function update(elapsed:Float) {
