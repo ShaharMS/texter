@@ -7,7 +7,7 @@ package texter.general;
 class CharTools
 {
 	/**
-			 	An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
+		An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
 		contains 1 or more chars from a RTL (right-to-left) language.
 
 		usage:
@@ -178,12 +178,12 @@ class CharTools
 	 * @param string the string to process
 	 * @return An array of letters & symbols
 	 */
-	public static function toCharArray(string:String):Array<String>
+	public static function toCharArray(string:String):Array<Char>
 	{
 		return [for (i in 0...string.length) string.charAt(i)];
 	}
 
-	public static function fromCharArray(charArray:Array<String>):String
+	public static function fromCharArray(charArray:Array<Char>):String
 	{
 		return charArray.join("");
 	}

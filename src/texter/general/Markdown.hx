@@ -136,7 +136,7 @@ class MarkdownStyle {
      * |row2|text|text|
      * 
      * when you do this:
-     * ```md
+     * ```txt
      * |col1|col2|col3|
      * | -- | -- | -- |
      * |row1|    |    |

@@ -1,19 +1,48 @@
-1.1.5
----
+2.0.0 (Month X, 2022) - Major Update!
+===
 ### **Bug Fixes:**
 
-### FlxInputText
+**FlxInputTextRTL:**
 
  - removed unnecesarry field from `getCharBoundaries`
- - fixed issues with care positioning
+ - fixed issues with caret positioning
+ - fixed offcentered caret in very large/very small font sizes
+ - fixed lag spikes when focus is being repetitively given to the text.
+
+### **New Features:**
+
+**FlxInputTextRTL**
+
+ - added `getAlignment()` method
+ - added `getCaretIndexAtPoint()` method
+ - added `HOME_ACTION` and `END_ACTION`
+
+**Char:**
+
+ - added new type - `Char`
+ - extends `String` to report the character's `charCode`
+ - can be instantiated with a `String` or `Int`
+
+**CharTools:**
+
+ - added `charFromValue` map
+ - added `charToValue` map
+ - `fromCharArray` and `toCharArray` now use use `Char`s instead of `String`s
+
+**Markdown**
+
+ - added a Markdown to HTML parser
+ - added `generateVisuals()` - a Markdown visualization method for OpenFL & HaxeFlixel
+ - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on callbacks
+ - added `MarkdownStyle` and `MarkdownEffects` to help with interpretation & visualization
 
 1.1.4 (March 20, 2022)
----
+===
 ### **Bug Fix:**
  - fixed pasting an image/empty text from the clipboard adding `null` to the text
 
 1.1.3 (March 20, 2022)
----
+===
 ### **New Features:**
 
  - moved `CharTools` and `WordWrapper` into the folder `general`
@@ -35,7 +64,7 @@
 
 
 1.1.2 (February 29, 2022)
----
+===
 
 ### **Bug Fixes:**
 
@@ -45,7 +74,7 @@
 - `LICENSE` file was chaned to `LICENSE.md`
 
 1.1.1 (February 28, 2022)
----
+===
 
 ### **New Features:**
 
@@ -82,7 +111,7 @@
 
 
 1.1.0 (February 24, 2022)
---- 
+===
 ### **New Features:**
 
 ### CharTools
@@ -125,7 +154,7 @@
 
 
 1.0.0 (February 21, 2022) - **Official Release!**
----
+===
 ### **New Features:**
 
 ### CharTools - new class! features:

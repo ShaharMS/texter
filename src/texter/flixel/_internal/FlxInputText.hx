@@ -95,8 +95,6 @@ class FlxInputText extends FlxText
 		return caretWidth;
 	}
 
-	public var params(default, set):Array<Dynamic>;
-
 	/**
 	 * Whether or not the textfield is a password textfield
 	 */
@@ -728,7 +726,7 @@ class FlxInputText extends FlxText
 	/**
 	 * Turns the caret on/off for the caret flashing animation.
 	 */
-	private function toggleCaret(timer:FlxTimer):Void
+	private inline function toggleCaret(timer:FlxTimer):Void
 	{
 		caret.visible = !caret.visible;
 	}
@@ -767,18 +765,6 @@ class FlxInputText extends FlxText
 			text = pattern.replace(text, "");
 		}
 		return text;
-	}
-
-	private function set_params(p:Array<Dynamic>):Array<Dynamic>
-	{
-		params = p;
-		if (params == null)
-		{
-			params = [];
-		}
-		var namedValue:NamedString = {name: "value", value: text};
-		params.push(namedValue);
-		return p;
 	}
 
 	private override function set_x(X:Float):Float
@@ -835,14 +821,9 @@ class FlxInputText extends FlxText
 		return hasFocus = newFocus;
 	}
 
-	private function getAlignStr():FlxTextAlign
+	public function getAlignment():FlxTextAlign
 	{
-		var alignStr:FlxTextAlign = LEFT;
-		if (_defaultFormat != null && _defaultFormat.align != null)
-		{
-			alignStr = alignment;
-		}
-		return alignStr;
+		return alignment != null ? alignment : LEFT;
 	}
 
 	// ----------------------------------
@@ -886,7 +867,7 @@ class FlxInputText extends FlxText
 				{
 					// 2 px gutters
 					caret.x = x + 2;
-					caret.y = y + 2;
+					caret.y = y + (backgroundSprite.height + borderSize * 2) / 2 - caret.height / 2;
 				}
 			}
 		}
