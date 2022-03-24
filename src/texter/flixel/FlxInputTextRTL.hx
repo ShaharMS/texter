@@ -182,7 +182,6 @@ class FlxInputTextRTL extends FlxInputText
 			{
 				text = insertSubstring(text, textInput.value, caretIndex);
 				caretIndex++;
-				// text = WordWrapper.wrapVisual(this);
 				text = text;
 			}
 		}, true);

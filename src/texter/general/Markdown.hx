@@ -7,8 +7,67 @@ import openfl.text.TextField;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 #end
-
+typedef MDRule = {
+    rule:EReg,
+    effect:MarkdownEffects
+}
 class Markdown {
+
+	/**
+	    When used on a string of text with `lineEReg.match(string)`, 
+        it will report everything that gives info about a markdown link:
+
+        - `lineEReg.matched(1)` will give you the text from the link. this text should be displayed
+        - `lineEReg.matched(2)` will give you the actual hyperlink. this text should be internal
+	**/
+	public static var linkEReg:EReg = ~/\[([^\]]+)\]\(([^)]+)\)/g;
+	public static var codeEReg:EReg = ~/`(\s?[^\n,]+\s?)`/g;
+	public static var codeblockEReg:EReg = ~/```(.{1,})\n(.{1,}\n{1,})```/g;
+	public static var imageEReg:EReg = ~/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/g;
+
+    static var isParagraphStart(get, default):Bool = false;
+	static function get_isParagraphStart():Bool return isParagraphStart = !isParagraphStart;
+
+    static var cblockStart(get, default):Bool = false;
+    static function get_cblockStart():Bool return cblockStart = !cblockStart;
+
+	static var currentLine:String;
+    public static final markdownRules:Array<MDRule> = [
+        //headers
+        { rule: ~/#{6}\s?([^\n]+)/g, effect: Heading(1)}, /* Heading 1 */
+		{ rule: ~/#{5}\s?([^\n]+)/g, effect: Heading(2)}, /* Heading 2 */
+		{ rule: ~/#{4}\s?([^\n]+)/g, effect: Heading(3)}, /* Heading 3 */
+		{ rule: ~/#{3}\s?([^\n]+)/g, effect: Heading(4)}, /* Heading 4 */
+		{ rule: ~/#{2}\s?([^\n]+)/g, effect: Heading(5)}, /* Heading 5 */
+		{ rule: ~/#{1}\s?([^\n]+)/g, effect: Heading(6)}, /* Heading 6 */
+
+        //horizontal rules
+        { rule: ~/-{1,}|={1,}/g, effect: HORIZONTALRULE},
+
+        //bold & italic
+		{ rule: ~/\*\*\s?([^\n]+)\*\*/g, effect: BOLD}, /* Bold */
+		{ rule: ~/\*\s?([^\n]+)\*/g, effect: ITALIC}, /* Italic */
+		{ rule: ~/__([^_]+)__/g, effect: BOLD}, /* Bold (_) */
+		{ rule: ~/_([^_`]+)_/g, effect: ITALIC}, /* Italic (_) */
+
+        //paragraphs
+		{ rule: ~/([^\n]+\n?)/g, effect: Paragraph(isParagraphStart)}, /* Paragraph */
+
+        //links
+		{ rule: linkEReg, effect: Link(matcher(linkEReg, currentLine, 2), matcher(linkEReg ,currentLine, 1))}, /* HyperLink */
+
+        //code/codeblocks
+        { rule: codeEReg, effect: CODE}, /* Code */
+        { rule: codeblockEReg, effect: CodeBlock(matcher(codeblockEReg, currentLine, 2), cblockStart)}, /* Code Block */
+    
+        //List Items
+        { rule: ~/([^\n]+)(\+)([^\n]+)/g, effect: UNORDEREDLISTITEM}, /* List Item (+) */
+		{ rule: ~/([^\n]+)(\*)([^\n]+)/g, effect: UNORDEREDLISTITEM}, /* List Item (*) */
+		{ rule: ~/([^\n]+)(\-)([^\n]+)/g, effect: UNORDEREDLISTITEM}, /* List Item (-) */
+    
+        //Image
+		{ rule: imageEReg, effect: Image(matcher(imageEReg, currentLine, 1), matcher(imageEReg, currentLine, 2), matcher(imageEReg, currentLine , 1))}, /* Image */
+    ];
     
     #if (flixel && !openfl_development)
     public static function generateVisuals(text:flixel.text.FlxText, markdownStyle:MarkdownStyle) {
@@ -36,47 +95,22 @@ class Markdown {
      * - `effect` is the actual special effect, defined by `MarkdownEffects`
      */
     public static function interpret(markdownText:String, callback:(startIndex:Int, endIndex:Int, effect:MarkdownEffects) -> Void) {
-        final lineTexts = markdownText.split("\n"); //gets each line of text, wordwrapped text shouldnt be worried about
+        final lineTexts = StringTools.replace(markdownText, "\r", "").split("\n"); //gets each line of text, wordwrapped text shouldnt be worried about
         var lengthOffset = 0, index = -1, skipNextLine = false; // add to it each time we finish scanning a line
         for (line in lineTexts) {
+            currentLine = line;
 			index++;
-            if (index > 0) lengthOffset += lineTexts[index - 1].length;
-            if (skipNextLine) {
-                skipNextLine = false;
-                continue;
-            }
+            for (i in markdownRules) {
 
-            //------
-            //TITLES
-            //------
-            if (line.charAt(0) == "#") { //easy peasy lemon squeezy, there can only be a title here
-                var headingLevel = 1;
-                while (line.charAt(headingLevel) == "#") headingLevel++;
-                if (headingLevel <= 6) { //Bingo! title
-					callback(headingLevel + lengthOffset, line.length - 1 + lengthOffset, Heading(headingLevel));
-                    continue;
-                }
-			}
-            else if (lineTexts[index + 1] != null && lineTexts[index + 1].charAt(0) == "-") { //A title can also form with some text and a hyphen below it
-                var broken = false;
-				for (i in 0...lineTexts[index + 1].length) {
-					if (lineTexts[index + 1].charAt(i) != "-") {broken = true; break;}
-                }
-                if (!broken) {callback(0  + lengthOffset, line.length - 1  + lengthOffset, Heading(3)); skipNextLine = true;}
             }
-            else if (lineTexts[index + 1] != null && lineTexts[index + 1].charAt(0) == "=") { //Or an equals sign
-                var broken = false;
-				for (i in 0...lineTexts[index + 1].length) {
-					if (lineTexts[index + 1].charAt(i) != "=") {broken = true; break;}
-                }
-                if (!broken) {callback(0 + lengthOffset, line.length - 1 + lengthOffset, Heading(1)); skipNextLine = true;}
-            }
-            //--------------
-            //SIMPLE EFFECTS
-            //--------------
-
         }
     }
+
+	static function matcher(e:EReg, s:String, item:Int):String
+	{
+		e.match(s);
+		return e.matched(item);
+	}
 }
 
 class MarkdownStyle {
@@ -172,13 +206,62 @@ enum MarkdownEffects {
 	NESTEDUNORDEREDLISTITEM;
     TABLEHEADING;
 	TABLEROW;
+    Paragraph(start:Bool);
     TableAlign(left:Bool, right:Bool, center:Bool);
     OrderedListItem(number:Int);
 	NestedOrderedListItem(number:Int);
-    CodeBlock(language:String);
-    Link(link:String);
-    Image(altText:String, imageSource:String);
+    CodeBlock(language:String, start:Bool);
+    Link(link:String, text:String);
+    Image(altText:String, imageSource:String, title:String);
     Emoji(type:String);
     Heading(level:Int);
+    Highlight(text:String);
 
 }
+
+/*
+
+	public static function interpret(markdownText:String, callback:(startIndex:Int, endIndex:Int, effect:MarkdownEffects) -> Void) {
+		final lineTexts = markdownText.split("\n"); //gets each line of text, wordwrapped text shouldnt be worried about
+		var lengthOffset = 0, index = -1, skipNextLine = false; // add to it each time we finish scanning a line
+		for (line in lineTexts) {
+			currentLine = line;
+			index++;
+			if (index > 0) lengthOffset += lineTexts[index - 1].length;
+			if (skipNextLine) {
+				skipNextLine = false;
+				continue;
+			}
+
+			//------
+			//TITLES
+			//------
+			if (line.charAt(0) == "#") { //easy peasy lemon squeezy, there can only be a title here
+				var headingLevel = 1;
+				while (line.charAt(headingLevel) == "#") headingLevel++;
+				if (headingLevel <= 6) { //Bingo! title
+					callback(headingLevel + lengthOffset, line.length - 1 + lengthOffset, Heading(headingLevel));
+					continue;
+				}
+			}
+			else if (lineTexts[index + 1] != null && lineTexts[index + 1].charAt(0) == "-") { //A title can also form with some text and a hyphen below it
+				var broken = false;
+				for (i in 0...lineTexts[index + 1].length) {
+					if (lineTexts[index + 1].charAt(i) != "-") {broken = true; break;}
+				}
+				if (!broken) {callback(0  + lengthOffset, line.length - 1  + lengthOffset, Heading(3)); skipNextLine = true;}
+			}
+			else if (lineTexts[index + 1] != null && lineTexts[index + 1].charAt(0) == "=") { //Or an equals sign
+				var broken = false;
+				for (i in 0...lineTexts[index + 1].length) {
+					if (lineTexts[index + 1].charAt(i) != "=") {broken = true; break;}
+				}
+				if (!broken) {callback(0 + lengthOffset, line.length - 1 + lengthOffset, Heading(1)); skipNextLine = true;}
+			}
+			//--------------
+			//SIMPLE EFFECTS
+			//--------------
+
+		}
+	}
+*/

@@ -2,10 +2,10 @@
     "name": "texter",
     "classPath": "src/",
     "license": "MIT",
-    "releasenote": "fixed pasted text, it should now avoid adding null to the text",
+    "releasenote": "The next big thing for texter - Markdown! \n\n texter can now also handle markdown for various frameworks, and also bundles its own basic interpreter to build your own style on top of it.\n for more things see CHANGELOG.md",
     "url": "https://github.com/ShaharMS/texter",
     "contributors": ["ShaharMS"],
-    "version": "1.1.4",
+    "version": "2.0.0",
     "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
     "description": "adding more support for general text input/regular text in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
 }
