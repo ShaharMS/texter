@@ -14,7 +14,7 @@ class MarkdownPatterns {
 		When used on a string of text with `codeEReg.match(string)`, 
 		it will report everything that gives info about a markdown single-line codeblock:
 	**/
-	public var codeEReg(default, null):EReg = ~/`(\s?[^\n,]+\s?)`/g;
+	public var codeEReg(default, null):EReg = ~/`(\s?[^`,]+\s?)`/g;
 
 	/**
 		When used on a string of text with `codeblockEReg.match(string)`, 
@@ -23,7 +23,7 @@ class MarkdownPatterns {
 		- `codeblockEReg.matched(1)` will give you the language of the code block, it detects this text: ```**haxe** <- this.
 		- `codeblockEReg.matched(2)` is it the start of the codeblock or the end? true for start, false for end.
 	**/
-	public var codeblockEReg(default, null):EReg = ~/```(.{1,})\n(.{1,}\n{1,})```/g;
+	public var codeblockEReg(default, null):EReg = ~/```(.{0,})\n/g;
 
 	/**
 		When used on a string of text with `imageEReg.match(string)`, 
@@ -63,11 +63,12 @@ class MarkdownPatterns {
 		- `hRuleEReg.matched(1)` The tupe of the rule. `"="` means a thick one, `"-"` means a thin one
 		- `hRuleEReg.matched(2)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/(-\+|=+)/g;
+	public var hRuleEReg(default, null):EReg = ~/(-\+|=+\n)/g;
 
-	public var boldEReg(default, null):EReg = ~/\*\*|__([^\n]+)\*\*|__/g;
-	public var italicEReg(default, null):EReg = ~/\*|_([^\n]+)\*|_/g;
+	public var boldEReg(default, null):EReg = ~/\*\*([^\*\*]+)\*\*/g;
+	public var italicEReg(default, null):EReg = ~/\*([^\*]+)\*/g;
 	public var mathEReg(default, null):EReg = ~/\${1,2}([^\$]\${1,2})/g;
-	public var parSepEReg(default, null):EReg = ~/([^\n]+\n?)/g;
+	public var parSepEReg(default, null):EReg = ~/([^\n]+\n)/g;
 
+	private function new() {}
 }

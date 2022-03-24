@@ -1,5 +1,6 @@
 package texter.flixel;
 
+import texter.general.CharTools;
 import flixel.FlxG;
 import openfl.desktop.Clipboard;
 #if flixel
@@ -58,7 +59,7 @@ class FlxInputTextRTL extends FlxInputText
 	{
 		var offx:Float = 0;
 
-		var alignStr:FlxTextAlign = getAlignStr();
+		var alignStr:FlxTextAlign = getAlignment();
 
 		switch (alignStr)
 		{
@@ -132,7 +133,7 @@ class FlxInputTextRTL extends FlxInputText
 				trueWidth += char;
 			for (char in [for (i in 0...text.length + 1) getCharBoundaries(i).width])
 				tWidth += char;
-			if (CharTools.rtlLetterArray.contains(text.charAt(caretIndex - 1)))
+			if (CharTools.rtlLetters.match(text.charAt(caretIndex - 1)))
 				caret.x = tWidth - trueWidth + 2;
 		}
 
