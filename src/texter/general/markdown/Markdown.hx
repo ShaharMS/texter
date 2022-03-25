@@ -30,22 +30,19 @@ class Markdown {
      * - those rules should be checked in that order to achive normal markdown syntax
      */
     public static var markdownRules(default, null):Array<MarkdownRule> = [
-        { rule: patterns.titleEReg, 	effect: () -> return Heading(matcher(patterns.titleEReg, currentLine, 1).length, matcher(patterns.titleEReg, currentLine, 2))}, /* Headings */
-		{ rule: patterns.boldEReg,  	effect: () -> return Bold(matcher(patterns.boldEReg, currentLine, 1))}, /* Bold */
-		{ rule: patterns.italicEReg, 	effect: () -> return Italic((matcher(patterns.italicEReg, currentLine, 1)))}, /* Italic */
-		{ rule: patterns.mathEReg, 		effect: () -> return Math(matcher(patterns.mathEReg, currentLine, 1))}, /* Math */
-        { rule: patterns.codeEReg, 		effect: () -> return Code(matcher(patterns.codeEReg, currentLine, 1))}, /* Code */
-		{ rule: patterns.parSepEReg,	effect: () -> return Paragraph(isParagraphStart)}, /* Paragraph */
-		{ rule: patterns.linkEReg, 		effect: () -> return Link(matcher(patterns.linkEReg, currentLine, 2), matcher(patterns.linkEReg ,currentLine, 1))}, /* HyperLink */
-        { rule: patterns.codeblockEReg,	effect: () -> return CodeBlock(matcher(patterns.codeblockEReg, currentLine, 2), cblockStart)}, /* Code Block */
-		{ rule: patterns.listItemEReg, 	effect: () -> return UnorderedListItem(matcher(patterns.listItemEReg, currentLine, 1).length)}, /* List Item (+) */
-		{ rule: patterns.imageEReg, 	effect: () -> return Image(matcher(patterns.imageEReg, currentLine, 1), matcher(patterns.imageEReg, currentLine, 2), matcher(patterns.imageEReg, currentLine , 1))}, /* Image */
-        { rule: patterns.hRuleEReg, 	effect: () -> return HorizontalRule(matcher(patterns.hRuleEReg, currentLine, 1).charAt(0), matcher(patterns.hRuleEReg, currentLine, 1))}, /* Horizontal Rule */
+        { rule: patterns.titleEReg, 	 effect: () -> return Heading(matcher(patterns.titleEReg, currentLine, 1).length, matcher(patterns.titleEReg, currentLine, 2))}, /* Headings */
+        { rule: patterns.codeblockEReg,	 effect: () -> return CodeBlock(matcher(patterns.codeblockEReg, currentLine, 2), cblockStart)}, /* Code Block */
+		{ rule: patterns.italicBoldEReg, effect: () -> return ItalicBold(matcher(patterns.italicBoldEReg, currentLine, 1))}, /* Bold Italic */
+        { rule: patterns.boldEReg,  	 effect: () -> return Bold(matcher(patterns.boldEReg, currentLine, 1))}, /* Bold */
+		{ rule: patterns.italicEReg, 	 effect: () -> return Italic((matcher(patterns.italicEReg, currentLine, 1)))}, /* Italic */
+		{ rule: patterns.mathEReg, 		 effect: () -> return Math(matcher(patterns.mathEReg, currentLine, 1))}, /* Math */
+        { rule: patterns.codeEReg, 		 effect: () -> return Code(matcher(patterns.codeEReg, currentLine, 1))}, /* Code */
+		{ rule: patterns.parSepEReg,	 effect: () -> return Paragraph(isParagraphStart)}, /* Paragraph */
+		{ rule: patterns.linkEReg, 		 effect: () -> return Link(matcher(patterns.linkEReg, currentLine, 2), matcher(patterns.linkEReg ,currentLine, 1))}, /* HyperLink */
+		{ rule: patterns.listItemEReg, 	 effect: () -> return UnorderedListItem(matcher(patterns.listItemEReg, currentLine, 1).length)}, /* List Item (+) */
+		{ rule: patterns.imageEReg, 	 effect: () -> return Image(matcher(patterns.imageEReg, currentLine, 1), matcher(patterns.imageEReg, currentLine, 2), matcher(patterns.imageEReg, currentLine , 1))}, /* Image */
+        { rule: patterns.hRuleEReg, 	 effect: () -> return HorizontalRule(matcher(patterns.hRuleEReg, currentLine, 1).charAt(0), matcher(patterns.hRuleEReg, currentLine, 1))}, /* Horizontal Rule */
     ];
-
-    public static function generateVisuals(text:TextField, markdownStyle:Dynamic) {
-        
-    }
 
     /**
      * Mostly for internal use, but can also be useful for creating your own
@@ -63,20 +60,19 @@ class Markdown {
      * - **`effect`** is the actual special effect, defined by `MarkdownEffects`
      */
     public static function interpret(markdownText:String, callback:(startIndex:Int, endIndex:Int, effect:MarkdownEffects) -> Void) {
-        final lineTexts = StringTools.replace(markdownText, "\r", "").split("\n"); //gets each line of text, wordwrapped text shouldnt be worried about
+        final lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
+        currentLine = lineTexts;
         var index = -1, lenOffset = 0; // add to it each time we finish scanning a line
-        for (line in lineTexts) {
-            currentLine = line;
-			index++;
-            callback(0 + lenOffset, line.length + lenOffset, RegularText(line));
-            for (r in markdownRules) {
-				if (r.rule.match(line)) {
-                    var pos = r.rule.matchedPos();
-                    callback(pos.pos + lenOffset, pos.pos + pos.len + lenOffset, r.effect());
-                }
+        var callbacks:Array<{i1:Int, i2:Int, effect:MarkdownEffects}> = [];
+        for (r in markdownRules) {
+			if (r.rule.match(currentLine)) {
+                var pos = r.rule.matchedPos();
+                callbacks.push({i1: pos.pos + lenOffset, i2: pos.pos + pos.len + lenOffset, effect: r.effect()});
+                lenOffset += pos.len;
+                currentLine = currentLine.substring(0, pos.pos) + currentLine.substring(pos.pos + pos.len + 1, currentLine.length);
             }
-            lenOffset += line.length;
         }
+        for (i in callbacks) trace(i);
     }
 
 	static function matcher(e:EReg, s:String, item:Int):String

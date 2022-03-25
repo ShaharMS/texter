@@ -4,6 +4,7 @@ enum MarkdownEffects
 {
 	Bold(text:String);
 	Italic(text:String);
+	ItalicBold(text:String);
 	Underline(text:String);
 	StrikeThrough(text:String);
 	Code(text:String);

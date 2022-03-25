@@ -23,7 +23,7 @@ class MarkdownPatterns {
 		- `codeblockEReg.matched(1)` will give you the language of the code block, it detects this text: ```**haxe** <- this.
 		- `codeblockEReg.matched(2)` is it the start of the codeblock or the end? true for start, false for end.
 	**/
-	public var codeblockEReg(default, null):EReg = ~/```(.{0,})\n/g;
+	public var codeblockEReg(default, null):EReg = ~/```(.{0,})\n?\n?([^```])/g;
 
 	/**
 		When used on a string of text with `imageEReg.match(string)`, 
@@ -66,7 +66,8 @@ class MarkdownPatterns {
 	public var hRuleEReg(default, null):EReg = ~/(-\+|=+\n)/g;
 
 	public var boldEReg(default, null):EReg = ~/\*\*([^\*\*]+)\*\*/g;
-	public var italicEReg(default, null):EReg = ~/\*([^\*]+)\*/g;
+	public var italicEReg(default, null):EReg = ~/^\*\*^\*([^\*]+)^\*\*^\*/g;
+	public var italicBoldEReg(default, null):EReg = ~/\*\*\*([^\*\*\*]+)\*\*\*/g;
 	public var mathEReg(default, null):EReg = ~/\${1,2}([^\$]\${1,2})/g;
 	public var parSepEReg(default, null):EReg = ~/([^\n]+\n)/g;
 
