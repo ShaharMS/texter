@@ -1,47 +1,36 @@
 package texter.general.markdown;
-#if (flixel && !openfl_development)
-import flixel.FlxSprite;
-#elseif openfl
-import openfl.display.DisplayObject;
-import openfl.text.TextField;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-#end
 
 import texter.general.markdown.MarkdownEffects;
-import texter.general.markdown.MarkdownRule;
 import texter.general.markdown.MarkdownPatterns;
+
+using StringTools;
 
 class Markdown {
 
-	public static var patterns:MarkdownPatterns = @:privateAccess new MarkdownPatterns();
+	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
     static var isParagraphStart(get, default):Bool = false;
 	static function get_isParagraphStart():Bool return isParagraphStart = !isParagraphStart;
 
     static var cblockStart(get, default):Bool = false;
     static function get_cblockStart():Bool return cblockStart = !cblockStart;
 
-	static var currentLine:String;
+	static var current:String;
 
     /**
      * Those rules are the ones used by the interpreter to determine where to place each markdown element:
-     * 
-     * - Those are in oreder of importance - the higher the index, the higher priority
-     * - those rules should be checked in that order to achive normal markdown syntax
      */
-    public static var markdownRules(default, null):Array<MarkdownRule> = [
-        { rule: patterns.titleEReg, 	 effect: () -> return Heading(matcher(patterns.titleEReg, currentLine, 1).length, matcher(patterns.titleEReg, currentLine, 2))}, /* Headings */
-        { rule: patterns.codeblockEReg,	 effect: () -> return CodeBlock(matcher(patterns.codeblockEReg, currentLine, 2), cblockStart)}, /* Code Block */
-		{ rule: patterns.italicBoldEReg, effect: () -> return ItalicBold(matcher(patterns.italicBoldEReg, currentLine, 1))}, /* Bold Italic */
-        { rule: patterns.boldEReg,  	 effect: () -> return Bold(matcher(patterns.boldEReg, currentLine, 1))}, /* Bold */
-		{ rule: patterns.italicEReg, 	 effect: () -> return Italic((matcher(patterns.italicEReg, currentLine, 1)))}, /* Italic */
-		{ rule: patterns.mathEReg, 		 effect: () -> return Math(matcher(patterns.mathEReg, currentLine, 1))}, /* Math */
-        { rule: patterns.codeEReg, 		 effect: () -> return Code(matcher(patterns.codeEReg, currentLine, 1))}, /* Code */
-		{ rule: patterns.parSepEReg,	 effect: () -> return Paragraph(isParagraphStart)}, /* Paragraph */
-		{ rule: patterns.linkEReg, 		 effect: () -> return Link(matcher(patterns.linkEReg, currentLine, 2), matcher(patterns.linkEReg ,currentLine, 1))}, /* HyperLink */
-		{ rule: patterns.listItemEReg, 	 effect: () -> return UnorderedListItem(matcher(patterns.listItemEReg, currentLine, 1).length)}, /* List Item (+) */
-		{ rule: patterns.imageEReg, 	 effect: () -> return Image(matcher(patterns.imageEReg, currentLine, 1), matcher(patterns.imageEReg, currentLine, 2), matcher(patterns.imageEReg, currentLine , 1))}, /* Image */
-        { rule: patterns.hRuleEReg, 	 effect: () -> return HorizontalRule(matcher(patterns.hRuleEReg, currentLine, 1).charAt(0), matcher(patterns.hRuleEReg, currentLine, 1))}, /* Horizontal Rule */
+    public static var markdownRules(default, null):Array<EReg> = [
+        //patterns.titleEReg, <- DISABLED - causes a crash in the interpreter
+        patterns.codeblockEReg,
+		patterns.boldEReg, // Done.
+		patterns.italicEReg, // Done.
+		patterns.mathEReg, // Done.
+		patterns.codeEReg, // Done.
+	    patterns.parSepEReg,	 
+	    patterns.linkEReg,
+	    patterns.listItemEReg,
+	    patterns.imageEReg,
+        patterns.hRuleEReg,
     ];
 
     /**
@@ -49,35 +38,68 @@ class Markdown {
      * Markdown styling.
      * 
      * This function takes in a string formatted in Markdown, and each time it encounteres
-     * a Markdown "special effect" (headings, charts, points, etc.), it triggers a callback
-     * for the style corresponding to the found effect.
+     * a Markdown "special effect" (headings, charts, points, etc.), it pushes
+     * a style corresponding to the found effect. after finding the effects, it calls:
+     * 
+     * ### onComplete:
+     * 
+     * The `onComplete()` will get called after the text has been processed:
+     *  - **First Argument - The Actual Text**: to keep the text clean, after proccessing the text, a markdown-
+     * free version of the text is returned (altho some marks do remain, such as the list items and hrules)
+     *  - **Second Argument - The Effects** - this array contains lots of ADTs (algebric data types). Those
+     * contain the actual data - most of them contain the start & end index of the effect, and some contain more
+     * data (things like list numbers, indentation...) **NOTICE -** the texts starts at startIndex, but not including endIndex.
      * 
      * @param markdownText Just a plain string with markdown formatting. If you want to make sure 
      * the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
-     * @param callback This function will get called each time a new effect is detected: 
-     * - **`startIndex`** will contain the point in the string to start applying effects
-     * - **`endIndex`** will contain the point in the string to stop applying effects
-     * - **`effect`** is the actual special effect, defined by `MarkdownEffects`
      */
-    public static function interpret(markdownText:String, callback:(startIndex:Int, endIndex:Int, effect:MarkdownEffects) -> Void) {
-        final lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
-        currentLine = lineTexts;
-        var index = -1, lenOffset = 0; // add to it each time we finish scanning a line
-        var callbacks:Array<{i1:Int, i2:Int, effect:MarkdownEffects}> = [];
-        for (r in markdownRules) {
-			if (r.rule.match(currentLine)) {
-                var pos = r.rule.matchedPos();
-                callbacks.push({i1: pos.pos + lenOffset, i2: pos.pos + pos.len + lenOffset, effect: r.effect()});
-                lenOffset += pos.len;
-                currentLine = currentLine.substring(0, pos.pos) + currentLine.substring(pos.pos + pos.len + 1, currentLine.length);
+    public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffects>) -> Void) {
+        var lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
+        var b = true;
+        //fix for nested bold
+        while (lineTexts.contains("**")) {
+            if (b) {lineTexts = replacefirst(lineTexts, "**", "[<"); b = !b;}
+            else   {lineTexts = replacefirst(lineTexts, "**", ">]"); b = !b;}
+        }
+		if (lineTexts.lastIndexOf("[<") > lineTexts.lastIndexOf(">]")) {
+            lineTexts = replaceLast(lineTexts, "[<", "**");
+        }
+        current = lineTexts;
+        trace(current);
+        var effects:Array<MarkdownEffects> = [];
+        for (rule in markdownRules) {
+			while (rule.match(current)) {
+                if (rule == patterns.italicEReg|| rule == patterns.mathEReg || rule == patterns.codeEReg) {
+					current = rule.replace(current, "$1");
+                    var info = rule.matchedPos();
+                    effects.push(
+                        if (rule == patterns.italicEReg) 
+                            Italic(info.pos, info.pos + info.len - 2) else
+                        if (rule == patterns.codeEReg) 
+                            Code(info.pos, info.pos + info.len - 2) else
+                        Math(info.pos, info.pos + info.len - 2)
+                    );
+                } else if (rule == patterns.boldEReg) {
+					current = rule.replace(current, "$1");
+                    var info = rule.matchedPos();
+                    effects.push(Bold(info.pos, info.pos + info.len - 4));
+                } else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg) {
+
+                }
             }
         }
-        for (i in callbacks) trace(i);
+        onComplete(current, effects);
     }
 
-	static function matcher(e:EReg, s:String, item:Int):String
-	{
-		e.match(s);
-		return e.matched(item);
-	}
+    static function replaceLast(string:String, replace:String, by:String):String {
+        var place = string.lastIndexOf(replace);
+        var result = string.substring(0, place) + by + string.substring(place + replace.length);
+        return result;
+    }
+
+    static function replacefirst(string:String, replace:String, by:String):String {
+        var place = string.indexOf(replace);
+        var result = string.substring(0, place) + by + string.substring(place + replace.length);
+        return result;
+    }
 }

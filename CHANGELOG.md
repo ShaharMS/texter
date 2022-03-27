@@ -27,14 +27,18 @@
 
  - added `charFromValue` map
  - added `charToValue` map
- - `fromCharArray` and `toCharArray` now use use `Char`s instead of `String`s
+ - `fromCharArray` and `toCharArray` now use `Char`s instead of `String`s
 
 **Markdown**
 
- - added a Markdown to HTML parser
- - added `generateVisuals()` - a Markdown visualization method for OpenFL & HaxeFlixel
- - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on callbacks
- - added `MarkdownStyle` and `MarkdownEffects` to help with interpretation & visualization
+ - new class - `Markdown`
+ - added an array of markdown ERegs - `markdownRules`
+ - added `generateVisuals()` - a Markdown visualization method for OpenFL
+ - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffects.hx`
+
+**MarkdownPatterns**
+
+ - new class - `MarkdownPatterns`
 
 1.1.4 (March 20, 2022)
 ===

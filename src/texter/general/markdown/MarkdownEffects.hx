@@ -2,24 +2,23 @@ package texter.general.markdown;
 
 enum MarkdownEffects
 {
-	Bold(text:String);
-	Italic(text:String);
-	ItalicBold(text:String);
-	Underline(text:String);
-	StrikeThrough(text:String);
-	Code(text:String);
-	Math(text:String);
+	Bold(start:Int, end:Int);
+	Italic(start:Int, end:Int);
+	ItalicBold(start:Int, end:Int);
+	Underline(start:Int, end:Int);
+	StrikeThrough(start:Int, end:Int);
+	Code(start:Int, end:Int);
+	Math(start:Int, end:Int);
 	LINEBREAK;
-	HorizontalRule(type:String, text:String);
+	HorizontalRule(type:String, start:Int, end:Int);
 	Paragraph(start:Bool);
-	CodeBlock(language:String, start:Bool);
-	CodeBlockText(text:String);
-	Link(link:String, text:String);
-	Image(altText:String, imageSource:String, title:String);
+	CodeBlock(language:String, start:Int, end:Int);
+	Link(link:String, start:Int, end:Int);
+	Image(altText:String, imageSource:String, start:Int, end:Int);
 	Emoji(type:String);
-	Heading(level:Int, text:String);
+	Heading(level:Int, start:Int, end:Int);
 	UnorderedListItem(nestingLevel:Int);
-	RegularText(text:String);
+	RegularText(start:Int, end:Int);
 }
 
 typedef MarkdownEffectRange = {
