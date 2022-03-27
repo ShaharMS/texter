@@ -14,8 +14,7 @@ enum MarkdownEffects
 	CodeBlock(language:String, start:Int, end:Int);
 	Link(link:String, start:Int, end:Int);
 	Image(altText:String, imageSource:String, start:Int, end:Int);
-	Emoji(type:String);
+	Emoji(type:String, start:Int, end:Int);
 	Heading(level:Int, start:Int, end:Int);
-	UnorderedListItem(nestingLevel:Int);
-	RegularText(start:Int, end:Int);
+	UnorderedListItem(nestingLevel:Int, start:Int, end:Int);
 }

@@ -61,6 +61,8 @@ class Markdown {
 		if (lineTexts.lastIndexOf("[<") > lineTexts.lastIndexOf(">]")) {
             lineTexts = replaceLast(lineTexts, "[<", "**");
         }
+        //fixes interpreter faults
+        lineTexts = lineTexts.replace("\n\n", "\r\r").replace("=", "_").replace("-", "_");
         current = lineTexts;
         trace(current);
         var effects:Array<MarkdownEffects> = [];
@@ -81,13 +83,18 @@ class Markdown {
                     var info = rule.matchedPos();
                     effects.push(Bold(info.pos, info.pos + info.len - 4));
                 } else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg) {
-					current = rule.replace(current, if (rule == patterns.parSepEReg) " \n \n" else " ---");
+					current = rule.replace(current, if (rule == patterns.parSepEReg) "\n\n" else "==");
                     var info = rule.matchedPos();
                     effects.push(
                         if (rule == patterns.parSepEReg)
                             ParagraphGap(info.pos, info.pos + info.len - 1) else 
-                        HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len - 1));
+                        HorizontalRule("=", info.pos, info.pos + info.len - 1));
                 } else if (rule == patterns.linkEReg) {
+                    current = rule.replace(current, "$1");
+                    var info = rule.matchedPos();
+                    effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
+                } else if (rule == patterns.listItemEReg) {
+                    
                 }
             }
         }

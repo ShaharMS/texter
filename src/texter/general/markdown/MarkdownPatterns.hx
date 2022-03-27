@@ -63,12 +63,12 @@ class MarkdownPatterns {
 		- `hRuleEReg.matched(1)` The tupe of the rule. `"="` means a thick one, `"-"` means a thin one
 		- `hRuleEReg.matched(2)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/(?!={3,})(^==)|^(?!-{3,})(^--)/m;
+	public var hRuleEReg(default, null):EReg = ~/^(?!_{3,})(^__)/m;
 
 	public var boldEReg(default, null):EReg = ~/\[<([^>]+)>\]/m;
 	public var italicEReg(default, null):EReg = ~/\*([^\*]+)\*/m;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
-	public var parSepEReg(default, null):EReg = ~/\n^\n/m;
+	public var parSepEReg(default, null):EReg = ~/\r\r/m;
 
 	private function new() {}
 }
