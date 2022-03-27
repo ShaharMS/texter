@@ -43,7 +43,7 @@ class MarkdownPatterns {
 		- `listItemEReg.matched(2)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
 		- `listItemEReg.matched(3)` gives you the text inside of the list item
 	**/
-	public var unorderedListItemEReg(default, null):EReg = ~/(\s*)\+|\*|\-\s([^\+\*\-]+)/m;
+	public var unorderedListItemEReg(default, null):EReg = ~/(?!^\S)( +)\+|\*|\- ([^\+\*\-]+)/m;
 
 	/**
 		When used on a string of text with `titleEReg.match(string)`, 
@@ -52,7 +52,7 @@ class MarkdownPatterns {
 		- `titleEReg.matched(1)` will give you the size of the heading, between 1 and 6
 		- `titleEReg.matched(2)` the actual text used in the title.
 	**/
-	public var titleEReg(default, null):EReg = ~/(#+)\s(\s*.+)/m;
+	public var titleEReg(default, null):EReg = ~/^(#+)\s(\s*[^\n]+)/s;
 
 	/**
 			 	(hRule stands for horizontal rule)

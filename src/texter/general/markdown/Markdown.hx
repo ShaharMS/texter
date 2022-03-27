@@ -19,10 +19,10 @@ class Markdown {
     public static var markdownRules(default, null):Array<EReg> = [
         patterns.titleEReg, // Done.
         patterns.codeblockEReg,
-		patterns.boldEReg, // Done.
 		patterns.italicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
+		patterns.boldEReg, // Done.
 	    patterns.parSepEReg, // Done.
 	    patterns.linkEReg, // Done.
 	    patterns.unorderedListItemEReg, // Done.
@@ -62,7 +62,7 @@ class Markdown {
             lineTexts = replaceLast(lineTexts, "[<", "**");
         }
         //fixes interpreter faults
-        lineTexts = lineTexts.replace("\n\n", "\r\r").replace("=", "_").replace("-", "_");
+        lineTexts = lineTexts.replace("\n\n", "\r\r").replace("=", "_");
         current = lineTexts;
         trace(current);
         var effects:Array<MarkdownEffects> = [];
@@ -94,11 +94,12 @@ class Markdown {
                     var info = rule.matchedPos();
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
                 } else if (rule == patterns.unorderedListItemEReg) {
-					current = rule.replace(current, "$1· $2");
+                    //todo - fix nested lists
+					current = rule.replace(current, " · $2");
                     var info = rule.matchedPos();
-                    effects.push(UnorderedListItem(rule.matched(1).length,  info.pos, info.pos + info.len - 2));
+					effects.push(UnorderedListItem(1,  info.pos, info.pos + info.len - 2));
                 } else if (rule == patterns.titleEReg) {
-                    current = rule.replace(current, " $2");
+                    current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
                     effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len - rule.matched(1).length - 2));
                 } else if (rule == patterns.codeblockEReg) {
