@@ -9,9 +9,8 @@ enum MarkdownEffects
 	StrikeThrough(start:Int, end:Int);
 	Code(start:Int, end:Int);
 	Math(start:Int, end:Int);
-	LINEBREAK;
 	HorizontalRule(type:String, start:Int, end:Int);
-	Paragraph(start:Bool);
+	ParagraphGap(start:Int, end:Int);
 	CodeBlock(language:String, start:Int, end:Int);
 	Link(link:String, start:Int, end:Int);
 	Image(altText:String, imageSource:String, start:Int, end:Int);
@@ -20,9 +19,3 @@ enum MarkdownEffects
 	UnorderedListItem(nestingLevel:Int);
 	RegularText(start:Int, end:Int);
 }
-
-typedef MarkdownEffectRange = {
-    start:Int,
-    end:Int,
-    effect:String
-};

@@ -11,9 +11,6 @@ class Markdown {
     static var isParagraphStart(get, default):Bool = false;
 	static function get_isParagraphStart():Bool return isParagraphStart = !isParagraphStart;
 
-    static var cblockStart(get, default):Bool = false;
-    static function get_cblockStart():Bool return cblockStart = !cblockStart;
-
 	static var current:String;
 
     /**
@@ -26,7 +23,7 @@ class Markdown {
 		patterns.italicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
-	    patterns.parSepEReg,	 
+	    patterns.parSepEReg,
 	    patterns.linkEReg,
 	    patterns.listItemEReg,
 	    patterns.imageEReg,
@@ -84,7 +81,13 @@ class Markdown {
                     var info = rule.matchedPos();
                     effects.push(Bold(info.pos, info.pos + info.len - 4));
                 } else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg) {
-
+					current = rule.replace(current, if (rule == patterns.parSepEReg) " \n \n" else " ---");
+                    var info = rule.matchedPos();
+                    effects.push(
+                        if (rule == patterns.parSepEReg)
+                            ParagraphGap(info.pos, info.pos + info.len - 1) else 
+                        HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len - 1));
+                } else if (rule == patterns.linkEReg) {
                 }
             }
         }
