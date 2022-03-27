@@ -6,6 +6,6 @@
     "url": "https://github.com/ShaharMS/texter",
     "contributors": ["ShaharMS"],
     "version": "2.0.0",
-    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic"],
-    "description": "adding more support for general text input/regular text in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
+    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown"],
+    "description": "adding more support for general text input, regular text, markdown text and more in multiple libraries such as HaxeFlixel, OpenFL and more (to be added!)"
 }

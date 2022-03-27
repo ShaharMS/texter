@@ -23,5 +23,9 @@ class ___TestState extends FlxState {
         trace(effects);
     }
 
-    var md = "==\n\n-- **bold text**\n\n sussy **quick *test***\n\n $some math$ and also `CODE`";
+    var md = "
+    ```haxe
+    code block
+    ```
+    ";
 }

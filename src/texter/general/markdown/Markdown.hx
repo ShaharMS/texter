@@ -17,17 +17,17 @@ class Markdown {
      * Those rules are the ones used by the interpreter to determine where to place each markdown element:
      */
     public static var markdownRules(default, null):Array<EReg> = [
-        //patterns.titleEReg, <- DISABLED - causes a crash in the interpreter
+        patterns.titleEReg, // Done.
         patterns.codeblockEReg,
 		patterns.boldEReg, // Done.
 		patterns.italicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
-	    patterns.parSepEReg,
-	    patterns.linkEReg,
-	    patterns.listItemEReg,
+	    patterns.parSepEReg, // Done.
+	    patterns.linkEReg, // Done.
+	    patterns.unorderedListItemEReg, // Done.
 	    patterns.imageEReg,
-        patterns.hRuleEReg,
+        patterns.hRuleEReg, // Done.
     ];
 
     /**
@@ -93,8 +93,18 @@ class Markdown {
                     current = rule.replace(current, "$1");
                     var info = rule.matchedPos();
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
-                } else if (rule == patterns.listItemEReg) {
-                    
+                } else if (rule == patterns.unorderedListItemEReg) {
+					current = rule.replace(current, "$1· $2");
+                    var info = rule.matchedPos();
+                    effects.push(UnorderedListItem(rule.matched(1).length,  info.pos, info.pos + info.len - 2));
+                } else if (rule == patterns.titleEReg) {
+                    current = rule.replace(current, " $2");
+                    var info = rule.matchedPos();
+                    effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len - rule.matched(1).length - 2));
+                } else if (rule == patterns.codeblockEReg) {
+                    current = rule.replace(current, "$2");
+                    var info = rule.matchedPos();
+                    effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len - 6 - rule.matched(1).length));
                 }
             }
         }
