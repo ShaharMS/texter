@@ -11,6 +11,15 @@ for about 2 months I tried to find some existing (decent) RTL support, but didnt
 It might seem like I'm exaggerating, but trust me, it took me a **while** to make progress. but when I did start making (good) progress,
 I figured I'm not the only person that needs those fixes, **and thats how and why I created this library.**
 
+### Over-time, i wanted to add more things to the library
+
+A month or so after the release of this library, i found myself needing a bunch more things - (markdown text, Char...) and this library expanded and expanded.
+
+Today, it is no longer an RTL-support focused library, but a general-purpose text-related library. 
+
+does this mean i abandoned the project of cross-framework RTL? Of course not - but now, the library is W A Y more useful, providing visual markdown text, cross-platform cross-framework markdown interpreter, Emojis and more to come!
+
+
 ### **Can I Help/Contribute?**
 Of course! Any help is greatly appreciated! You can help with: 
 - fixing bugs

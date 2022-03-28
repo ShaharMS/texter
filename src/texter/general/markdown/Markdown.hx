@@ -1,14 +1,30 @@
 package texter.general.markdown;
 
-import js.html.CSS;
 import texter.general.markdown.MarkdownEffects;
 import texter.general.markdown.MarkdownPatterns;
 
 using StringTools;
-
+using texter.general.text.TextTools;
+/**
+ * The `Markdown` class provides tools to handle markdown texts in a **cross-framework** fashion.
+ * 
+ * **In its base resides the `interpret()` function.**
+ * 
+ * Everything in this class is based around the interpreter. everything from the markdown rules, to the patterns & visualization methods.
+ * The interpreter uses a pre-parser & lots of `regex`s (Regular Expresions) to parse the markdown text. after parsing, 
+ * it returns the text witout all of the "ugly" markdown syntax, and an array of the effects that are needed to be appied, with `startIndex` and `endIndex`.
+ * You don't have to utilize all of the information the interpreter gives you - it doesnt enforce anything - it just guves you the data you need to start working
+ * 
+ * `interpret()` is mostly used internally to get information about the markdown text for visualization methods, 
+ * but you can also use it yourself to make your own markdown styling
+ * 
+ */
 class Markdown {
 
 	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
+    public static var emojiMaps:Map<String, String> = [
+
+    ];
     static var isParagraphStart(get, default):Bool = false;
 	static function get_isParagraphStart():Bool return isParagraphStart = !isParagraphStart;
 
@@ -19,7 +35,7 @@ class Markdown {
      */
     public static var markdownRules(default, null):Array<EReg> = [
         patterns.titleEReg, // Done.
-        patterns.codeblockEReg,
+        patterns.codeblockEReg, // Done.
 		patterns.italicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
@@ -27,8 +43,8 @@ class Markdown {
 	    patterns.parSepEReg, // Done.
 	    patterns.linkEReg, // Done.
 	    patterns.listItemEReg, // Done.
-	    patterns.imageEReg,
         patterns.hRuleEReg, // Done.
+        patterns.emojiEReg // Done.
     ];
 
     /**
@@ -54,9 +70,9 @@ class Markdown {
     public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffects>) -> Void) {
         var lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
         //fix for nested bold
-        while (lineTexts.contains("__")) lineTexts = replacefirst(lineTexts, "__", "**");
+        while (lineTexts.contains("__")) lineTexts = lineTexts.replacefirst( "__", "**");
         //fixes interpreter faults
-		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n==", "――").replace("\n--", "――").replace("*", "_");
+		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n===", "\n―――").replace("\n---", "\n―――").replace("*", "_");
         ~/( *[0-9]+\.)/g.replace(lineTexts, "$1>");
 
         current = lineTexts;
@@ -80,7 +96,7 @@ class Markdown {
                     var info = rule.matchedPos();
                     effects.push(Bold(info.pos, info.pos + info.len - 4));
                 } else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg) {
-					current = rule.replace(current, if (rule == patterns.parSepEReg) "\n\n" else "==");
+					current = rule.replace(current, if (rule == patterns.parSepEReg) "\n\n" else "\r$1\r");
                     var info = rule.matchedPos();
                     effects.push(
                         if (rule == patterns.parSepEReg)
@@ -92,13 +108,12 @@ class Markdown {
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
                 } else if (rule == patterns.listItemEReg) {
                     //todo - fix nested lists
-					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "· $2") else current = rule.replace(current, "$1 $2");
+					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "· $2") else current = rule.replace(current, "$1. $2");
                     var info = rule.matchedPos();
 					effects.push(
                         if (!~/[0-9]/g.match(rule.matched(1)))
-                            UnorderedListItem(1,  info.pos, info.pos + info.len - 2) else
-                        OrderedListItem(null ,null, null, null)
-                    );
+                            UnorderedListItem(1,  info.pos, info.pos + info.len - 1) else
+					    OrderedListItem(Std.parseInt(rule.matched(1)), 1, info.pos, info.pos + info.len - 1));
                 } else if (rule == patterns.titleEReg) {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
@@ -107,21 +122,12 @@ class Markdown {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
                     effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len - 6 - rule.matched(1).length));
-                } 
+                } else if (rule == patterns.emojiEReg) {
+                    var info = rule.matchedPos();
+                    effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len - 2));
+                }
             }
         }
-        onComplete(current, effects);
-    }
-
-    static function replaceLast(string:String, replace:String, by:String):String {
-        var place = string.lastIndexOf(replace);
-        var result = string.substring(0, place) + by + string.substring(place + replace.length);
-        return result;
-    }
-
-    static function replacefirst(string:String, replace:String, by:String):String {
-        var place = string.indexOf(replace);
-        var result = string.substring(0, place) + by + string.substring(place + replace.length);
-        return result;
+        onComplete(current.replace("\r", "\n"), effects);
     }
 }

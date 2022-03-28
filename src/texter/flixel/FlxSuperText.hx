@@ -1,5 +1,6 @@
-package texter.flixel;
 #if (flixel && false)
+package texter.flixel;
+
 import flixel.group.FlxSpriteGroup;
 
 

@@ -17,9 +17,8 @@
  - added `getCaretIndexAtPoint()` method
  - added `HOME_ACTION` and `END_ACTION`
 
-**Char:**
+**Char - new type! features:**
 
- - added new type - `Char`
  - extends `String` to report the character's `charCode`
  - can be instantiated with a `String` or `Int`
 
@@ -29,17 +28,40 @@
  - added `charToValue` map
  - `fromCharArray` and `toCharArray` now use `Char`s instead of `String`s
 
-**Markdown**
+**Markdown - new class! features:**
 
- - new class - `Markdown`
  - added an array of markdown ERegs - `markdownRules`
- - added `generateVisuals()` - a Markdown visualization method for OpenFL
+ - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdowPatterns`
  - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffects.hx`
 
-**MarkdownPatterns**
+**MarkdownPatterns - new class!**
 
- - new class - `MarkdownPatterns`
+`MarkdownPatterns` is a class consisting of the following markdown patterns: (more will be added in the future)
+ - `hRuleEReg`
+ - `boldEReg`
+ - `italicEReg`
+ - `mathEReg`
+ - `parSepEReg`
+ - `emojiEReg`
+ - `titleEReg`
+ - `listItemEReg`
+ - `imageEReg`
+ - `codeblockEReg`
+ - `linkEReg`
 
+**Emoji - new class!**
+
+`Emoji` is a class that contains every single emoji supported by github. it contains:
+ - `emojiToString()` - a function to convert an emoji into a string
+ - `emojiFromString()` - a function to convert a string into an emoji
+ - `extractEmojis()` - a function to extract all emojis present in a string of text
+
+**TextTools - new class!**
+
+`TextTools` is a class containing static methods for manipulating text. it contains:
+ - `replaceFirst()` - replaces the first occurrence of a string inside another string
+ - `replaceFirst()` - replaces the last occurrence of a string inside another string
+ 
 1.1.4 (March 20, 2022)
 ===
 ### **Bug Fix:**

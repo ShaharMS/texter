@@ -1,20 +1,19 @@
-package texter.flixel;
-
-import texter.general.CharTools;
-import flixel.FlxG;
-import openfl.desktop.Clipboard;
 #if flixel
+package texter.flixel;
 #if js
 import flixel.FlxG;
 import flixel.text.FlxText.FlxTextAlign;
 import haxe.Timer;
 import openfl.geom.Rectangle;
+import texter.general.CharTools;
 #else
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
 import texter.general.CharTools;
+import flixel.FlxG;
+import openfl.desktop.Clipboard;
 #end
 import texter.flixel._internal.FlxInputText;
 

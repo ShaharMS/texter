@@ -1,6 +1,5 @@
-package texter.flixel;
-
 #if flixel
+package texter.flixel;
 import flixel.group.FlxSpriteGroup;
 import flixel.ui.FlxButton;
 import flixel.FlxG;
