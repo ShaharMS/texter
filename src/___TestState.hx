@@ -11,7 +11,7 @@ class ___TestState extends FlxState {
 	var t:FlxInputTextRTL;
     override function create() {
         super.create();
-        Markdown.interpret(md3, callback);
+        Markdown.interpret(md, callback);
     }
 
     override function update(elapsed:Float) {

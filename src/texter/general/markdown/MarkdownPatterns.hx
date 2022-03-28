@@ -39,11 +39,10 @@ class MarkdownPatterns {
 		When used on a string of text with `listItemEReg.match(string)`, 
 		it will report everything that gives info about an image:
 
-		- `listItemEReg.matched(1)` will give you the identation/nesting of the list item (the amount of spaces before it)
-		- `listItemEReg.matched(2)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
-		- `listItemEReg.matched(3)` gives you the text inside of the list item
+		- `listItemEReg.matched(1)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
+		- `listItemEReg.matched(2)` gives you the text inside of the list item
 	**/
-	public var unorderedListItemEReg(default, null):EReg = ~/(?!^\S)( +)\+|\*|\- ([^\+\*\-]+)/m;
+	public var listItemEReg(default, null):EReg = ~/\n *([0-9]+\.|[+-*]) (.*)/m;
 
 	/**
 		When used on a string of text with `titleEReg.match(string)`, 
@@ -52,7 +51,7 @@ class MarkdownPatterns {
 		- `titleEReg.matched(1)` will give you the size of the heading, between 1 and 6
 		- `titleEReg.matched(2)` the actual text used in the title.
 	**/
-	public var titleEReg(default, null):EReg = ~/^(#+)\s(\s*[^\n]+)/s;
+	public var titleEReg(default, null):EReg = ~/^(#+) (.+)/m;
 
 	/**
 			 	(hRule stands for horizontal rule)
@@ -63,12 +62,11 @@ class MarkdownPatterns {
 		- `hRuleEReg.matched(1)` The tupe of the rule. `"="` means a thick one, `"-"` means a thin one
 		- `hRuleEReg.matched(2)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/^(?!_{3,})(^__)/m;
+	public var hRuleEReg(default, null):EReg = ~/\n(――+)\n/m;
 
 	public var boldEReg(default, null):EReg = ~/\[<([^>]+)>\]/m;
-	public var italicEReg(default, null):EReg = ~/\*([^\*]+)\*/m;
+	public var italicEReg(default, null):EReg = ~/_([^_]+)_/m;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public var parSepEReg(default, null):EReg = ~/\r\r/m;
-
 	private function new() {}
 }

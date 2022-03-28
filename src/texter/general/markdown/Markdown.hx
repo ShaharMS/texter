@@ -1,5 +1,6 @@
 package texter.general.markdown;
 
+import js.html.CSS;
 import texter.general.markdown.MarkdownEffects;
 import texter.general.markdown.MarkdownPatterns;
 
@@ -25,7 +26,7 @@ class Markdown {
 		patterns.boldEReg, // Done.
 	    patterns.parSepEReg, // Done.
 	    patterns.linkEReg, // Done.
-	    patterns.unorderedListItemEReg, // Done.
+	    patterns.listItemEReg, // Done.
 	    patterns.imageEReg,
         patterns.hRuleEReg, // Done.
     ];
@@ -52,19 +53,15 @@ class Markdown {
      */
     public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffects>) -> Void) {
         var lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
-        var b = true;
         //fix for nested bold
-        while (lineTexts.contains("**")) {
-            if (b) {lineTexts = replacefirst(lineTexts, "**", "[<"); b = !b;}
-            else   {lineTexts = replacefirst(lineTexts, "**", ">]"); b = !b;}
-        }
-		if (lineTexts.lastIndexOf("[<") > lineTexts.lastIndexOf(">]")) {
-            lineTexts = replaceLast(lineTexts, "[<", "**");
-        }
+        while (lineTexts.contains("__")) lineTexts = replacefirst(lineTexts, "__", "**");
         //fixes interpreter faults
-        lineTexts = lineTexts.replace("\n\n", "\r\r").replace("=", "_");
+		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n==", "――").replace("\n--", "――").replace("*", "_");
+        ~/( *[0-9]+\.)/g.replace(lineTexts, "$1>");
+
         current = lineTexts;
         trace(current);
+
         var effects:Array<MarkdownEffects> = [];
         for (rule in markdownRules) {
 			while (rule.match(current)) {
@@ -93,11 +90,15 @@ class Markdown {
                     current = rule.replace(current, "$1");
                     var info = rule.matchedPos();
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
-                } else if (rule == patterns.unorderedListItemEReg) {
+                } else if (rule == patterns.listItemEReg) {
                     //todo - fix nested lists
-					current = rule.replace(current, " · $2");
+					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "· $2") else current = rule.replace(current, "$1 $2");
                     var info = rule.matchedPos();
-					effects.push(UnorderedListItem(1,  info.pos, info.pos + info.len - 2));
+					effects.push(
+                        if (!~/[0-9]/g.match(rule.matched(1)))
+                            UnorderedListItem(1,  info.pos, info.pos + info.len - 2) else
+                        OrderedListItem(null ,null, null, null)
+                    );
                 } else if (rule == patterns.titleEReg) {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
@@ -106,7 +107,7 @@ class Markdown {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
                     effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len - 6 - rule.matched(1).length));
-                }
+                } 
             }
         }
         onComplete(current, effects);
