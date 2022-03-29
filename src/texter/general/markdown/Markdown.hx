@@ -53,7 +53,13 @@ class Markdown {
      * 
      * This function takes in a string formatted in Markdown, and each time it encounteres
      * a Markdown "special effect" (headings, charts, points, etc.), it pushes
-     * a style corresponding to the found effect. after finding the effects, it calls:
+     * a style corresponding to the found effect. 
+     * 
+     * for some effects, it also includes a built-in visual effect:
+     *  - Unordered Lists
+     *  - Emojis
+     * 
+     * after finding the effects, it calls:
      * 
      * ### onComplete:
      * 
@@ -68,20 +74,21 @@ class Markdown {
      * the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
      */
     public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffects>) -> Void) {
-        var lineTexts = StringTools.replace(markdownText, "\r", ""); //gets each line of text, wordwrapped text shouldnt be worried about
+        var lineTexts = StringTools.replace(markdownText, "\r", "");
         //fix for nested bold
         while (lineTexts.contains("__")) lineTexts = lineTexts.replacefirst( "__", "**");
-        //fixes interpreter faults
-		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n===", "\n―――").replace("\n---", "\n―――").replace("*", "_");
+        //fixes interpreter faults & matches the markdown rules.
+		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n___", "\n―――").replace("\n---", "\n―――").replace("*", "_");
         ~/( *[0-9]+\.)/g.replace(lineTexts, "$1>");
 
         current = lineTexts;
-        trace(current);
 
         var effects:Array<MarkdownEffects> = [];
         for (rule in markdownRules) {
 			while (rule.match(current)) {
-                if (rule == patterns.italicEReg|| rule == patterns.mathEReg || rule == patterns.codeEReg) {
+
+                if (rule == patterns.italicEReg|| rule == patterns.mathEReg || rule == patterns.codeEReg)
+                {
 					current = rule.replace(current, "$1");
                     var info = rule.matchedPos();
                     effects.push(
@@ -91,38 +98,51 @@ class Markdown {
                             Code(info.pos, info.pos + info.len - 2) else
                         Math(info.pos, info.pos + info.len - 2)
                     );
-                } else if (rule == patterns.boldEReg) {
+                } 
+                else if (rule == patterns.boldEReg) 
+                {
 					current = rule.replace(current, "$1");
                     var info = rule.matchedPos();
                     effects.push(Bold(info.pos, info.pos + info.len - 4));
-                } else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg) {
+                } 
+                else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg)
+                {
 					current = rule.replace(current, if (rule == patterns.parSepEReg) "\n\n" else "\r$1\r");
                     var info = rule.matchedPos();
                     effects.push(
                         if (rule == patterns.parSepEReg)
                             ParagraphGap(info.pos, info.pos + info.len - 1) else 
-                        HorizontalRule("=", info.pos, info.pos + info.len - 1));
-                } else if (rule == patterns.linkEReg) {
+                        HorizontalRule("―", info.pos, info.pos + info.len - 1));
+                } 
+                else if (rule == patterns.linkEReg) 
+                {
                     current = rule.replace(current, "$1");
                     var info = rule.matchedPos();
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
-                } else if (rule == patterns.listItemEReg) {
-                    //todo - fix nested lists
+                } 
+                else if (rule == patterns.listItemEReg) 
+                {
 					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "$1· $3") else current = rule.replace(current, "$1$2. $3");
                     var info = rule.matchedPos();
 					effects.push(
                         if (!~/[0-9]/g.match(rule.matched(1)))
                             UnorderedListItem(rule.matched(1).length,  info.pos, info.pos + info.len - 1) else
 					    OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
-                } else if (rule == patterns.titleEReg) {
+                } 
+                else if (rule == patterns.titleEReg) 
+                {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
                     effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len - rule.matched(1).length - 2));
-                } else if (rule == patterns.codeblockEReg) {
+                } 
+                else if (rule == patterns.codeblockEReg) 
+                {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
                     effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len - 6 - rule.matched(1).length));
-                } else if (rule == patterns.emojiEReg) {
+                } 
+                else if (rule == patterns.emojiEReg) 
+                {
                     var info = rule.matchedPos();
                     effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len - 2));
                 }

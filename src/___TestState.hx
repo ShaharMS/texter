@@ -1,4 +1,5 @@
 package;
+import texter.flixel.FlxInputTextRTL;
 import openfl.events.KeyboardEvent;
 import texter.general.markdown.Markdown;
 import texter.general.markdown.MarkdownEffects;
@@ -9,8 +10,8 @@ import flixel.FlxState;
 class ___TestState extends FlxState {
     override function create() {
         super.create();
-        Markdown.interpret(md4, callback);
-		js.Browser.window.onkeydown = (e) -> trace(e.which);
+        //Markdown.interpret(md4, callback);
+        add(new FlxInputTextRTL(10, 10, 400, "", 40));
     }
 
     function callback(text:String, effects:Array<MarkdownEffects>) {
