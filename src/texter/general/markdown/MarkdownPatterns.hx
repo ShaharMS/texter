@@ -39,10 +39,11 @@ class MarkdownPatterns {
 		When used on a string of text with `listItemEReg.match(string)`, 
 		it will report everything that gives info about an image:
 
-		- `listItemEReg.matched(1)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
-		- `listItemEReg.matched(2)` gives you the text inside of the list item
+		- `listItemEReg.matched(1)` will give you the nesting level of the list item.
+		- `listItemEReg.matched(2)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
+		- `listItemEReg.matched(3)` gives you the text inside of the list item
 	**/
-	public var listItemEReg(default, null):EReg = ~/^ *(\d+>|[+\-*]) (.*)/m;
+	public var listItemEReg(default, null):EReg = ~/^( *)(\d+>|[+\-*]) (.*)/m;
 
 	/**
 		When used on a string of text with `titleEReg.match(string)`, 

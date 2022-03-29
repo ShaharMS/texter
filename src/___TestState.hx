@@ -9,7 +9,7 @@ import flixel.FlxState;
 class ___TestState extends FlxState {
     override function create() {
         super.create();
-        //Markdown.interpret(md4, callback);
+        Markdown.interpret(md4, callback);
 		js.Browser.window.onkeydown = (e) -> trace(e.which);
     }
 

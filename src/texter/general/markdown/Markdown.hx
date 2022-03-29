@@ -108,12 +108,12 @@ class Markdown {
                     effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
                 } else if (rule == patterns.listItemEReg) {
                     //todo - fix nested lists
-					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "· $2") else current = rule.replace(current, "$1. $2");
+					if (!~/[0-9]/g.match(rule.matched(1))) current = rule.replace(current, "$1· $3") else current = rule.replace(current, "$1$2. $3");
                     var info = rule.matchedPos();
 					effects.push(
                         if (!~/[0-9]/g.match(rule.matched(1)))
-                            UnorderedListItem(1,  info.pos, info.pos + info.len - 1) else
-					    OrderedListItem(Std.parseInt(rule.matched(1)), 1, info.pos, info.pos + info.len - 1));
+                            UnorderedListItem(rule.matched(1).length,  info.pos, info.pos + info.len - 1) else
+					    OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
                 } else if (rule == patterns.titleEReg) {
                     current = rule.replace(current, "$2");
                     var info = rule.matchedPos();
