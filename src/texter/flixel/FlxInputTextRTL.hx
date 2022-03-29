@@ -70,20 +70,23 @@ class FlxInputTextRTL extends FlxInputText
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
-
-
-		#if js
-		js.Browser.document.onkeydown = (e) -> {
-			regularKeysDown(e.key);
-			specialKeysDown(e.code, KeyModifier.NONE);
-		};
-		#else
 		FlxG.stage.window.onTextInput.add(regularKeysDown, false, 1);
 		FlxG.stage.window.onKeyDown.add(specialKeysDown, false, 2);
-		#end
+		
 	}
 
+	#if js
+	override function update(elapsed:Float) {
+		if (FlxG.keys.justPressed.SPACE) {
+			trace("p");
+			regularKeysDown(" ");
+		}
+		super.update(elapsed);
+	}
+	#end
+
 	override function set_hasFocus(newFocus:Bool):Bool {
+		FlxG.stage.window.textInputEnabled = true;
 		FlxG.sound.soundTrayEnabled = !newFocus;
 		return super.set_hasFocus(newFocus);
 	}
@@ -237,6 +240,7 @@ class FlxInputTextRTL extends FlxInputText
 		if (caretIndex < 0) caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
+		#if !js
 		if (letter != null)
 		{
 			// logic for general RTL letters, spacebar, punctuation mark
@@ -291,6 +295,7 @@ class FlxInputTextRTL extends FlxInputText
 		else
 			"";
 
+		#else t = letter; #end
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
 			caretIndex++;
