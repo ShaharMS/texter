@@ -10,8 +10,8 @@ import flixel.FlxState;
 class ___TestState extends FlxState {
     override function create() {
         super.create();
-        //Markdown.interpret(md4, callback);
-        add(new FlxInputTextRTL(10, 10, 400, "", 40));
+        Markdown.interpret(md4, callback);
+        //add(new FlxInputTextRTL(10, 10, 400, "", 40));
     }
 
     function callback(text:String, effects:Array<MarkdownEffects>) {

@@ -1,4 +1,5 @@
 package texter.flixel._internal;
+import texter.general.CharTools;
 #if flixel
 import flash.errors.Error;
 import flash.events.KeyboardEvent;
@@ -886,7 +887,6 @@ class FlxInputText extends FlxText
 		//and that the caret is not stuck to the text box
 		if (caret.x == x) caret.x = x + 2;
 		
-
 		return caretIndex;
 	}
 

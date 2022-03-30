@@ -165,6 +165,7 @@ class FlxInputTextRTL extends FlxInputText
 		{
 			if (caretIndex > 0)
 			{
+				#if !js
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
@@ -174,12 +175,17 @@ class FlxInputTextRTL extends FlxInputText
 					caretIndex--;
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
+				#else
+				caretIndex--;
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				#end
 
 				onChange(FlxInputText.BACKSPACE_ACTION);
 			}
 		}
 		else if (key == KeyCode.DELETE)
 		{
+			#if !js
 			if (text.length > 0 && caretIndex < text.length)
 			{
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
@@ -193,6 +199,9 @@ class FlxInputTextRTL extends FlxInputText
 				}
 				onChange(FlxInputText.DELETE_ACTION);
 			}
+			#else
+			text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+			#end
 		}
 		else if (key == 13)
 		{

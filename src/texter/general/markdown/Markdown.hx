@@ -58,6 +58,7 @@ class Markdown {
      * for some effects, it also includes a built-in visual effect:
      *  - Unordered Lists
      *  - Emojis
+     *  - tables (coming soon)
      * 
      * after finding the effects, it calls:
      * 
@@ -68,7 +69,12 @@ class Markdown {
      * free version of the text is returned (altho some marks do remain, such as the list items and hrules)
      *  - **Second Argument - The Effects** - this array contains lots of ADTs (algebric data types). Those
      * contain the actual data - most of them contain the start & end index of the effect, and some contain more
-     * data (things like list numbers, indentation...) **NOTICE -** the texts starts at startIndex, but not including endIndex.
+     * data (things like list numbers, indentation...)
+     * 
+     * ### Things to notice:
+     *  - The markdown text contains zero-width spaces (\u200B) in the text in order to keep track of effect positions.
+     *  - The effect's range is from startIndex up to, but not including endIndex.
+     *  - certine effects will already be rendered by the interpreter, so no need to mess with those.
      * 
      * @param markdownText Just a plain string with markdown formatting. If you want to make sure 
      * the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
@@ -79,7 +85,7 @@ class Markdown {
         while (lineTexts.contains("__")) lineTexts = lineTexts.replacefirst( "__", "**");
         //fixes interpreter faults & matches the markdown rules.
 		lineTexts = lineTexts.replace("\n\n", "\r\r").replace("\n___", "\n―――").replace("\n---", "\n―――").replace("*", "_");
-        ~/( *[0-9]+\.)/g.replace(lineTexts, "$1>");
+		~/( *[0-9]+)\./g.replace(lineTexts, "$1>");
 
         current = lineTexts;
 
@@ -89,21 +95,21 @@ class Markdown {
 
                 if (rule == patterns.italicEReg|| rule == patterns.mathEReg || rule == patterns.codeEReg)
                 {
-					current = rule.replace(current, "$1");
+					current = rule.replace(current, "​$1​");
                     var info = rule.matchedPos();
                     effects.push(
                         if (rule == patterns.italicEReg) 
-                            Italic(info.pos, info.pos + info.len - 2) else
+                            Italic(info.pos, info.pos + info.len) else
                         if (rule == patterns.codeEReg) 
-                            Code(info.pos, info.pos + info.len - 2) else
-                        Math(info.pos, info.pos + info.len - 2)
+                            Code(info.pos, info.pos + info.len) else
+                        Math(info.pos, info.pos + info.len)
                     );
                 } 
                 else if (rule == patterns.boldEReg) 
                 {
-					current = rule.replace(current, "$1");
+					current = rule.replace(current, "​​$1​​");
                     var info = rule.matchedPos();
-                    effects.push(Bold(info.pos, info.pos + info.len - 4));
+                    effects.push(Bold(info.pos, info.pos + info.len));
                 } 
                 else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg)
                 {
@@ -112,13 +118,16 @@ class Markdown {
                     effects.push(
                         if (rule == patterns.parSepEReg)
                             ParagraphGap(info.pos, info.pos + info.len - 1) else 
-                        HorizontalRule("―", info.pos, info.pos + info.len - 1));
+                        HorizontalRule("―", info.pos, info.pos + info.len));
                 } 
                 else if (rule == patterns.linkEReg) 
                 {
-                    current = rule.replace(current, "$1");
+					var linkLength = "";
+					while (linkLength.length < rule.matched(2).length)
+						linkLength += "​";
+					current = rule.replace(current, "​$1​​​" + linkLength);
                     var info = rule.matchedPos();
-                    effects.push(Link(rule.matched(1), info.pos, info.pos + info.len - 4 - rule.matched(2).length));
+                    effects.push(Link(rule.matched(1), info.pos, info.pos + info.len));
                 } 
                 else if (rule == patterns.listItemEReg) 
                 {
@@ -131,20 +140,23 @@ class Markdown {
                 } 
                 else if (rule == patterns.titleEReg) 
                 {
-                    current = rule.replace(current, "$2");
+					current = rule.replace(current, rule.matched(1).replace("#", "​") + "$2");
                     var info = rule.matchedPos();
-                    effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len - rule.matched(1).length - 2));
+                    effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
                 } 
                 else if (rule == patterns.codeblockEReg) 
                 {
-                    current = rule.replace(current, "$2");
+					var langLength = "";
+					while (langLength.length < rule.matched(1).length)
+						langLength += "​";
+					current = rule.replace(current, langLength + "​​​\r$2​​​");
                     var info = rule.matchedPos();
-                    effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len - 6 - rule.matched(1).length));
+                    effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
                 } 
                 else if (rule == patterns.emojiEReg) 
                 {
                     var info = rule.matchedPos();
-                    effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len - 2));
+                    effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len));
                 }
             }
         }

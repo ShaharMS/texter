@@ -32,7 +32,7 @@ And more that pops up in you mind!
 
 # Installation
 
-#### to install the stable version:
+#### to install the latest stable version:
 ```
 haxelib install texter
 ```
