@@ -32,7 +32,7 @@
 
  - added an array of markdown ERegs - `markdownRules`
  - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdowPatterns`
- - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffects.hx`
+ - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffect.hx`
 
 **MarkdownPatterns - new class!**
 

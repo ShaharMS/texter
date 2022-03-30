@@ -1,23 +1,28 @@
 package;
-import texter.flixel.FlxInputTextRTL;
-import openfl.events.KeyboardEvent;
-import texter.general.markdown.Markdown;
-import texter.general.markdown.MarkdownEffects;
-import texter.general.Char;
-import flixel.util.FlxColor;
+
 import flixel.FlxG;
 import flixel.FlxState;
-class ___TestState extends FlxState {
-    override function create() {
-        super.create();
-        Markdown.interpret(md4, callback);
-        //add(new FlxInputTextRTL(10, 10, 400, "", 40));
-    }
+import flixel.util.FlxColor;
+import openfl.events.KeyboardEvent;
+import texter.flixel.FlxInputTextRTL;
+import texter.general.Char;
+import texter.general.markdown.Markdown;
+import texter.general.markdown.MarkdownEffect;
 
-    function callback(text:String, effects:Array<MarkdownEffects>) {
+class ___TestState extends FlxState
+{
+	override function create()
+	{
+		super.create();
+		Markdown.interpret(md4, callback);
+		// add(new FlxInputTextRTL(10, 10, 400, "", 40));
+	}
+
+	function callback(text:String, effects:Array<MarkdownEffect>)
+	{
 		trace(text);
-        trace(effects);
-    }
+		trace(effects);
+	}
 
 	var md = "# texter
 
@@ -54,9 +59,9 @@ haxelib install texter
 haxelib git texter https://github.com/ShaharMS/texter.git
 ```
 ";
-    var md2 = "***hey***";
+	var md2 = "***hey***";
 	var md3 = "### *bob* **tim** *jim* ***bobjim*** ***jimbob***";
-    var md4 = '2.0.0 (Month X, 2022) - Major Update!
+	var md4 = '2.0.0 (Month X, 2022) - Major Update!
 ===
 ### **Bug Fixes:**
 
@@ -90,7 +95,7 @@ haxelib git texter https://github.com/ShaharMS/texter.git
 
  - added an array of markdown ERegs - `markdownRules`
  - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdowPatterns`
- - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffects.hx`
+ - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffect.hx`
 
 **MarkdownPatterns - new class!**
 

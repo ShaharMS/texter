@@ -1,6 +1,6 @@
 package texter.general.markdown;
 
-enum MarkdownEffects
+enum MarkdownEffect
 {
 	Bold(start:Int, end:Int);
 	Italic(start:Int, end:Int);

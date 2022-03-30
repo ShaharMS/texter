@@ -62,7 +62,7 @@ class MarkdownPatterns {
 
 		- `hRuleEReg.matched(1)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/\n(―+)\n/m;
+	public var hRuleEReg(default, null):EReg = ~/\n(—{3,})\n/m;
 
 	public var boldEReg(default, null):EReg = ~/\[<([^>]+)>\]/m;
 	public var italicEReg(default, null):EReg = ~/_([^_]+)_/m;
