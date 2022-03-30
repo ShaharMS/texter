@@ -13,21 +13,25 @@ using StringTools;
 
 /**
  * Reguar FlxInputText with extended support for:
- * - All languages
+ * - Multilanguage
  * - Bi-directional text
- * - Multilne (Almost!)
+ * - Copy/Paste
+ * - Auto-align
+ * - Multilne
  */
 class FlxInputTextRTL extends FlxInputText
 {
 	/**
 		Whether the text is aligned according to the first typed character:
 
-		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`
-		 - if the character is from any othe language - `alignment` will be set to `LEFT`
-
-		`autoAlign` does not default to a certine direction when set to `false`. it will
+		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`.
+		 - if the character is from any other language - `alignment` will be set to `LEFT`.
+		 - if the character is not from any specific language - `alignment` will be set to `UNDETERMINED`.
+		
+		
+		
+		 **`autoAlign` does not default to a certine direction when set to `false`**. it will
 		use the last direction it remembers when this `FlxInputTextRTL` was created/when `autoAlign` was still true;
-
 	**/
 	public var autoAlign(default, set):Bool = true;
 
@@ -40,7 +44,7 @@ class FlxInputTextRTL extends FlxInputText
 
 		| Character Group | Type | Direction |
 		|	  :---:	     | :---:|  :---:  |
-		| punctuation marks (see `CharTools.generalMarks`) | softly typed | UNDEFINED |
+		| punctuation marks (see `CharTools.generalMarks`) | softly typed | UNDETERMINED |
 		| LTR languages (English, Spanish, French, German...) | strongly typed | LTR |
 		| RTL languages (Arabic, Hebrew, Sorani, Urdu...) | strongly typed | RTL |
 	**/
@@ -69,16 +73,16 @@ class FlxInputTextRTL extends FlxInputText
 			BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
-		wordWrap = true;
+		#if js wordWrap = false; lines = 1;#else wordWrap = true; #end
 		FlxG.stage.window.onTextInput.add(regularKeysDown, false, 1);
 		FlxG.stage.window.onKeyDown.add(specialKeysDown, false, 2);
+		#if js FlxG.stage.window.onFocusOut.add(() -> hasFocus = false); #end
 		
 	}
 
 	#if js
 	override function update(elapsed:Float) {
 		if (FlxG.keys.justPressed.SPACE) {
-			trace("p");
 			regularKeysDown(" ");
 		}
 		super.update(elapsed);

@@ -5,6 +5,7 @@ import flixel.FlxState;
 import flixel.util.FlxColor;
 import openfl.events.KeyboardEvent;
 import texter.flixel.FlxInputTextRTL;
+import texter.flixel._internal.FlxInputText;
 import texter.general.Char;
 import texter.general.markdown.Markdown;
 import texter.general.markdown.MarkdownEffect;
@@ -15,13 +16,16 @@ class ___TestState extends FlxState
 	{
 		super.create();
 		Markdown.interpret(md4, callback);
-		// add(new FlxInputTextRTL(10, 10, 400, "", 40));
+		add(new FlxInputTextRTL(10, 10, 400, "FlxInputTextRTL", 40));
+		add(new FlxInputText(10, 110, 400, "FlxInputText", 40));
 	}
 
 	function callback(text:String, effects:Array<MarkdownEffect>)
 	{
 		trace(text);
-		trace(effects);
+		for (e in effects) {
+			trace(e);
+		}
 	}
 
 	var md = "# texter

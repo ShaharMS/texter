@@ -64,8 +64,10 @@ class MarkdownPatterns {
 	**/
 	public var hRuleEReg(default, null):EReg = ~/\n(—{3,})\n/m;
 
-	public var boldEReg(default, null):EReg = ~/\[<([^>]+)>\]/m;
+	public var boldEReg(default, null):EReg = ~/\*\*([^>]+)\*\*/m;
+	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;
 	public var italicEReg(default, null):EReg = ~/_([^_]+)_/m;
+	public var astItalicERer(default, null):EReg = ~/\*([^\*]+)\*/m;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public var parSepEReg(default, null):EReg = ~/\r\r/m;
 	public var emojiEReg(default, null):EReg = ~/:(.+):/m;

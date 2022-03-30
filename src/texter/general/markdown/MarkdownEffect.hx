@@ -4,8 +4,6 @@ enum MarkdownEffect
 {
 	Bold(start:Int, end:Int);
 	Italic(start:Int, end:Int);
-	ItalicBold(start:Int, end:Int);
-	Underline(start:Int, end:Int);
 	StrikeThrough(start:Int, end:Int);
 	Code(start:Int, end:Int);
 	Math(start:Int, end:Int);
