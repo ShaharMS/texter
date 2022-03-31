@@ -1,7 +1,7 @@
 package texter.general.markdown;
 
 import texter.general.markdown.MarkdownEffect;
-import texter.general.markdown.MarkdownPatterns;
+import texter.general.markdown.ModifiedMarkdownPatterns;
 
 using StringTools;
 using texter.general.text.TextTools;
@@ -25,7 +25,7 @@ class Markdown
 	/**
 	 * The `modifiedPatterns` field contains all of the modified patterns that are used to parse markdown text.   
 	 */
-	static var modifiedPatterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
+	static var modifiedPatterns(default, never):ModifiedMarkdownPatterns = @:privateAccess new ModifiedMarkdownPatterns();
 
 	static var markdownRules(default, null):Array<EReg> = [
 		modifiedPatterns.titleEReg, // Done.
@@ -89,27 +89,31 @@ class Markdown
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
+		
 		// fix for nested bold
-		lineTexts = lineTexts.replace("__", "**");
+		lineTexts = lineTexts.replace("\t", "").replace("__", "**");
 		// fixes interpreter faults & matches the markdown rules.
-		lineTexts = lineTexts.replace("\n\n", "\r\r")
-			.replace("\n___", "\n———")
-			.replace("\n---", "\n———")
-			.replace("\n===", "\n———")
-			.replace("\n***", "\n———");
-		modifiedPatterns.astItalicERer.replace(lineTexts, "_$1_");
+		lineTexts = lineTexts.replace("\n___\n", "\n———\n")
+			.replace("\n---\n", "\n———\n")
+			.replace("\n===\n", "\n———\n")
+			.replace("\n***\n", "\n———\n")
+			.replace("\n\n", "\r\r");
 
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
 			while (rule.match(lineTexts))
 			{
-				if (rule == modifiedPatterns.italicEReg || rule == modifiedPatterns.mathEReg || rule == modifiedPatterns.codeEReg)
+				if (rule == modifiedPatterns.italicEReg || rule == modifiedPatterns.mathEReg || rule == modifiedPatterns.codeEReg || rule == modifiedPatterns.astItalicEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​$1​");
 					var info = rule.matchedPos();
-					effects.push(if (rule == modifiedPatterns.italicEReg) Italic(info.pos,
-						info.pos + info.len) else if (rule == modifiedPatterns.codeEReg) Code(info.pos, info.pos + info.len) else Math(info.pos, info.pos + info.len));
+					effects.push(
+						if (rule == modifiedPatterns.mathEReg) 
+					Math(info.pos, info.pos + info.len) else 
+					if (rule == modifiedPatterns.codeEReg) 
+						Code(info.pos, info.pos + info.len) else
+					Italic(info.pos, info.pos + info.len)); 
 				}
 				else if (rule == modifiedPatterns.boldEReg || rule == modifiedPatterns.strikeThroughEReg)
 				{
@@ -139,7 +143,7 @@ class Markdown
 				else if (rule == modifiedPatterns.listItemEReg)
 				{
 					if (!~/[0-9]/g.match(rule.matched(1)))
-						lineTexts = rule.replace(lineTexts, "$1· $3")
+						lineTexts = rule.replace(lineTexts, "$1• $3")
 					else
 						lineTexts = rule.replace(lineTexts, "$1$2. $3");
 					var info = rule.matchedPos();
@@ -169,9 +173,16 @@ class Markdown
 				} 
 			}
 		}
+		while (modifiedPatterns.astItalicEReg.match(lineTexts)) 
+		{
+			lineTexts = modifiedPatterns.astItalicEReg.replace(lineTexts, "​$1​");
+			var info = modifiedPatterns.astItalicEReg.matchedPos();
+			effects.push(Italic(info.pos, info.pos + info.len));
+		}
 		onComplete(lineTexts.replace("\r", "\n"), effects);
 	}
 
+	#if openfl
 	/**
 	 * Generates the default visual theme from the markdown interpreter's information.
 	 * 
@@ -192,44 +203,38 @@ class Markdown
 	 * 
 	 * example:
 	 * 
-	 *  	var visuals = Markdown.generateVisuals(yourText);
+	 *  	var visuals:TextClass = Markdown.generateTextClassVisuals(yourText);
 	 */
-	public static function generateVisuals(textField:Dynamic, apply:Bool = false):Dynamic {
+	public static function generateTextFieldVisuals(textField:openfl.text.TextField, apply:Bool = false):openfl.text.TextField {
 		//now we get to the fun part
-		#if openfl
-		if (textField is openfl.text.TextField) {
-			var field:openfl.text.TextField = if (!apply) createShallowCopyTF(cast textField) else cast textField;
-			interpret(field.text, (markdownText, effects) -> {
-				for (e in effects) {
-					switch e {
-						case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true), start, end + 1);
-						case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end + 1);
-						case StrikeThrough(start, end): continue;
-						case Code(start, end): continue;
-						case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("assets/includedFontsMD/math.ttf"));
-						case HorizontalRule(type, start, end): continue;
-						case ParagraphGap(start, end): continue;
-						case CodeBlock(language, start, end): continue;
-						case Link(link, start, end): continue;
-						case Image(altText, imageSource, start, end): continue;
-						case Emoji(type, start, end): continue;
-						case Heading(level, start, end): continue;
-						case UnorderedListItem(nestingLevel, start, end): continue;
-						case OrderedListItem(number, nestingLevel, start, end): continue;
-					}
+		var field:openfl.text.TextField = if (!apply) createShallowCopyTF(textField) else textField;
+		interpret(field.text, (markdownText, effects) ->
+		{
+			field.text = markdownText;
+			for (e in effects)
+			{
+				switch e
+				{
+					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true), start, end + 1);
+					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end + 1);
+					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", start, end));
+					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("assets/includedFontsMD/math.ttf"), start, end);
+					case ParagraphGap(start, end): continue;
+					case CodeBlock(language, start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
+					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, "_blank"), start, end);
+					case Emoji(type, start, end): continue;
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, field.defaultTextFormat.size + Std.int(6 / level * 2), null, true), start, end + 1);
+					case UnorderedListItem(nestingLevel, start, end): continue;
+					case OrderedListItem(number, nestingLevel, start, end): continue;
+					case HorizontalRule(type, start, end): continue;
+					case StrikeThrough(start, end): continue;
+					case Image(altText, imageSource, start, end): continue;
+					default: continue;
 				}
-			});
-		}
-		#end
-		#if flixel
-		if (textField is flixel.text.FlxText) {
-
-		}
-		#end
-
-		throw "Markdown.generateVisuals: Visualization is not yet supported for this framework.";
+			}
+		});
+		return field;
 	}
-	#if openfl
 	static function createShallowCopyTF(t:openfl.text.TextField):openfl.text.TextField {
 		var f = new openfl.text.TextField();
 		f.text = t.text;
@@ -241,7 +246,6 @@ class Markdown
 		f.backgroundColor = t.backgroundColor;
 		f.border = t.border;
 		f.borderColor = t.borderColor;
-		f.condenseWhite = t.condenseWhite;
 		f.displayAsPassword = t.displayAsPassword;
 		f.gridFitType = t.gridFitType;
 		f.htmlText = t.htmlText;
@@ -250,7 +254,6 @@ class Markdown
 		f.restrict = t.restrict;
 		f.selectable = t.selectable;
 		f.sharpness = t.sharpness;
-		f.styleSheet = t.styleSheet;
 		f.textColor = t.textColor;
 		f.type = t.type;
 		f.wordWrap = t.wordWrap;

@@ -1,6 +1,6 @@
 package texter.general.markdown;
 
-class MarkdownPatterns {
+class ModifiedMarkdownPatterns {
 	/**
 		When used on a string of text with `lineEReg.match(string)`, 
 		it will report everything that gives info about a markdown link:
@@ -52,7 +52,7 @@ class MarkdownPatterns {
 		- `titleEReg.matched(1)` will give you the size of the heading, between 1 and 6
 		- `titleEReg.matched(2)` the actual text used in the title.
 	**/
-	public var titleEReg(default, null):EReg = ~/^(#+) (.+)/m;
+	public var titleEReg(default, null):EReg = ~/^(#{1,6}) (.+)/m;
 
 	/**
 		(hRule stands for horizontal rule)
@@ -64,10 +64,10 @@ class MarkdownPatterns {
 	**/
 	public var hRuleEReg(default, null):EReg = ~/\n(—{3,})\n/m;
 
-	public var boldEReg(default, null):EReg = ~/\*\*([^>]+)\*\*/m;
-	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;
-	public var italicEReg(default, null):EReg = ~/_([^_]+)_/m;
-	public var astItalicERer(default, null):EReg = ~/\*([^\*]+)\*/m;
+	public var boldEReg(default, null):EReg = ~/\*\*(.+)\*\*/s;
+	public var strikeThroughEReg(default, null):EReg = ~/~~(.+)~~/m;
+	public var italicEReg(default, null):EReg = ~/_(.+)_/s;
+	public var astItalicEReg(default, null):EReg = ~/\*(.+)\*/s;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public var parSepEReg(default, null):EReg = ~/\r\r/m;
 	public var emojiEReg(default, null):EReg = ~/:(.+):/m;
