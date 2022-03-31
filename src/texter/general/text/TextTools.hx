@@ -1,8 +1,5 @@
 package texter.general.text;
 
-import haxe.extern.EitherType;
-import haxe.ds.Either;
-
 /**
  * `TextTools` is a class containing static methods for manipulating text.
  * 
@@ -40,12 +37,20 @@ class TextTools {
 		switch patternType.toLowerCase() {
 			case "alpha":
 				return filter(text, new EReg("[^a-zA-Z]", "g"));
-			case "alphanumeric": //alphanumeric is the same as alpha, but with numbers
+			case "alphanumeric":
 				return filter(text, new EReg("[^a-zA-Z0-9]", "g"));
-			case "numeric": //numeric is the same as alpha, but with numbers
+			case "numeric":
 				return filter(text, new EReg("[^0-9]", "g")); 
 		}
 		return text;
 		
+	}
+
+	public static function multiply(string:String, by:Int):String {
+		var stringcopy = string;
+		while (by-- > 0) {
+			string += stringcopy;
+		}
+		return string;
 	}
 }

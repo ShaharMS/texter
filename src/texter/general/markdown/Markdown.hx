@@ -22,6 +22,10 @@ using texter.general.text.TextTools;
  */
 class Markdown
 {
+
+	#if openfl
+	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 14, 0x000000, false, false, false, "", "", "left");
+	#end
 	/**
 	 * The `modifiedPatterns` field contains all of the modified patterns that are used to parse markdown text.   
 	 */
@@ -30,15 +34,15 @@ class Markdown
 	static var markdownRules(default, null):Array<EReg> = [
 		modifiedPatterns.titleEReg, // Done.
 		modifiedPatterns.codeblockEReg, // Done.
+		modifiedPatterns.boldEReg, // Done.
 		modifiedPatterns.italicEReg, // Done.
 		modifiedPatterns.mathEReg, // Done.
 		modifiedPatterns.codeEReg, // Done.
-		modifiedPatterns.boldEReg, // Done.
 		modifiedPatterns.parSepEReg, // Done.
 		modifiedPatterns.linkEReg, // Done.
 		modifiedPatterns.listItemEReg, // Done.
-		modifiedPatterns.hRuleEReg, // Done.
-		modifiedPatterns.emojiEReg // Done. 
+		modifiedPatterns.emojiEReg, // Done. 
+		modifiedPatterns.hRuleEReg // Done.
 	];
 
 	/**
@@ -206,9 +210,10 @@ class Markdown
 	 * 
 	 *  	var visuals:TextClass = Markdown.generateTextClassVisuals(yourText);
 	 */
-	public static function generateTextFieldVisuals(textField:openfl.text.TextField, apply:Bool = false):openfl.text.TextField {
+	public static function generateTextFieldVisuals(textField:openfl.text.TextField):openfl.text.TextField {
 		//now we get to the fun part
-		var field:openfl.text.TextField = if (!apply) createShallowCopyTF(textField) else textField;
+		textField.setTextFormat(markdownTextFormat);
+		var field:openfl.text.TextField = textField;
 		interpret(field.text, (markdownText, effects) ->
 		{
 			field.text = markdownText;
@@ -216,7 +221,7 @@ class Markdown
 			{
 				switch e
 				{
-					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true), start, end);
+					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
 					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("assets/includedFontsMD/math.ttf"), start, end);
@@ -224,11 +229,16 @@ class Markdown
 					case CodeBlock(language, start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, "_blank"), start, end);
 					case Emoji(type, start, end): continue; //default behaviour
-					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, field.defaultTextFormat.size + Std.int(6 / level * 2), null, true), start, end);
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 14 + Std.int(6 / level * 2), null, true), start, end);
 					case UnorderedListItem(nestingLevel, start, end): continue; //default behaviour
 					case OrderedListItem(number, nestingLevel, start, end): continue; //default behaviour
 					case HorizontalRule(type, start, end): {
-						var bounds = field.getCharBoundaries(start), lW = field.getLineMetrics(field.getLineIndexOfChar(start)).width;
+						var bounds = field.getCharBoundaries(start + 1), lW = field.width - 4 - field.defaultTextFormat.leftMargin - field.defaultTextFormat.rightMargin;
+						var chars = Std.int(lW / bounds.width) - 4;
+						var addition = "—".multiply(chars);
+
+						//TODO - fix format shifting bug
+						//field.text = field.text.substring(0, start + 1) + addition + field.text.substring(start + 1);
 					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;

@@ -1,5 +1,6 @@
 package;
 
+import haxe.Timer;
 import texter.general.markdown.Markdown;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
@@ -13,10 +14,10 @@ class Main extends Sprite {
     public function new() {
         super();
 		var tf = new TextField();
-		tf.width = 800;
-		tf.height = 800;
-		tf.text = markdownStressTest.replace("\r", "").replace("\t", "");
-        tf.x = tf.y = 0;
+		tf.width = 700;
+		tf.height = 700;
+		tf.text = "";
+        tf.x = tf.y = 50;
 		tf.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
 		tf.background = true;
 		tf.backgroundColor = 0xDDDDDD;
@@ -26,10 +27,28 @@ class Main extends Sprite {
 		tf.type = INPUT;
 		tf.wordWrap = true;
 		tf.multiline = true;
-		tf = Markdown.generateTextFieldVisuals(tf, true);
 		addChild(tf);
-        
-    }
+
+		var s = new TextField();
+		s.width = 700;
+		s.height = 700;
+		s.text = "";
+		s.x = 800;
+		s.y = 50;
+		s.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
+		s.background = true;
+		s.backgroundColor = 0xDDDDDD;
+		s.border = true;
+		s.borderColor = 0x0000FF;
+		s.selectable = true;
+		s.wordWrap = true;
+		s.multiline = true;
+		addChild(s);
+		new Timer(1000).run = () -> {
+			s.text = tf.text;
+			Markdown.generateTextFieldVisuals(s);
+		};
+	}
 	var markdownStressTest:String = "
 	# This is a header1
 	## This is a sub-header

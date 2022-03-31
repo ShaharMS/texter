@@ -64,12 +64,12 @@ class ModifiedMarkdownPatterns {
 	**/
 	public var hRuleEReg(default, null):EReg = ~/\n(—{3,})\n/m;
 
-	public var boldEReg(default, null):EReg = ~/\*\*(.+)\*\*/s;
-	public var strikeThroughEReg(default, null):EReg = ~/~~(.+)~~/m;
-	public var italicEReg(default, null):EReg = ~/_(.+)_/s;
-	public var astItalicEReg(default, null):EReg = ~/\*(.+)\*/s;
+	public var boldEReg(default, null):EReg = ~/\*\*([^\*{2}]+)\*\*/s;
+	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;
+	public var italicEReg(default, null):EReg = ~/_([^_]+)_/s;
+	public var astItalicEReg(default, null):EReg = ~/\*([^\*]+)\*/s;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public var parSepEReg(default, null):EReg = ~/\r\r/m;
-	public var emojiEReg(default, null):EReg = ~/:(.+):/m;
+	public var emojiEReg(default, null):EReg = ~/:([^:]+):/m;
 	private function new() {}
 }
