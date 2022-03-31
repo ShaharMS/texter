@@ -93,7 +93,8 @@ class Markdown
 		// fix for nested bold
 		lineTexts = lineTexts.replace("\t", "").replace("__", "**");
 		// fixes interpreter faults & matches the markdown rules.
-		lineTexts = lineTexts.replace("\n___\n", "\n———\n")
+		lineTexts = lineTexts
+			.replace("\n___\n", "\n———\n")
 			.replace("\n---\n", "\n———\n")
 			.replace("\n===\n", "\n———\n")
 			.replace("\n***\n", "\n———\n")
@@ -215,18 +216,20 @@ class Markdown
 			{
 				switch e
 				{
-					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true), start, end + 1);
-					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end + 1);
-					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", start, end));
+					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true), start, end);
+					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
+					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("assets/includedFontsMD/math.ttf"), start, end);
-					case ParagraphGap(start, end): continue;
+					case ParagraphGap(start, end): continue; //default behaviour
 					case CodeBlock(language, start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, "_blank"), start, end);
-					case Emoji(type, start, end): continue;
-					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, field.defaultTextFormat.size + Std.int(6 / level * 2), null, true), start, end + 1);
-					case UnorderedListItem(nestingLevel, start, end): continue;
-					case OrderedListItem(number, nestingLevel, start, end): continue;
-					case HorizontalRule(type, start, end): continue;
+					case Emoji(type, start, end): continue; //default behaviour
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, field.defaultTextFormat.size + Std.int(6 / level * 2), null, true), start, end);
+					case UnorderedListItem(nestingLevel, start, end): continue; //default behaviour
+					case OrderedListItem(number, nestingLevel, start, end): continue; //default behaviour
+					case HorizontalRule(type, start, end): {
+						var bounds = field.getCharBoundaries(start), lW = field.getLineMetrics(field.getLineIndexOfChar(start)).width;
+					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;
 					default: continue;
