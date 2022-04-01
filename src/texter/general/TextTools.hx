@@ -53,4 +53,20 @@ class TextTools {
 		}
 		return string;
 	}
+
+	/**
+	 * Finds all instances of a `part` in `string` and returns them as an array of start indexes.
+	 * 
+	 * If `string` doesn't contain `part`, an empty array is returned.
+	 * @param string the string to search in
+	 * @return an array of start indexes
+	 */
+	public static function findAll(string:String, part:String):Array<Int> {
+		var result:Array<Int> = [];
+		var index = string.indexOf(part);
+		if (index == -1) return result;
+		result.push(index);
+		string = replacefirst(string, part, "");
+		return [];
+	}
 }

@@ -1,7 +1,7 @@
 package texter.general.markdown;
 
 import texter.general.markdown.MarkdownEffect;
-import texter.general.markdown.ModifiedMarkdownPatterns;
+import texter.general.markdown.MarkdownPatterns;
 
 using StringTools;
 using texter.general.TextTools;
@@ -27,22 +27,25 @@ class Markdown
 	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
 	#end
 	/**
-	 * The `modifiedPatterns` field contains all of the modified patterns that are used to parse markdown text.   
+	 * The `patterns` field contains all of the patterns used to parse markdown text.   
 	 */
-	static var modifiedPatterns(default, never):ModifiedMarkdownPatterns = @:privateAccess new ModifiedMarkdownPatterns();
+	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
 
 	static var markdownRules(default, null):Array<EReg> = [
-		modifiedPatterns.titleEReg, // Done.
-		modifiedPatterns.codeblockEReg, // Done.
-		modifiedPatterns.boldEReg, // Done.
-		modifiedPatterns.italicEReg, // Done.
-		modifiedPatterns.mathEReg, // Done.
-		modifiedPatterns.codeEReg, // Done.
-		modifiedPatterns.parSepEReg, // Done.
-		modifiedPatterns.linkEReg, // Done.
-		modifiedPatterns.listItemEReg, // Done.
-		modifiedPatterns.emojiEReg, // Done. 
-		modifiedPatterns.hRuleEReg // Done.
+		patterns.hRuledTitleEReg, // Done.
+		patterns.titleEReg, // Done.
+		patterns.codeblockEReg, // Done.
+		patterns.boldEReg, // Done.
+		patterns.italicEReg, // Done.
+		patterns.astBoldEReg, // Done.
+		patterns.astItalicEReg, // Done.
+		patterns.mathEReg, // Done.
+		patterns.codeEReg, // Done.
+		patterns.parSepEReg, // Done.
+		patterns.linkEReg, // Done.
+		patterns.listItemEReg, // Done.
+		patterns.emojiEReg, // Done. 
+		patterns.hRuleEReg // Done.
 	];
 
 	/**
@@ -56,7 +59,7 @@ class Markdown
 	 * for some effects, it also includes a built-in visual effect:
 	 *  - Unordered Lists
 	 *  - Emojis
-	 *  - tables (coming soon)
+	 *  - Tables (coming soon)
 	 * 
 	 * after finding the effects, it calls:
 	 * 
@@ -80,11 +83,12 @@ class Markdown
 	 * 	  - **Inline Code**: ``
 	 * 	  - **Italics**: _, *
 	 * 	  - **Bolds**: **, __
-	 * 	  - **StrikeThrough**: ~~~~ 
+	 * 	  - **StrikeThrough**: ~~~~
 	 * 	  - **Links**: `[ ]( )`
 	 * 	  - **Math**: $$
 	 * 	  - **Emojis**: :emojiNameHere:
-	 * 	  - **HRules**: ---, ***, ___, ===
+	 * 	  - **HRules**: ---, ***, ___, ===, +++
+	 * 	  - **HRuledHeadings**: H1 - title\n===,+++,***, H2 - title\n---,___
 	 * 	  - **Paragraph Gaps** (two or more newlines)
 	 * 
 	 * @param markdownText Just a plain string with markdown formatting. If you want to make sure 
@@ -93,8 +97,6 @@ class Markdown
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
-		// fix for nested bold
-		lineTexts = lineTexts.replace("\t", "").replace("__", "**");
 		// fixes interpreter faults & matches the markdown rules.
 		lineTexts = lineTexts.replace("\n\n", "\r\r");
 		var effects:Array<MarkdownEffect> = [];
@@ -102,34 +104,42 @@ class Markdown
 		{
 			while (rule.match(lineTexts))
 			{
-				if (rule == modifiedPatterns.italicEReg || rule == modifiedPatterns.mathEReg || rule == modifiedPatterns.codeEReg || rule == modifiedPatterns.astItalicEReg)
+				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​$1​");
 					var info = rule.matchedPos();
 					effects.push(
-						if (rule == modifiedPatterns.mathEReg) 
+						if (rule == patterns.mathEReg) 
 					Math(info.pos, info.pos + info.len) else 
-					if (rule == modifiedPatterns.codeEReg) 
+					if (rule == patterns.codeEReg) 
 						Code(info.pos, info.pos + info.len) else
 					Italic(info.pos, info.pos + info.len)); 
 				}
-				else if (rule == modifiedPatterns.boldEReg || rule == modifiedPatterns.strikeThroughEReg)
+				else if (rule == patterns.boldEReg || rule == patterns.strikeThroughEReg || rule == patterns.boldEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​​$1​​");
 					var info = rule.matchedPos();
 					effects.push(
-						if (rule == modifiedPatterns.boldEReg) 
+						if (rule == patterns.boldEReg || rule == patterns.astBoldEReg) 
 							Bold(info.pos, info.pos + info.len) else
 						StrikeThrough(info.pos, info.pos + info.len));
 				}
-				else if (rule == modifiedPatterns.parSepEReg || rule == modifiedPatterns.hRuleEReg)
+				else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg)
 				{
-					lineTexts = rule.replace(lineTexts, if (rule == modifiedPatterns.parSepEReg) "\n\n" else "—".multiply(rule.matched(1).length));
+					lineTexts = rule.replace(lineTexts, if (rule == patterns.parSepEReg) "\n\n" else "—".multiply(rule.matched(1).length));
 					var info = rule.matchedPos();
-					effects.push(if (rule == modifiedPatterns.parSepEReg) ParagraphGap(info.pos,
-						info.pos + info.len - 1) else HorizontalRule("—", info.pos, info.pos + info.len));
+					effects.push(if (rule == patterns.parSepEReg) ParagraphGap(info.pos,
+						info.pos + info.len - 1) else HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len));
 				}
-				else if (rule == modifiedPatterns.linkEReg)
+				else if (rule == patterns.hRuledTitleEReg)
+				{
+					lineTexts = rule.replace(lineTexts, rule.matched(1) + "\n" + "—".multiply(rule.matched(2).length));
+					var info = rule.matchedPos();
+					var type = rule.matched(2).charAt(0);
+					effects.push(Heading(if (type == "*" || type == "+" || type == "=") 1 else 2, info.pos, info.pos + rule.matched(1).length));
+					effects.push(HorizontalRule(type, info.pos + rule.matched(1).length, info.pos + info.len));
+				}
+				else if (rule == patterns.linkEReg)
 				{
 					var linkLength = "";
 					while (linkLength.length < rule.matched(2).length)
@@ -138,7 +148,7 @@ class Markdown
 					var info = rule.matchedPos();
 					effects.push(Link(rule.matched(1), info.pos, info.pos + info.len));
 				}
-				else if (rule == modifiedPatterns.listItemEReg)
+				else if (rule == patterns.listItemEReg)
 				{
 					if (!~/[0-9]/g.match(rule.matched(1)))
 						lineTexts = rule.replace(lineTexts, "$1• $3")
@@ -149,13 +159,13 @@ class Markdown
 						info.pos + info.len - 1) else
 						OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
 				}
-				else if (rule == modifiedPatterns.titleEReg)
+				else if (rule == patterns.titleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, rule.matched(1).replace("#", "​") + "$2");
 					var info = rule.matchedPos();
 					effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
 				}
-				else if (rule == modifiedPatterns.codeblockEReg)
+				else if (rule == patterns.codeblockEReg)
 				{
 					var langLength = "";
 					while (langLength.length < rule.matched(1).length)
@@ -164,7 +174,7 @@ class Markdown
 					var info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
 				}
-				else if (rule == modifiedPatterns.emojiEReg)
+				else if (rule == patterns.emojiEReg)
 				{
 					var info = rule.matchedPos();
 					effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len));
