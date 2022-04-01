@@ -4,7 +4,7 @@ import texter.general.markdown.MarkdownEffect;
 import texter.general.markdown.ModifiedMarkdownPatterns;
 
 using StringTools;
-using texter.general.text.TextTools;
+using texter.general.TextTools;
 
 /**
  * The `Markdown` class provides tools to handle markdown texts in a **cross-framework** fashion.
@@ -24,7 +24,7 @@ class Markdown
 {
 
 	#if openfl
-	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 14, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
 	#end
 	/**
 	 * The `modifiedPatterns` field contains all of the modified patterns that are used to parse markdown text.   
@@ -93,7 +93,6 @@ class Markdown
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
-		
 		// fix for nested bold
 		lineTexts = lineTexts.replace("\t", "").replace("__", "**");
 		// fixes interpreter faults & matches the markdown rules.
@@ -125,7 +124,7 @@ class Markdown
 				}
 				else if (rule == modifiedPatterns.parSepEReg || rule == modifiedPatterns.hRuleEReg)
 				{
-					lineTexts = rule.replace(lineTexts, if (rule == modifiedPatterns.parSepEReg) "\n\n" else "———");
+					lineTexts = rule.replace(lineTexts, if (rule == modifiedPatterns.parSepEReg) "\n\n" else "—".multiply(rule.matched(1).length));
 					var info = rule.matchedPos();
 					effects.push(if (rule == modifiedPatterns.parSepEReg) ParagraphGap(info.pos,
 						info.pos + info.len - 1) else HorizontalRule("—", info.pos, info.pos + info.len));
@@ -174,92 +173,5 @@ class Markdown
 		}
 		onComplete(lineTexts.replace("\r", "\n"), effects);
 	}
-
-	#if openfl
-	/**
-	 * Generates the default visual theme from the markdown interpreter's information.
-	 * 
-	 * This method **is** cross-framework, but is yet to have support for all of those frameworks.
-	 * currently supported frameworks:
-	 *  - OpenFL
-	 *  - HaxeFlixel
-	 * 
-	 * For the **textField** parameter, provide a text of your framework's main text type: 
-	 * - for **OpenFL** its **TextField**, 
-	 * - for **HaxeFlixel** its **FlxText**...
-	 * 
-	 * The **apply** parameter is a boolean that determines whether the theme should be applied to the actual textField or a shallow copy of it
-	 * 
-	 * ### Expectations:
-	 *  - The markdown text should be a string inside the field `text`.
-	 *  - The textField's font should be able to support *italic* and **bold**'
-	 * 
-	 * example:
-	 * 
-	 *  	var visuals:TextClass = Markdown.generateTextClassVisuals(yourText);
-	 */
-	public static function generateTextFieldVisuals(textField:openfl.text.TextField):openfl.text.TextField {
-		//now we get to the fun part
-		textField.setTextFormat(markdownTextFormat);
-		var field:openfl.text.TextField = textField;
-		interpret(field.text, (markdownText, effects) ->
-		{
-			field.text = markdownText;
-			for (e in effects)
-			{
-				switch e
-				{
-					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
-					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
-					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
-					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("assets/includedFontsMD/math.ttf"), start, end);
-					case ParagraphGap(start, end): continue; //default behaviour
-					case CodeBlock(language, start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter"), start, end);
-					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, "_blank"), start, end);
-					case Emoji(type, start, end): continue; //default behaviour
-					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 14 + Std.int(6 / level * 2), null, true), start, end);
-					case UnorderedListItem(nestingLevel, start, end): continue; //default behaviour
-					case OrderedListItem(number, nestingLevel, start, end): continue; //default behaviour
-					case HorizontalRule(type, start, end): {
-						var bounds = field.getCharBoundaries(start + 1), lW = field.width - 4 - field.defaultTextFormat.leftMargin - field.defaultTextFormat.rightMargin;
-						var chars = Std.int(lW / bounds.width) - 4;
-						var addition = "—".multiply(chars);
-
-						//TODO - fix format shifting bug
-						//field.text = field.text.substring(0, start + 1) + addition + field.text.substring(start + 1);
-					}
-					case StrikeThrough(start, end): continue;
-					case Image(altText, imageSource, start, end): continue;
-					default: continue;
-				}
-			}
-		});
-		return field;
-	}
-	static function createShallowCopyTF(t:openfl.text.TextField):openfl.text.TextField {
-		var f = new openfl.text.TextField();
-		f.text = t.text;
-		f.defaultTextFormat = t.defaultTextFormat;
-		f.embedFonts = t.embedFonts;
-		f.antiAliasType = t.antiAliasType;
-		f.autoSize = t.autoSize;
-		f.background = t.background;
-		f.backgroundColor = t.backgroundColor;
-		f.border = t.border;
-		f.borderColor = t.borderColor;
-		f.displayAsPassword = t.displayAsPassword;
-		f.gridFitType = t.gridFitType;
-		f.htmlText = t.htmlText;
-		f.maxChars = t.maxChars;
-		f.multiline = t.multiline;
-		f.restrict = t.restrict;
-		f.selectable = t.selectable;
-		f.sharpness = t.sharpness;
-		f.textColor = t.textColor;
-		f.type = t.type;
-		f.wordWrap = t.wordWrap;
-		return f;
-	}
-	#end
 }
 

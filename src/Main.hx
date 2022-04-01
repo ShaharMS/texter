@@ -1,5 +1,6 @@
 package;
 
+import texter.general.markdown.MarkdownVisualizer;
 import haxe.Timer;
 import texter.general.markdown.Markdown;
 import openfl.text.TextFormat;
@@ -44,9 +45,9 @@ class Main extends Sprite {
 		s.wordWrap = true;
 		s.multiline = true;
 		addChild(s);
-		new Timer(1000).run = () -> {
+		new Timer(25).run = () -> {
 			s.text = tf.text;
-			Markdown.generateTextFieldVisuals(s);
+			MarkdownVisualizer.generateTextFieldVisuals(s);
 		};
 	}
 	var markdownStressTest:String = "

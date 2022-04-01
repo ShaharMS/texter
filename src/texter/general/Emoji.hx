@@ -1,4 +1,4 @@
-package texter.general.text;
+package texter.general;
 
 /**
  * The `Emoji` contains all of github's supported emojis.

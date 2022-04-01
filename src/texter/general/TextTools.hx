@@ -1,4 +1,4 @@
-package texter.general.text;
+package texter.general;
 
 /**
  * `TextTools` is a class containing static methods for manipulating text.

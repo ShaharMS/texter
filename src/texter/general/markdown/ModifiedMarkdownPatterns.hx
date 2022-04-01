@@ -23,7 +23,7 @@ class ModifiedMarkdownPatterns {
 		- `codeblockEReg.matched(1)` will give you the language of the code block, it detects this text: ```**haxe** <- this.
 		- `codeblockEReg.matched(2)` is it the start of the codeblock or the end? true for start, false for end.
 	**/
-	public var codeblockEReg(default, null):EReg = ~/```(.*)\n*([^`]+)```/m;
+	public var codeblockEReg(default, null):EReg = ~/```([^\n]*)\n*([^`]+)```/m;
 
 	/**
 		When used on a string of text with `imageEReg.match(string)`, 
@@ -43,16 +43,16 @@ class ModifiedMarkdownPatterns {
 		- `listItemEReg.matched(2)` the sign used to determine the list item's texture. can be one of those: **`(*, -, +)`** 
 		- `listItemEReg.matched(3)` gives you the text inside of the list item
 	**/
-	public var listItemEReg(default, null):EReg = ~/^( *)(\d+>|[+\-*]) (.*)/m;
+	public var listItemEReg(default, null):EReg = ~/^( *)(\d+>|[+\-*]) ([^\n]*)/m;
 
-	/**
+	/** 
 		When used on a string of text with `titleEReg.match(string)`, 
 		it will report everything that gives info about a title:
 
 		- `titleEReg.matched(1)` will give you the size of the heading, between 1 and 6
 		- `titleEReg.matched(2)` the actual text used in the title.
 	**/
-	public var titleEReg(default, null):EReg = ~/^(#{1,6}) (.+)/m;
+	public var titleEReg(default, null):EReg = ~/^(#{1,6}) ([^\n]+)/m;
 
 	/**
 		(hRule stands for horizontal rule)
@@ -62,7 +62,7 @@ class ModifiedMarkdownPatterns {
 
 		- `hRuleEReg.matched(1)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/^(?:-{3,}|\+{3,}|_{3,}|\*{3,})$/m;
+	public var hRuleEReg(default, null):EReg = ~/^(-{3,}|\+{3,}|_{3,}|\*{3,})$/m;
 
 	public var boldEReg(default, null):EReg = ~/\*\*([^\*{2}]+)\*\*/s;
 	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;
