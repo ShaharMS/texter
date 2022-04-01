@@ -62,7 +62,7 @@ class ModifiedMarkdownPatterns {
 
 		- `hRuleEReg.matched(1)` the actual text forming this horizontal rule.
 	**/
-	public var hRuleEReg(default, null):EReg = ~/\n(—{3,})\n/m;
+	public var hRuleEReg(default, null):EReg = ~/^(?:-{3,}|\+{3,}|_{3,}|\*{3,})$/m;
 
 	public var boldEReg(default, null):EReg = ~/\*\*([^\*{2}]+)\*\*/s;
 	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;

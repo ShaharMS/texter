@@ -97,13 +97,7 @@ class Markdown
 		// fix for nested bold
 		lineTexts = lineTexts.replace("\t", "").replace("__", "**");
 		// fixes interpreter faults & matches the markdown rules.
-		lineTexts = lineTexts
-			.replace("\n___\n", "\n———\n")
-			.replace("\n---\n", "\n———\n")
-			.replace("\n===\n", "\n———\n")
-			.replace("\n***\n", "\n———\n")
-			.replace("\n\n", "\r\r");
-
+		lineTexts = lineTexts.replace("\n\n", "\r\r");
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
@@ -131,7 +125,7 @@ class Markdown
 				}
 				else if (rule == modifiedPatterns.parSepEReg || rule == modifiedPatterns.hRuleEReg)
 				{
-					lineTexts = rule.replace(lineTexts, if (rule == modifiedPatterns.parSepEReg) "\n\n" else "\r$1\r");
+					lineTexts = rule.replace(lineTexts, if (rule == modifiedPatterns.parSepEReg) "\n\n" else "———");
 					var info = rule.matchedPos();
 					effects.push(if (rule == modifiedPatterns.parSepEReg) ParagraphGap(info.pos,
 						info.pos + info.len - 1) else HorizontalRule("—", info.pos, info.pos + info.len));
@@ -177,12 +171,6 @@ class Markdown
 					effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len));
 				} 
 			}
-		}
-		while (modifiedPatterns.astItalicEReg.match(lineTexts)) 
-		{
-			lineTexts = modifiedPatterns.astItalicEReg.replace(lineTexts, "​$1​");
-			var info = modifiedPatterns.astItalicEReg.matchedPos();
-			effects.push(Italic(info.pos, info.pos + info.len));
 		}
 		onComplete(lineTexts.replace("\r", "\n"), effects);
 	}
