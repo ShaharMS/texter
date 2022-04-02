@@ -1,5 +1,8 @@
 package;
 
+import openfl.Lib;
+import js.Browser;
+import openfl.display.FPS;
 import texter.general.markdown.MarkdownVisualizer;
 import haxe.Timer;
 import texter.general.markdown.Markdown;

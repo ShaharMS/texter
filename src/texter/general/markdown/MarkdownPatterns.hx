@@ -11,11 +11,11 @@ class MarkdownPatterns {
 	public var listItemEReg(default, null):EReg = ~/^( *)([0-9]+\.|[+\-*]) ([^\n]*)/m;
 	public var titleEReg(default, null):EReg = ~/^(#{1,6}) ([^\n]+)/m;
 	public var hRuleEReg(default, null):EReg = ~/^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
-	public var astBoldEReg(default, null):EReg = ~/\*\*([^\*]+)\*\*/s;
-	public var boldEReg(default, null):EReg = ~/__([^_]+)__/s;
-	public var strikeThroughEReg(default, null):EReg = ~/~~([^~]+)~~/m;
-	public var italicEReg(default, null):EReg = ~/_([^_]+)_/s;
-	public var astItalicEReg(default, null):EReg = ~/\*([^\*]+)\*/s;
+	public var astBoldEReg(default, null):EReg = ~/\*\*([^\n]+)\*\*/m;
+	public var boldEReg(default, null):EReg = ~/__([^_\n]+)__/m;
+	public var strikeThroughEReg(default, null):EReg = ~/~~([^\n]+)~~/m;
+	public var italicEReg(default, null):EReg = ~/_([^\n]+)_/m;
+	public var astItalicEReg(default, null):EReg = ~/\*([^\n]+)\*/m;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public var parSepEReg(default, null):EReg = ~/\r\r/m;
 	public var emojiEReg(default, null):EReg = ~/:([^:]+):/m;

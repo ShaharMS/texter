@@ -32,12 +32,12 @@ class Markdown
 	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
 
 	static var markdownRules(default, null):Array<EReg> = [
-		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
 		patterns.codeblockEReg, // Done.
 		patterns.boldEReg, // Done.
-		patterns.italicEReg, // Done.
 		patterns.astBoldEReg, // Done.
+		patterns.strikeThroughEReg, // Done.
+		patterns.italicEReg, // Done.
 		patterns.astItalicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
@@ -45,6 +45,7 @@ class Markdown
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
 		patterns.emojiEReg, // Done. 
+		patterns.hRuledTitleEReg, // Done.
 		patterns.hRuleEReg // Done.
 	];
 
@@ -84,7 +85,7 @@ class Markdown
 	 * 	  - **Italics**: _, *
 	 * 	  - **Bolds**: **, __
 	 * 	  - **StrikeThrough**: ~~~~
-	 * 	  - **Links**: `[ ]( )`
+	 * 	  - **Links**: `[]()`
 	 * 	  - **Math**: $$
 	 * 	  - **Emojis**: :emojiNameHere:
 	 * 	  - **HRules**: ---, ***, ___, ===, +++
@@ -115,7 +116,7 @@ class Markdown
 						Code(info.pos, info.pos + info.len) else
 					Italic(info.pos, info.pos + info.len)); 
 				}
-				else if (rule == patterns.boldEReg || rule == patterns.strikeThroughEReg || rule == patterns.boldEReg)
+				else if (rule == patterns.boldEReg || rule == patterns.strikeThroughEReg || rule == patterns.astBoldEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​​$1​​");
 					var info = rule.matchedPos();
@@ -181,7 +182,7 @@ class Markdown
 				} 
 			}
 		}
-		onComplete(lineTexts.replace("\r", "\n"), effects);
+		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
 	}
 }
 

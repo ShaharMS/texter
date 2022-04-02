@@ -25,7 +25,7 @@ class MarkdownVisualizer {
 	/**
 	 * When visualizing a given Markdown string, this `TextFormat` will be used.
 	 */
-	public static var markdownTextFormat(default,never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default,never):openfl.text.TextFormat = new openfl.text.TextFormat(null, 16, 0x000000, false, false, false, "", "", "left");
 
 	/**
 	    Generates the default visual theme from the markdown interpreter's information.
@@ -47,6 +47,7 @@ class MarkdownVisualizer {
 		field.setTextFormat(markdownTextFormat);
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
+			trace(effects);
 			field.text = markdownText;
 			for (e in effects)
 			{
@@ -66,7 +67,15 @@ class MarkdownVisualizer {
 					case HorizontalRule(type, start, end): {
 						var bounds = field.getCharBoundaries(start + 1);
                         bounds.y = bounds.y + bounds.height / 2;
-						var lW = field.width - 2 - field.defaultTextFormat.rightMargin;
+						var lW = field.width - 2 - field.defaultTextFormat.rightMargin, x = field.x + field.defaultTextFormat.leftMargin + 2;
+						@:privateAccess {
+							var g = field.__graphics;
+							var char = field.getCharBoundaries(start);
+							char.y = char.y + char.height / 2 - 2;
+							g.lineStyle(2, field.defaultTextFormat.color);
+							g.moveTo(char.x, char.y);
+							g.lineTo(field.width - field.defaultTextFormat.rightMargin - 2, char.y);
+						}
 					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;
