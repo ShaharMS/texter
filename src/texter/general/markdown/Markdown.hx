@@ -32,6 +32,7 @@ class Markdown
 	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
 
 	static var markdownRules(default, null):Array<EReg> = [
+		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
 		patterns.codeblockEReg, // Done.
 		patterns.boldEReg, // Done.
@@ -45,7 +46,6 @@ class Markdown
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
 		patterns.emojiEReg, // Done. 
-		patterns.hRuledTitleEReg, // Done.
 		patterns.hRuleEReg // Done.
 	];
 
@@ -99,10 +99,10 @@ class Markdown
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
 		// fixes interpreter faults & matches the markdown rules.
-		lineTexts = lineTexts.replace("\n\n", "\r\r");
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
+			if (rule == patterns.parSepEReg) continue;
 			while (rule.match(lineTexts))
 			{
 				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
@@ -125,20 +125,20 @@ class Markdown
 							Bold(info.pos, info.pos + info.len) else
 						StrikeThrough(info.pos, info.pos + info.len));
 				}
-				else if (rule == patterns.parSepEReg || rule == patterns.hRuleEReg)
+				else if (rule == patterns.hRuleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, if (rule == patterns.parSepEReg) "\n\n" else "—".multiply(rule.matched(1).length));
 					var info = rule.matchedPos();
-					effects.push(if (rule == patterns.parSepEReg) ParagraphGap(info.pos,
-						info.pos + info.len - 1) else HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len));
+					effects.push(HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.hRuledTitleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, rule.matched(1) + "\n" + "—".multiply(rule.matched(2).length));
 					var info = rule.matchedPos();
 					var type = rule.matched(2).charAt(0);
-					effects.push(Heading(if (type == "*" || type == "+" || type == "=") 1 else 2, info.pos, info.pos + rule.matched(1).length));
-					effects.push(HorizontalRule(type, info.pos + rule.matched(1).length, info.pos + info.len));
+					if (rule.matched(1).charAt(0) == "#") continue; //this is inteded to be a regular heading
+					effects.push(Heading(if (type == "*" || type == "+" || type == "=") 1 else 2, if (info.pos == 0) info.pos else info.pos - 1, info.pos + rule.matched(1).length));
+					effects.push(HorizontalRule(type, info.pos + rule.matched(1).length + 1, info.pos + info.len + 1));
 				}
 				else if (rule == patterns.linkEReg)
 				{

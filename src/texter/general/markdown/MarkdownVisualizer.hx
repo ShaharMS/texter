@@ -1,5 +1,6 @@
 package texter.general.markdown;
 
+import flixel.text.FlxText;
 import openfl.display.Bitmap;
 using texter.general.TextTools;
 /**
@@ -31,7 +32,7 @@ class MarkdownVisualizer {
 	    Generates the default visual theme from the markdown interpreter's information.
 
 	    examples (with/without static extension):
-
+		
         var visuals = new TextField();
         visuals.text = "# hey everyone\n this is *so cool*"
         MarkdownVisualizer.generateTextFieldVisuals(visuals);
@@ -39,11 +40,8 @@ class MarkdownVisualizer {
         visuals.generateTextFieldVisuals();
         
 	**/
-	public static function generateTextFieldVisuals(field:openfl.text.TextField):openfl.text.TextField
+	overload extern inline public static function generateVisuals(field:openfl.text.TextField):openfl.text.TextField
 	{
-		// now we get to the fun part
-
-        //create a mask for the textfield - well add all of the special visual effects to that mask
 		field.setTextFormat(markdownTextFormat);
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
@@ -86,4 +84,25 @@ class MarkdownVisualizer {
 		return field;
 	}
 	#end
+
+	#if flixel
+	/**
+		Generates the default visual theme from the markdown interpreter's information.
+
+		examples (with/without static extension):
+
+		```haxe
+		var t = new FlxText();
+		t.text = "# hey everyone\n this is *so cool*"
+		var visuals = MarkdownVisualizer.generateTextFieldVisuals(t);
+		//OR
+		var visuals = t.generateTextFieldVisuals();
+		```
+
+	**/
+	public static overload extern inline function generateVisuals(field:FlxText) {
+		throw "generateVisuals not yet implemented for Flixel";
+	}
+	#end
+
 }

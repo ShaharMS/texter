@@ -17,7 +17,7 @@ class MarkdownPatterns {
 	public var italicEReg(default, null):EReg = ~/_([^\n]+)_/m;
 	public var astItalicEReg(default, null):EReg = ~/\*([^\n]+)\*/m;
 	public var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
-	public var parSepEReg(default, null):EReg = ~/\r\r/m;
+	public var parSepEReg(default, null):EReg = ~/\n\n/gm;
 	public var emojiEReg(default, null):EReg = ~/:([^:]+):/m;
 	private function new() {}
 

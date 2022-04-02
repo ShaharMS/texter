@@ -50,7 +50,7 @@ class Main extends Sprite {
 		addChild(s);
 		new Timer(25).run = () -> {
 			s.text = tf.text;
-			MarkdownVisualizer.generateTextFieldVisuals(s);
+			MarkdownVisualizer.generateVisuals(s);
 		};
 	}
 	var markdownStressTest:String = "

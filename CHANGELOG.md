@@ -38,9 +38,13 @@
 
 `MarkdownPatterns` is a class consisting of the following markdown patterns: (more will be added in the future)
  - `hRuleEReg`
+ - `hRuledTitleEReg`
  - `boldEReg`
+ - `astBoldEReg`
  - `italicEReg`
+ - `astItalicEReg`
  - `mathEReg`
+ - `strikeThroughEReg`
  - `parSepEReg`
  - `emojiEReg`
  - `titleEReg`
@@ -48,6 +52,14 @@
  - `imageEReg`
  - `codeblockEReg`
  - `linkEReg`
+
+**MarkdownVisualizer - new class!**
+
+`MarkdownPatterns` is a class consisting of the framework-specific markdown visualization methods. For now, only supports visualization for:
+
+ - OpenFL (via `TextField`)
+ - HaxeFlixel (via `FlxText`)
+
 
 **Emoji - new class!**
 
@@ -59,8 +71,11 @@
 **TextTools - new class!**
 
 `TextTools` is a class containing static methods for manipulating text. it contains:
- - `replaceFirst()` - replaces the first occurrence of a string inside another string
- - `replaceFirst()` - replaces the last occurrence of a string inside another string
+ - `replaceFirst()` - replaces the first occurrence of a substring inside a string
+ - `replaceFirst()` - replaces the last occurrence of a substring inside a string
+ - `filter()` - filters a string according to the `EReg` or `String` supplied
+ - `multiply()` - multiplies a string by `X` times
+ - `findAll()` finds and reports all occurrences of a substring inside a string
  
 1.1.4 (March 20, 2022)
 ===
