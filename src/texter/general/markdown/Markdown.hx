@@ -31,6 +31,8 @@ class Markdown
 	 */
 	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
 
+	public static var codeBlocks(default, null):MarkdownBlocks = @:privateAccess new MarkdownBlocks();
+
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.

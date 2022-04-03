@@ -9,8 +9,8 @@ package texter.general;
  * 
  * and enjoy not having to write more text manipulation functions!
  */
-class TextTools {
-
+class TextTools
+{
 	/**
 	 * replaces the last occurrence of `replace` in `string` with `by`
 	 * @param string the string to replace in
@@ -55,28 +55,31 @@ class TextTools {
 	 * @param filter the actual filter; can be a string or an EReg
 	 * @return the filtered string
 	 */
-	public static function filter(text:String, filter:Dynamic):String {
-		if (filter is EReg) {
+	public static function filter(text:String, filter:Dynamic):String
+	{
+		if (filter is EReg)
+		{
 			var pattern:EReg = cast filter;
 			text = pattern.replace(text, "");
 			return text;
 		}
 		var patternType:String = cast filter;
-		if (replacefirst(text, "/", "") != patternType) { //someone decided to be quirky and pass an EReg as a string
+		if (replacefirst(text, "/", "") != patternType)
+		{ // someone decided to be quirky and pass an EReg as a string
 			var regexDetector:EReg = ~/^~?\/(.*)\/(.*)$/s;
 			regexDetector.match(patternType);
 			return filter(text, new EReg(regexDetector.matched(1), regexDetector.matched(2)));
 		}
-		switch patternType.toLowerCase() {
+		switch patternType.toLowerCase()
+		{
 			case "alpha":
 				return filter(text, new EReg("[^a-zA-Z]", "g"));
 			case "alphanumeric":
 				return filter(text, new EReg("[^a-zA-Z0-9]", "g"));
 			case "numeric":
-				return filter(text, new EReg("[^0-9]", "g")); 
+				return filter(text, new EReg("[^0-9]", "g"));
 		}
 		return text;
-		
 	}
 
 	/**
@@ -97,31 +100,62 @@ class TextTools {
 	 * @param by 
 	 * @return String
 	 */
-	public static function multiply(string:String, times:Int):String {
+	public static function multiply(string:String, times:Int):String
+	{
 		var stringcopy = string;
-		if (times <= 0) return "";
-		while (times-- > 0) {
+		if (times <= 0)
+			return "";
+		while (times-- > 0)
+		{
 			string += stringcopy;
 		}
 		return string;
 	}
 
 	/**
-	 * Finds all instances of a `part` in `string` and returns them as an array of start indexes.
-	 * 
-	 * If `string` doesn't contain `part`, an empty array is returned.
-	 * @param string the string to search in
-	 * @return an array of start indexes
+	 * Returns an array containing the start & end indexes of all occurences of `sub`.
+	 * the reported indxes are from `startIndex`, up to but not including `endIndex`.
+	 * @param string The string containing the `sub`
+	 * @param sub The `sub` itself
+	 * @return An Array f all indexes
 	 */
-	public static function findAll(string:String, part:String):Array<Int> {
-		var result:Array<Int> = [];
-		var index = string.indexOf(part);
-		while (index != -1) {
-			result.push(index);
-			string = replacefirst(string, part, "");
-			index = string.indexOf(part);
+	public static function indexesOf(string:String, sub:String):Array<{startIndex:Int, endIndex:Int}>
+	{
+		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [];
+		var removedLength = 0, index = string.indexOf(sub);
+		while (index != -1)
+		{
+			indexArray.push({startIndex: index + removedLength, endIndex: index + sub.length + removedLength - 1});
+			removedLength += sub.length;
+			string = string.substring(0, index) + string.substring(index + sub.length, string.length);
+			index = string.indexOf(sub);
 		}
-		return result;
-		
+		return indexArray;
+	}
+
+
+	/**
+	 * repoort all occurences of the elements inside `sub` in `string`
+	 * @param string the string to search in
+	 * @param subs an array of substrings to search for
+	 * @return an array of all positions of the substrings
+	 */
+	public static function indexesFromArray(string:String, subs:Array<String>):Array<{startIndex:Int, endIndex:Int}>
+	{
+		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [],
+			orgString = string;
+		for (sub in subs)
+		{
+			var removedLength = 0, index = string.indexOf(sub);
+			while (index != -1)
+			{
+				indexArray.push({startIndex: index + removedLength, endIndex: index + sub.length + removedLength - 1});
+				removedLength += sub.length;
+				string = string.substring(0, index) + string.substring(index + sub.length, string.length);
+				index = string.indexOf(sub);
+			}
+			string = orgString;
+		}
+		return indexArray;
 	}
 }

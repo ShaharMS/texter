@@ -75,7 +75,7 @@
  - `replaceFirst()` - replaces the last occurrence of a substring inside a string
  - `filter()` - filters a string according to the `EReg` or `String` supplied
  - `multiply()` - multiplies a string by `X` times
- - `findAll()` finds and reports all occurrences of a substring inside a string
+ - `indexesOf()` finds and reports all occurrences of a substring inside a string
  
 1.1.4 (March 20, 2022)
 ===
