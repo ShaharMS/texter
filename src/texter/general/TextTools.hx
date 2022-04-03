@@ -92,13 +92,13 @@ class TextTools
 	 * var foo = "foo";
 	 * var bar = TextTools.multiply(foo, 3);
 	 * trace(bar); // foofoofoo
-	 * bar = TextTools.multiply(foo, 0);
+	 * bar = foo.multiply(0);
 	 * trace(bar); // ""
 	 * ```
 	 * 
-	 * @param string 
-	 * @param by 
-	 * @return String
+	 * @param string the string to multiply
+	 * @param by the number of times to multiply
+	 * @return the multiplied string
 	 */
 	public static function multiply(string:String, times:Int):String
 	{

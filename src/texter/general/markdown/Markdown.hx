@@ -26,8 +26,10 @@ class Markdown
 	static var _curNum:Int = 1;
 
 	#if openfl
-	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default,
+		never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
 	#end
+
 	/**
 	 * The `patterns` field contains all of the patterns used to parse markdown text.   
 	 */
@@ -51,7 +53,7 @@ class Markdown
 		patterns.parSepEReg, // Done.
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
-		patterns.emojiEReg, // Done. 
+		patterns.emojiEReg, // Done.
 		patterns.hRuleEReg // Done.
 	];
 
@@ -108,28 +110,24 @@ class Markdown
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
-			if (rule == patterns.parSepEReg || rule == patterns.emojiEReg) continue;
+			if (rule == patterns.parSepEReg || rule == patterns.emojiEReg)
+				continue;
 			while (rule.match(lineTexts))
 			{
 				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​$1​");
 					var info = rule.matchedPos();
-					effects.push(
-						if (rule == patterns.mathEReg) 
-					Math(info.pos, info.pos + info.len) else 
-					if (rule == patterns.codeEReg) 
-						Code(info.pos, info.pos + info.len) else
-					Italic(info.pos, info.pos + info.len)); 
+					effects.push(if (rule == patterns.mathEReg) Math(info.pos,
+						info.pos + info.len) else if (rule == patterns.codeEReg) Code(info.pos, info.pos + info.len) else
+						Italic(info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.boldEReg || rule == patterns.strikeThroughEReg || rule == patterns.astBoldEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​​$1​​");
 					var info = rule.matchedPos();
-					effects.push(
-						if (rule == patterns.boldEReg || rule == patterns.astBoldEReg) 
-							Bold(info.pos, info.pos + info.len) else
-						StrikeThrough(info.pos, info.pos + info.len));
+					effects.push(if (rule == patterns.boldEReg || rule == patterns.astBoldEReg) Bold(info.pos,
+						info.pos + info.len) else StrikeThrough(info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.hRuleEReg)
 				{
@@ -142,8 +140,10 @@ class Markdown
 					lineTexts = rule.replace(lineTexts, rule.matched(1) + "\n" + "—".multiply(rule.matched(2).length));
 					var info = rule.matchedPos();
 					var type = rule.matched(2).charAt(0);
-					if (rule.matched(1).charAt(0) == "#") continue; //this is inteded to be a regular heading
-					effects.push(Heading(if (type == "*" || type == "+" || type == "=") 1 else 2, if (info.pos == 0) info.pos else info.pos - 1, info.pos + rule.matched(1).length));
+					if (rule.matched(1).charAt(0) == "#")
+						continue; // this is inteded to be a regular heading
+					effects.push(Heading(if (type == "*" || type == "+" || type == "=") 1 else 2, if (info.pos == 0) info.pos else info.pos - 1,
+						info.pos + rule.matched(1).length));
 					effects.push(HorizontalRule(type, info.pos + rule.matched(1).length + 1, info.pos + info.len + 1));
 				}
 				else if (rule == patterns.linkEReg)
@@ -157,21 +157,55 @@ class Markdown
 				}
 				else if (rule == patterns.listItemEReg)
 				{
-					if (!rule.matched(2).contains(".")) {
+					if (!rule.matched(2).contains("."))
+					{
 						var n = rule.matched(1).length;
-						if (_nesting == -1) {
-							_nesting = n;
-							lineTexts = rule.replace(lineTexts, "$1• $3");
-						} else if (n <= _nesting) {
-							_nesting = n;
-							lineTexts = rule.replace(lineTexts, "$1• $3");
-						} else if (n > _nesting) {
-							lineTexts = rule.replace(lineTexts, "$1◦ $3");
-						} 
 						var info = rule.matchedPos();
+						var start = info.pos - 2;
+						if (start < 0)
+						{
+							lineTexts = rule.replace(lineTexts, "$1• $3");
+							effects.push(UnorderedListItem(n, info.pos, info.pos + info.len - 1));
+							continue;
+						}
+						while (lineTexts.charAt(start--) != "\n" && start != 0) {} // now, start contains the previous line's start
+						if (start != 0)
+							start += 2;
+						var prevLine = lineTexts.substring(start, info.pos);
+						if (prevLine.trim().charAt(0) == "•" || prevLine.trim().charAt(0) == "◦")
+						{
+							var len = 0;
+							while (prevLine.charAt(len) != "•" && prevLine.charAt(len) != "◦")
+								len++;
+							if (n < len)
+							{
+								lineTexts = rule.replace(lineTexts, "$1• $3");
+							}
+							else if (len == n)
+							{
+								trace("C");
+								if (prevLine.trim().charAt(0) == "•")
+								{
+									lineTexts = rule.replace(lineTexts, "$1• $3");
+								}
+								else
+								{
+									lineTexts = rule.replace(lineTexts, "$1◦ $3");
+								}
+							}
+							else
+							{
+								lineTexts = rule.replace(lineTexts, "$1◦ $3");
+							}
+							effects.push(UnorderedListItem(n, info.pos, info.pos + info.len - 1));
+							continue;
+						}
+						lineTexts = rule.replace(lineTexts, "$1• $3");
 						effects.push(UnorderedListItem(n, info.pos, info.pos + info.len - 1));
-					} else {
-						lineTexts = rule.replace(lineTexts, "$1$2. $3");
+					}
+					else
+					{
+						lineTexts = rule.replace(lineTexts, rule.matched(1) + rule.matched(2).replace(".", "") + "․ $3");
 						var info = rule.matchedPos();
 						effects.push(OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
 					}
@@ -196,4 +230,3 @@ class Markdown
 		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
 	}
 }
-

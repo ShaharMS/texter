@@ -13,6 +13,7 @@ class MarkdownPatterns
 	public var codeblockEReg(default, null):EReg = ~/```([^\n]*)\n*([^`]+)```/m;
 	public var imageEReg(default, null):EReg = ~/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/m;
 	public var listItemEReg(default, null):EReg = ~/^( *)([0-9]+\.|[+\-*]) ([^\n]*)/m;
+	public var unorderedListItemEReg(default, null):EReg = ~/^( *)([+\-*]) ([^\n]*)/m;
 	public var titleEReg(default, null):EReg = ~/^(#{1,6}) ([^\n]+)/m;
 	public var hRuleEReg(default, null):EReg = ~/^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
 	public var astBoldEReg(default, null):EReg = ~/\*\*([^\n]+)\*\*/m;

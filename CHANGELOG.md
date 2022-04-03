@@ -49,21 +49,31 @@
  - `emojiEReg`
  - `titleEReg`
  - `listItemEReg`
+ - `unorderedListItemEReg`
  - `imageEReg`
  - `codeblockEReg`
  - `linkEReg`
 
 **MarkdownVisualizer - new class!**
 
-`MarkdownPatterns` is a class consisting of the framework-specific markdown visualization methods. For now, only supports visualization for:
+`MarkdownVisualizer` is a class consisting of the framework-specific markdown visualization methods. For now, only supports visualization for:
 
  - OpenFL (via `TextField`)
- - HaxeFlixel (via `FlxText`)
+
+**MarkdownBlocks - new class!**
+
+`MarkdownBlocks` is the class that handles the code block's syntax highlighting in markdown.
+It provides a user friendly way to edit the syntax, and all syntax handlers can be redefiend with `parseLang = function(...)`
+
+For now, suntax highlighting is only available for theses languages:
+
+ - JSON
 
 
 **Emoji - new class!**
 
 `Emoji` is a class that contains every single emoji supported by github. it contains:
+
  - `emojiToString()` - a function to convert an emoji into a string
  - `emojiFromString()` - a function to convert a string into an emoji
  - `extractEmojis()` - a function to extract all emojis present in a string of text
@@ -71,11 +81,13 @@
 **TextTools - new class!**
 
 `TextTools` is a class containing static methods for manipulating text. it contains:
+
  - `replaceFirst()` - replaces the first occurrence of a substring inside a string
  - `replaceFirst()` - replaces the last occurrence of a substring inside a string
  - `filter()` - filters a string according to the `EReg` or `String` supplied
  - `multiply()` - multiplies a string by `X` times
  - `indexesOf()` finds and reports all occurrences of a substring inside a string
+ - `indexesFromArray()` finds and reports all occurrences of the supplied substrings inside a string
  
 1.1.4 (March 20, 2022)
 ===

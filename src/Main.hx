@@ -50,7 +50,7 @@ class Main extends Sprite {
 		s.wordWrap = true;
 		s.multiline = true;
 		addChild(s);
-		new Timer(25).run = () -> {
+		new Timer(200).run = () -> {
 			s.text = tf.text;
 			Markdown.visualizer.generateVisuals(s);
 		};
