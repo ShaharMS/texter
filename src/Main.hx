@@ -1,5 +1,7 @@
 package;
 
+import texter.general.TextTools;
+import texter.general.markdown.MarkdownBlocks;
 import openfl.Lib;
 import js.Browser;
 import openfl.display.FPS;
@@ -50,7 +52,7 @@ class Main extends Sprite {
 		addChild(s);
 		new Timer(25).run = () -> {
 			s.text = tf.text;
-			MarkdownVisualizer.generateVisuals(s);
+			Markdown.visualizer.generateVisuals(s);
 		};
 	}
 	var markdownStressTest:String = "

@@ -22,6 +22,8 @@ using texter.general.TextTools;
  */
 class Markdown
 {
+	static var _nesting:Int = -1;
+	static var _curNum:Int = 1;
 
 	#if openfl
 	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
@@ -32,6 +34,8 @@ class Markdown
 	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
 
 	public static var codeBlocks(default, null):MarkdownBlocks = @:privateAccess new MarkdownBlocks();
+
+	public static var visualizer(default, null):MarkdownVisualizer = @:privateAccess new MarkdownVisualizer();
 
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.hRuledTitleEReg, // Done.
@@ -104,7 +108,7 @@ class Markdown
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
-			if (rule == patterns.parSepEReg) continue;
+			if (rule == patterns.parSepEReg || rule == patterns.emojiEReg) continue;
 			while (rule.match(lineTexts))
 			{
 				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
@@ -153,14 +157,24 @@ class Markdown
 				}
 				else if (rule == patterns.listItemEReg)
 				{
-					if (!~/[0-9]/g.match(rule.matched(1)))
-						lineTexts = rule.replace(lineTexts, "$1• $3")
-					else
+					if (!rule.matched(2).contains(".")) {
+						var n = rule.matched(1).length;
+						if (_nesting == -1) {
+							_nesting = n;
+							lineTexts = rule.replace(lineTexts, "$1• $3");
+						} else if (n <= _nesting) {
+							_nesting = n;
+							lineTexts = rule.replace(lineTexts, "$1• $3");
+						} else if (n > _nesting) {
+							lineTexts = rule.replace(lineTexts, "$1◦ $3");
+						} 
+						var info = rule.matchedPos();
+						effects.push(UnorderedListItem(n, info.pos, info.pos + info.len - 1));
+					} else {
 						lineTexts = rule.replace(lineTexts, "$1$2. $3");
-					var info = rule.matchedPos();
-					effects.push(if (!~/[0-9]/g.match(rule.matched(1))) UnorderedListItem(rule.matched(1).length, info.pos,
-						info.pos + info.len - 1) else
-						OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
+						var info = rule.matchedPos();
+						effects.push(OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
+					}
 				}
 				else if (rule == patterns.titleEReg)
 				{
@@ -177,11 +191,6 @@ class Markdown
 					var info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
 				}
-				else if (rule == patterns.emojiEReg)
-				{
-					var info = rule.matchedPos();
-					effects.push(Emoji(rule.matched(1), info.pos, info.pos + info.len));
-				} 
 			}
 		}
 		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);

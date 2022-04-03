@@ -5,6 +5,8 @@ using texter.general.TextTools;
 
 class MarkdownPatterns
 {
+	public static var patterns(default, null):MarkdownPatterns = new MarkdownPatterns();
+	
 	public var hRuledTitleEReg(default, null):EReg = ~/([^\n]+)\n^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
 	public var linkEReg(default, null):EReg = ~/\[([^\]]+)\]\(([^)]+)\)/m;
 	public var codeEReg(default, null):EReg = ~/`([^`\n]+)`/;
