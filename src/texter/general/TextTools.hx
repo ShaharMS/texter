@@ -158,4 +158,19 @@ class TextTools
 		}
 		return indexArray;
 	}
+
+	public static function indexesFromEReg(string:String, pattern:EReg):Array<{startIndex:Int, endIndex:Int}> {
+		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [];
+
+		@:privateAccess  var p = pattern.r.source;
+		@:privateAccess  var ereg = new EReg(p, '${if (pattern.r.ignoreCase) "i" else ""}${if (pattern.r.multiline) "m" else ""}');
+		while (ereg.match(string)) {
+			string = ereg.replace(string, "");
+			var info = ereg.matchedPos();
+			indexArray.push({startIndex: info.pos, endIndex: info.pos + info.len});
+		}
+		
+		return indexArray;
+		
+	}
 }

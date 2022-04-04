@@ -2,6 +2,8 @@ package texter.general.markdown;
 
 import texter.general.markdown.MarkdownEffect;
 import texter.general.markdown.MarkdownPatterns;
+import texter.general.markdown.MarkdownBlocks;
+import texter.general.markdown.MarkdownVisualizer;
 
 using StringTools;
 using texter.general.TextTools;
@@ -11,10 +13,12 @@ using texter.general.TextTools;
  * 
  * **In its base resides the `interpret()` function.**
  * 
- * Everything in this class is based around the interpreter. everything from the markdown rules, to the patterns & visualization methods.
- * The interpreter uses a pre-parser & lots of `regex`s (Regular Expresions) to parse the markdown text. after parsing, 
- * it returns the text witout all of the "ugly" markdown syntax, and an array of the effects that are needed to be appied, with `startIndex` and `endIndex`.
- * You don't have to utilize all of the information the interpreter gives you - it doesnt enforce anything - it just guves you the data you need to start working
+ * Everything in this class is based around the interpreter. everything from the markdown rules, 
+ * to the patterns & visualization methods. The interpreter uses a pre-parser & lots of `regex`s
+ * (Regular Expresions) to parse the markdown text. after parsing, it returns the text witout all
+ * of the "ugly" markdown syntax, and an array of the effects that are needed to be appied, with 
+ * `startIndex` and `endIndex`. You don't have to utilize all of the information the interpreter
+ * gives you - it doesnt enforce anything - it just gives you the data you need to start working
  * 
  * `interpret()` is mostly used internally to get information about the markdown text for visualization methods, 
  * but you can also use it yourself to make your own markdown styling
@@ -22,22 +26,25 @@ using texter.general.TextTools;
  */
 class Markdown
 {
-	static var _nesting:Int = -1;
-	static var _curNum:Int = 1;
-
-	#if openfl
-	public static var markdownTextFormat(default,
-		never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 16, 0x000000, false, false, false, "", "", "left");
-	#end
 
 	/**
 	 * The `patterns` field contains all of the patterns used to parse markdown text.   
+	 * 
+	 * If you want to access them individually, you can do it using this field
 	 */
-	public static var patterns(default, never):MarkdownPatterns = @:privateAccess new MarkdownPatterns();
+	public static var patterns(default, never) = MarkdownPatterns;
 
-	public static var codeBlocks(default, null):MarkdownBlocks = @:privateAccess new MarkdownBlocks();
+	/**
+	 * `syntaxBlocks` is a field representing a class that contains many syntax coloring
+	 * methods for codeblocks.
+	 */
+	public static var syntaxBlocks(default, null) = MarkdownBlocks;
 
-	public static var visualizer(default, null):MarkdownVisualizer = @:privateAccess new MarkdownVisualizer();
+	/**
+	 * If you want to modify certain visual aspects of the markdown text, you can 
+	 * gain access to those via the `visualizer` field.
+	 */
+	public static var visualizer(default, null) = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.hRuledTitleEReg, // Done.
@@ -87,7 +94,7 @@ class Markdown
 	 *  - certine effects will already be rendered by the interpreter, so no need to mess with those.
 	 *  - The interpreter doesnt support everything markdown has to offer (yet). supported markups:  
 	 * 	  - **Headings**: #, ##, ###, ####, #####, ######, #######
-	 * 	  - **Lists**: -, *, +, 1.
+	 * 	  - **Lists (also nested)**: -, *, +, 1., 2.
 	 * 	  - **CodeBlocks**: ``````
 	 * 	  - **Inline Code**: ``
 	 * 	  - **Italics**: _, *
@@ -148,10 +155,8 @@ class Markdown
 				}
 				else if (rule == patterns.linkEReg)
 				{
-					var linkLength = "";
-					while (linkLength.length < rule.matched(2).length)
-						linkLength += "​";
-					lineTexts = rule.replace(lineTexts, "​$1​​​" + linkLength);
+					var linkLength = "​".multiply(rule.matched(1).length);
+					lineTexts = rule.replace(lineTexts, "​$2​​​" + linkLength);
 					var info = rule.matchedPos();
 					effects.push(Link(rule.matched(1), info.pos, info.pos + info.len));
 				}
@@ -229,4 +234,10 @@ class Markdown
 		}
 		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
 	}
+
+	#if openfl
+	public static overload extern inline function visualizeMarkdown(textField:openfl.text.TextField):openfl.text.TextField {
+		return visualizer.generateVisuals(textField);
+	}
+	#end
 }

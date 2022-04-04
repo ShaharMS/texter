@@ -4,12 +4,7 @@ using texter.general.TextTools;
 
 class MarkdownBlocks {
 
-	public static var codeBlocks(default, null):MarkdownBlocks = new MarkdownBlocks();
-
-	public var blockSyntaxMap(default, null):Map<String, String -> Array<{color:Int, start:Int, end:Int}>>;
-
-	private function new() {
-		blockSyntaxMap = [
+	public static var blockSyntaxMap(default, null):Map<String, String -> Array<{color:Int, start:Int, end:Int}>> = [
 			"json" => parseJSON,
 			"haxe" => parseHaxe,
 			"c" => parseC,
@@ -49,10 +44,9 @@ class MarkdownBlocks {
 			"wasm" => parseWASM,
 			"solidity" => parseSolidity,	
 		];
-	}
 
-
-	public dynamic function parseJSON(text:String):Array<{color:Int, start:Int, end:Int}>
+	
+	public static dynamic function parseJSON(text:String):Array<{color:Int, start:Int, end:Int}>
 	{
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
 		var indexOfBool = text.indexesFromArray(["true", "false", "null"]),
@@ -82,41 +76,51 @@ class MarkdownBlocks {
 
 		return interp;
 	}
-	public dynamic function parseHaxe		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-    public dynamic function parseCSharp		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseCPP		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseC			(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseFlash		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseXML		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseJava		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseKotlin		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseGo			(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseHTML		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseCSS		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseJS			(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseTS			(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseLua		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseDart		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parsePython		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parsePHP		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseRuby		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseSQL		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseRust		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parsePerl		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseOCaml		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseYAML		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseHaskell	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseCrystal	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseClojure	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseScala		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseSwift		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseElixir		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseErlang		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseElm		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseAssembly	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseVB			(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseBasic		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseVHDL		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseWASM		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
-	public dynamic function parseSolidity	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseHaxe	(text:String):Array<{color:Int, start:Int, end:Int}> 
+	{
+		var interp:Array<{color:Int, start:Int, end:Int}> = [];
+		var indexOfBlue = text.indexesFromArray(["true", "false", "null", "public", "static", "dynamic", "extern", "inline", "override", "abstract", "final", "var", "function", "package", "enum", "typedef", "in", "is", "trace", "new", "this", "super", "extends", "implements", "interface"]),
+			indexOfPurle = text.indexesFromArray([ "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "try", "catch", "throw", "import"]), 
+			indexOfFunction = text.indexesFromEReg(~//),
+			indexOfKeyEnd = text.indexesOf('":'),
+			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+
+		return interp;
+	}
+    public static dynamic function parseCSharp	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseCPP		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseC		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseFlash	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseXML		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseJava	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseKotlin	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseGo		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseHTML	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseCSS		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseJS		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseTS		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseLua		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseDart	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parsePython	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parsePHP		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseRuby	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseSQL		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseRust	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parsePerl	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseOCaml	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseYAML	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseHaskell	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseCrystal	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseClojure	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseScala	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseSwift	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseElixir	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseErlang	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseElm		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseAssembly(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseVB		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseBasic	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseVHDL	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseWASM	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseSolidity(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 }
