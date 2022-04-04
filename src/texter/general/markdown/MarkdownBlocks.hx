@@ -81,8 +81,8 @@ class MarkdownBlocks {
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
 		var indexOfBlue = text.indexesFromArray(["true", "false", "null", "public", "static", "dynamic", "extern", "inline", "override", "abstract", "final", "var", "function", "package", "enum", "typedef", "in", "is", "trace", "new", "this", "super", "extends", "implements", "interface"]),
 			indexOfPurle = text.indexesFromArray([ "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "try", "catch", "throw", "import"]), 
-			indexOfFunction = text.indexesFromEReg(~//),
-			indexOfKeyEnd = text.indexesOf('":'),
+			indexOfFunctionName = text.indexesFromEReg(~/[a-z][a-zA-Z_]* *\(.*\) *{/),
+			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
 			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 
 		return interp;

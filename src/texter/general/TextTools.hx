@@ -165,7 +165,7 @@ class TextTools
 		@:privateAccess  var p = pattern.r.source;
 		@:privateAccess  var ereg = new EReg(p, '${if (pattern.r.ignoreCase) "i" else ""}${if (pattern.r.multiline) "m" else ""}');
 		while (ereg.match(string)) {
-			string = ereg.replace(string, "");
+			string = ereg.replace(string, multiply("⨔", ereg.matchedLeft().length));
 			var info = ereg.matchedPos();
 			indexArray.push({startIndex: info.pos, endIndex: info.pos + info.len});
 		}

@@ -188,7 +188,6 @@ class Markdown
 							}
 							else if (len == n)
 							{
-								trace("C");
 								if (prevLine.trim().charAt(0) == "•")
 								{
 									lineTexts = rule.replace(lineTexts, "$1• $3");
