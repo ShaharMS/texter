@@ -1,26 +1,3 @@
-2.0.0 (Month X, 2022) - Major Update!
-===
-### **Bug Fixes:**
-
-**FlxInputTextRTL:**
-
- - removed unnecesarry field from `getCharBoundaries`
- - fixed issues with caret positioning
- - fixed offcentered caret in very large/very small font sizes
- - fixed lag spikes when focus is being repetitively given to the text.
-
-### **New Features:**
-
-**FlxInputTextRTL**
-
- - added `getAlignment()` method
- - added `getCaretIndexAtPoint()` method
- - added `HOME_ACTION` and `END_ACTION`
-
-**Char - new type! features:**
-
- - extends `String` to report the character's `charCode`
- - can be instantiated with a `String` or `Int`
 
 **CharTools:**
 
@@ -68,6 +45,8 @@ It provides a user friendly way to edit the syntax, and all syntax handlers can 
 For now, suntax highlighting is only available for theses languages:
 
  - JSON
+ - Haxe
+ - C#
 
 
 **Emoji - new class!**
@@ -88,6 +67,7 @@ For now, suntax highlighting is only available for theses languages:
  - `multiply()` - multiplies a string by `X` times
  - `indexesOf()` finds and reports all occurrences of a substring inside a string
  - `indexesFromArray()` finds and reports all occurrences of the supplied substrings inside a string
+ - `indexesFromEReg()` finds and reports all occurences of the findings of a regex pattern in a string.
  
 1.1.4 (March 20, 2022)
 ===

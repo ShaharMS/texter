@@ -159,14 +159,18 @@ class TextTools
 		return indexArray;
 	}
 
-	public static function indexesFromEReg(string:String, pattern:EReg):Array<{startIndex:Int, endIndex:Int}> {
+	/**
+	 * reports all occurences of the findings of `ereg` in `string`.
+	 * NOTICE: avoid using eregs with the global flag, as they will only report the first substring found.
+	 * @param string the string to search in
+	 * @param ereg the EReg to use as the searching engine
+	 * @return an array of all positions of the substrings, from startIndex, up to but not including endIndex
+	 */
+	public static function indexesFromEReg(string:String, ereg:EReg):Array<{startIndex:Int, endIndex:Int}> {
 		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [];
-
-		@:privateAccess  var p = pattern.r.source;
-		@:privateAccess  var ereg = new EReg(p, '${if (pattern.r.ignoreCase) "i" else ""}${if (pattern.r.multiline) "m" else ""}');
 		while (ereg.match(string)) {
-			string = ereg.replace(string, multiply("⨔", ereg.matchedLeft().length));
 			var info = ereg.matchedPos();
+			string = ereg.replace(string, multiply("⨔", info.len - 1));
 			indexArray.push({startIndex: info.pos, endIndex: info.pos + info.len});
 		}
 		

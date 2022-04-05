@@ -1,5 +1,6 @@
 package;
 
+import openfl.events.Event;
 import texter.general.TextTools;
 import texter.general.markdown.MarkdownBlocks;
 import openfl.Lib;
@@ -46,16 +47,16 @@ class Main extends Sprite {
 		s.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
 		s.background = true;
 		s.backgroundColor = 0xDDDDDD;
-		s.border = true;
+		s.border = true; 
 		s.borderColor = 0x0000FF;
 		s.selectable = true;
 		s.wordWrap = true;
 		s.multiline = true;
 		addChild(s);
-		new Timer(200).run = () -> {
+		tf.addEventListener(Event.CHANGE, (e) -> {
 			s.text = tf.text;
 			Markdown.visualizer.generateVisuals(s);	
-		};
+		});
 	}
 	var markdownStressTest:String = "
 	# This is a header1

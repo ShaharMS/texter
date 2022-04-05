@@ -7,9 +7,11 @@ class MarkdownBlocks {
 	public static var blockSyntaxMap(default, null):Map<String, String -> Array<{color:Int, start:Int, end:Int}>> = [
 			"json" => parseJSON,
 			"haxe" => parseHaxe,
+			"hx" => parseHaxe,
 			"c" => parseC,
 			"cpp" => parseCPP,
 			"csharp" => parseCSharp,
+			"cs" => parseCSharp,
 			"java" => parseJava,
 			"js" => parseJS,
 			"php" => parsePHP,
@@ -79,15 +81,47 @@ class MarkdownBlocks {
 	public static dynamic function parseHaxe	(text:String):Array<{color:Int, start:Int, end:Int}> 
 	{
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
-		var indexOfBlue = text.indexesFromArray(["true", "false", "null", "public", "static", "dynamic", "extern", "inline", "override", "abstract", "final", "var", "function", "package", "enum", "typedef", "in", "is", "trace", "new", "this", "super", "extends", "implements", "interface"]),
+		var indexOfBlue = text.indexesFromEReg(~/(?: |\n|^)(overload|true|false|null|public|static|dynamic|extern|inline|override|abstract|final|var|function|package|enum|typedef|in|is|trace|new|this|class|super|extends|implements|interface|->)/m),
 			indexOfPurle = text.indexesFromArray([ "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "try", "catch", "throw", "import"]), 
-			indexOfFunctionName = text.indexesFromEReg(~/[a-z][a-zA-Z_]* *\(.*\) *{/),
+			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]*)\(/m),
+			indexOfClassName = text.indexesFromEReg(~/[A-Z][a-z]+/m),
 			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
-			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+			indexOfComments = text.indexesFromEReg(~/\/\/.*/m),
+			indexOfConditionals = text.indexesFromEReg(~/#(?:if|end|elseif) [^\n]*/m);
 
+		for (i in indexOfFunctionName) 	interp.push({color: 0xFF8700, start: i.startIndex, end: i.endIndex - 2});
+		for (i in indexOfBlue) 			interp.push({color: 0x4169E1, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfClassName) 	interp.push({color: 0x42B473, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfPurle) 		interp.push({color: 0xDC52BF, start: i.startIndex, end: i.startIndex + 2});
+		for (i in indexOfString) 		interp.push({color: 0xFF7F50, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfNumbers) 		interp.push({color: 0x62D493, start: i.startIndex, end: i.endIndex});
+		for (i in indexOfComments) 		interp.push({color: 0x556B2F, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfConditionals) 	interp.push({color: 0x888888, start: i.startIndex, end: i.endIndex - 1});
 		return interp;
 	}
-    public static dynamic function parseCSharp	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+    public static dynamic function parseCSharp	(text:String):Array<{color:Int, start:Int, end:Int}> 
+	{
+		var interp:Array<{color:Int, start:Int, end:Int}> = [];
+		trace("tryParse");
+		var indexOfBlue = text.indexesFromEReg(~/(?:\(| |\n|^)(virtual|true|false|null|public|static|as|base|bool|byte|abstract|char|var|checked|class|enum|const|in|is|decimal|new|this|delegate|super|double|extern|float|int|inerface|internal|long|namespace|object|override|private|protected|readonly|short|sizeof|string|struct|typeof|uint|ulong|ushort|using|void|volatile|dynamic|where|yield|to|partial)/m),
+		//var	indexOfPurle = text.indexesFromEReg(~/(?: |\n|^)(if|else|for|while|do|switch|case|default|break|continue|try|catch|throw|return|foreach|)/m),
+			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m),
+			indexOfClassName = text.indexesFromEReg(~/[A-Z][a-z]+/m),
+			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
+			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+			indexOfComments = text.indexesFromEReg(~/\/\/.*/m);
+		trace("endParse");
+
+		for (i in indexOfBlue) 			interp.push({color: 0x4169E1, start: i.startIndex + 1, end: i.endIndex});
+		for (i in indexOfClassName) 	interp.push({color: 0x42B473, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfFunctionName) 	interp.push({color: 0xFF8700, start: i.startIndex, end: i.endIndex - 2});
+		//for (i in indexOfPurle) 		interp.push({color: 0xDC52BF, start: i.startIndex, end: i.startIndex + 2});
+		for (i in indexOfString) 		interp.push({color: 0xFF7F50, start: i.startIndex, end: i.endIndex - 1});
+		for (i in indexOfNumbers) 		interp.push({color: 0x62D493, start: i.startIndex, end: i.endIndex});
+		for (i in indexOfComments) 		interp.push({color: 0x556B2F, start: i.startIndex, end: i.endIndex - 1});
+		return interp;
+	}
 	public static dynamic function parseCPP		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 	public static dynamic function parseC		(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 	public static dynamic function parseFlash	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
