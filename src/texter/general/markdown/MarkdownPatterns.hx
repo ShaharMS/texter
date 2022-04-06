@@ -22,26 +22,4 @@ class MarkdownPatterns
 	public static var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public static var parSepEReg(default, null):EReg = ~/\n\n/gm;
 	public static var emojiEReg(default, null):EReg = ~/:([^:]+):/m;
-
-	/**
-	 * Because tables are slow to parse with regex, this function is used to parse & style tables.
-	 * @param markdownText the text containing a table
-	 */
-	public static function parseTable(markdownText:String):String
-	{
-		// first - filter any line that doesnt start with a |
-		var lines = markdownText.split("\n");
-		for (line in lines)
-			if (line.charAt(0) != "|")
-				lines.remove(line);
-		var textArray:Array<String> = [];
-		// second - split the lines into cells
-		for (i in 0...lines.length)
-		{
-			textArray.push(lines[i]);
-			var indexes = lines[i].indexesOf("|");
-		}
-
-		return markdownText;
-	}
 }

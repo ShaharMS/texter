@@ -71,7 +71,7 @@ class MarkdownVisualizer
 						field.setTextFormat(new openfl.text.TextFormat("_typewriter", 20, markdownTextFormat.color, null, null, null, null, null, null, markdownTextFormat.size, markdownTextFormat.size), start, end);
 						var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
 						for (i in coloring) {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end + 1);
+							field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 						}
 					}
 					case StrikeThrough(start, end): continue;

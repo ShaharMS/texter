@@ -1,3 +1,9 @@
+2.0.0 (April X, 2022) - Major Update!
+===
+**FlxInputTextRTL:**
+
+ - removed bulky and old code
+ - fixed lag spikes when the textfield is selected for a long time
 
 **CharTools:**
 
@@ -7,9 +13,11 @@
 
 **Markdown - new class! features:**
 
- - added an array of markdown ERegs - `markdownRules`
+ - added a field that gives access to the visualizer - `visualizer`
  - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdowPatterns`
+ - added `syntaxBlocks` field - you can redefine highlight pasers there.
  - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffect.hx`
+ - added `visualizeMarkdown` - a (soon to be) cross-framework method to display markdown visuals
 
 **MarkdownPatterns - new class!**
 
@@ -40,22 +48,16 @@
 **MarkdownBlocks - new class!**
 
 `MarkdownBlocks` is the class that handles the code block's syntax highlighting in markdown.
-It provides a user friendly way to edit the syntax, and all syntax handlers can be redefiend with `parseLang = function(...)`
+It provides a user friendly way to edit the syntax, and all syntax handlers can be redefiend with `MarkdownBlocks.parseLang = function(...)`
 
-For now, suntax highlighting is only available for theses languages:
+For now, syntax highlighting is only available (out-of-the-box) for theses languages:
 
  - JSON
  - Haxe
  - C#
+ - C
 
-
-**Emoji - new class!**
-
-`Emoji` is a class that contains every single emoji supported by github. it contains:
-
- - `emojiToString()` - a function to convert an emoji into a string
- - `emojiFromString()` - a function to convert a string into an emoji
- - `extractEmojis()` - a function to extract all emojis present in a string of text
+More will be added in the future :)
 
 **TextTools - new class!**
 

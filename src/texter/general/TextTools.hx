@@ -138,7 +138,7 @@ class TextTools
 	 * repoort all occurences of the elements inside `sub` in `string`
 	 * @param string the string to search in
 	 * @param subs an array of substrings to search for
-	 * @return an array of all positions of the substrings
+	 * @return an array of all positions of the substrings, from startIndex, up to but not including endIndex
 	 */
 	public static function indexesFromArray(string:String, subs:Array<String>):Array<{startIndex:Int, endIndex:Int}>
 	{
@@ -149,7 +149,7 @@ class TextTools
 			var removedLength = 0, index = string.indexOf(sub);
 			while (index != -1)
 			{
-				indexArray.push({startIndex: index + removedLength, endIndex: index + sub.length + removedLength - 1});
+				indexArray.push({startIndex: index + removedLength, endIndex: index + sub.length + removedLength});
 				removedLength += sub.length;
 				string = string.substring(0, index) + string.substring(index + sub.length, string.length);
 				index = string.indexOf(sub);
