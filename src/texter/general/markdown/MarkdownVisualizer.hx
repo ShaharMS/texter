@@ -52,13 +52,12 @@ class MarkdownVisualizer
 			{
 				switch e
 				{
+					case Emoji(type, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 20), start, end);
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
 					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", 20), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("_serif"), start, end);
-					case ParagraphGap(start, end): continue; // default behaviour
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, ""), start, end);
-					case Emoji(type, start, end): continue; // default behaviour
 					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 60 - Std.int(level * 10), null, true), start, end);
 					case UnorderedListItem(nestingLevel, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel, start + nestingLevel + 1);			
 					case OrderedListItem(number, nestingLevel, start, end): continue;
@@ -76,6 +75,8 @@ class MarkdownVisualizer
 					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;
+					case ParagraphGap(start, end): continue; // default behaviour
+
 					default: continue;
 				}
 			}

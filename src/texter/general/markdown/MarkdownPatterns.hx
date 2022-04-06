@@ -1,8 +1,5 @@
 package texter.general.markdown;
 
-using StringTools;
-using texter.general.TextTools;
-
 class MarkdownPatterns
 {	
 	public static var hRuledTitleEReg(default, null):EReg = ~/([^\n]+)\n^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
@@ -21,5 +18,5 @@ class MarkdownPatterns
 	public static var astItalicEReg(default, null):EReg = ~/\*([^\n]+)\*/m;
 	public static var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public static var parSepEReg(default, null):EReg = ~/\n\n/gm;
-	public static var emojiEReg(default, null):EReg = ~/:([^:]+):/m;
+	public static var emojiEReg(default, null):EReg = ~/(:[^:]+:)/m;
 }

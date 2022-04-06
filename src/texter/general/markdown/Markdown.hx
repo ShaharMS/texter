@@ -4,6 +4,7 @@ import texter.general.markdown.MarkdownEffect;
 import texter.general.markdown.MarkdownPatterns;
 import texter.general.markdown.MarkdownBlocks;
 import texter.general.markdown.MarkdownVisualizer;
+import texter.general.Emoji;
 
 using StringTools;
 using texter.general.TextTools;
@@ -117,7 +118,7 @@ class Markdown
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
-			if (rule == patterns.parSepEReg || rule == patterns.emojiEReg)
+			if (rule == patterns.parSepEReg)
 				continue;
 			while (rule.match(lineTexts))
 			{
@@ -228,6 +229,12 @@ class Markdown
 					lineTexts = rule.replace(lineTexts, langLength + "​​​\r$2​​​");
 					var info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
+				}
+				else if (rule == patterns.emojiEReg) 
+				{
+					lineTexts = rule.replace(lineTexts, '​${texter.general.Emoji.emojiFromString[rule.matched(1)]}${"​".multiply(rule.matched(1).length - 2)}');
+					var info = rule.matchedPos();
+					effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
 				}
 			}
 		}
