@@ -15,7 +15,69 @@ using texter.general.TextTools;
  * 2. If you cant make existing solutions work well, add a new visualization method. again - if it works as intended, contact me and i'll add it.
  * 3. contact me and ask me to make a visualization method. this one will take the longest since ill need to download and learn how to make things with that framework.
  * 
- * contact info: 
+ * ### How To Implement
+ * 
+ * If you want to make markdown visualization work for your framework, its actually pretty easy.
+ * The interpreter already sends all of the data and even does some nice modifictaions, so its as easy as can be:
+ * 
+ * **First, make a function, containing `Markdown.interpret` that recives a text field and retruns it**  
+ * **Dont forget to reset the text's "styling" each time to avoid artifacts!**
+ * ****
+ * ```haxe
+ * 	function displayMarkdown(textField:Text):Text {
+ * 		textField.textStyle = defaultTextStyle;
+ * 		Markdown.interpret(textField.text, function(markdownText:String, effects:Array<MarkdownEffect>) {
+ * 			
+ * 		});
+ * 		return textField;
+ * 	}
+ * ```
+ * 
+ * **Second, in the body of the anonymus function, you implement this *giant*
+ *  switch-case to handle all of the effects you want to handle, as well as make your text "markdown-artifact-free":**
+ * ```haxe
+ * 	function displayMarkdown(textField:Text):Text {
+ * 		textField.textStyle = defaultTextStyle;
+ * 		Markdown.interpret(textField.text, function(markdownText:String, effects:Array<MarkdownEffect>) {
+ * 			field.text = markdownText;
+			for (e in effects)
+			{
+				switch e
+				{
+					case Emoji(type, start, end): 
+					case Bold(start, end): 
+					case Italic(start, end): 
+					case Code(start, end): 
+					case Math(start, end): 
+					case Link(link, start, end): 
+					case Heading(level, start, end): 
+					case UnorderedListItem(nestingLevel, start, end): 
+					case OrderedListItem(number, nestingLevel, start, end): 
+					case HorizontalRule(type, start, end): 
+					case CodeBlock(language, start, end): 
+					case StrikeThrough(start, end): 
+					case Image(altText, imageSource, start, end): 
+					case ParagraphGap(start, end):
+
+					default: continue;
+				}
+			}
+		});
+		return field;
+ * 	}
+ * ```
+ * 
+ * **And FInally, you can add your desired effect in the switch-case:**
+ * ```haxe
+ * case Bold: textField.setBold(start, end);
+ * case Italic: textField.setItalic(start, end);
+ * case Math: textField.setFont("path/to/mathFont.ttf", start, end); //ETC.
+ * ```
+ * 
+ * ### For a working example you can look at this file's source code.
+ * 
+ * 
+ * contact info (for submitting a visualization method): 
  * - ShaharMS#8195 (discord)
  * - https://github.com/ShaharMS/texter (this haxelib's repo to make pull requests)
  */
@@ -43,8 +105,6 @@ class MarkdownVisualizer
 	public static overload extern inline function generateVisuals(field:openfl.text.TextField):openfl.text.TextField
 	{
 		field.defaultTextFormat = markdownTextFormat;
-		//if (field.mask == null) field.mask = new Bitmap(new BitmapData(Std.int(field.width), Std.int(field.height), true, 0xFFFFFFFF));
-		//@:privateAccess field.mask.__graphics.clear();
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
 			field.text = markdownText;
