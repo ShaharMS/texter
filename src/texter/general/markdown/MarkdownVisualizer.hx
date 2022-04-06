@@ -25,19 +25,19 @@ class MarkdownVisualizer
 	/**
 	 * When visualizing a given Markdown string, this `TextFormat` will be used.
 	 */
-	public static var markdownTextFormat(default,
-		never):openfl.text.TextFormat = new openfl.text.TextFormat(null, 18, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat(null, 18, 0x000000, false, false, false, "", "", "left");
 
 	/**
 		Generates the default visual theme from the markdown interpreter's information.
 
 		examples (with/without static extension):
-
+		```haxe
 		var visuals = new TextField();
 		visuals.text = "# hey everyone\n this is *so cool*"
 		MarkdownVisualizer.generateTextFieldVisuals(visuals);
 		//OR
 		visuals.generateVisuals();
+		```
 
 	**/
 	public static overload extern inline function generateVisuals(field:openfl.text.TextField):openfl.text.TextField
@@ -52,13 +52,13 @@ class MarkdownVisualizer
 			{
 				switch e
 				{
-					case Emoji(type, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 20), start, end);
+					case Emoji(type, start, end): trace(effects);
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
-					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", 20), start, end);
+					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("_serif"), start, end);
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, ""), start, end);
-					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, 60 - Std.int(level * 10), null, true), start, end);
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
 					case UnorderedListItem(nestingLevel, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel, start + nestingLevel + 1);			
 					case OrderedListItem(number, nestingLevel, start, end): continue;
 					case HorizontalRule(type, start, end): {
@@ -67,11 +67,13 @@ class MarkdownVisualizer
 						var lW = field.width - 2 - field.defaultTextFormat.rightMargin, x = field.x + field.defaultTextFormat.leftMargin + 2;
 					}
 					case CodeBlock(language, start, end): {
-						field.setTextFormat(new openfl.text.TextFormat("_typewriter", 20, markdownTextFormat.color, null, null, null, null, null, null, markdownTextFormat.size, markdownTextFormat.size), start, end);
-						var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
-						for (i in coloring) {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
-						}
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, markdownTextFormat.size, markdownTextFormat.size), start, end);
+						try {
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
+							for (i in coloring) {
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
+							}
+						}  catch(e) trace(e);		
 					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;

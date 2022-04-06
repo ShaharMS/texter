@@ -36,7 +36,8 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
-
+	<haxelib name="haxeui-core"/>
+	<haxelib name="haxeui-openfl" />
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
 

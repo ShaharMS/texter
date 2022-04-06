@@ -55,7 +55,7 @@ class Main extends Sprite {
 		addChild(s);
 		tf.addEventListener(Event.CHANGE, (e) -> {
 			s.text = tf.text;
-			Markdown.visualizer.generateVisuals(s);	
+			Markdown.visualizeMarkdown(s);
 		});
 	}
 	var markdownStressTest:String = "

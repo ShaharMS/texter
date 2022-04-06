@@ -51,6 +51,7 @@ class Markdown
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
 		patterns.codeblockEReg, // Done.
+		patterns.emojiEReg, // Done.
 		patterns.boldEReg, // Done.
 		patterns.astBoldEReg, // Done.
 		patterns.strikeThroughEReg, // Done.
@@ -61,7 +62,6 @@ class Markdown
 		patterns.parSepEReg, // Done.
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
-		patterns.emojiEReg, // Done.
 		patterns.hRuleEReg // Done.
 	];
 
@@ -232,9 +232,11 @@ class Markdown
 				}
 				else if (rule == patterns.emojiEReg) 
 				{
-					lineTexts = rule.replace(lineTexts, '​${texter.general.Emoji.emojiFromString[rule.matched(1)]}${"​".multiply(rule.matched(1).length - 2)}');
+					var emoji = '​${texter.general.Emoji.emojiFromString[rule.matched(1)]}${"​".multiply(rule.matched(1).length - 2)}';
+					if (emoji.contains("undefined")) emoji = rule.matched(1).replace(":", "​");
+					lineTexts = rule.replace(lineTexts, emoji);
 					var info = rule.matchedPos();
-					effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
+					effects.push(Emoji(emoji, info.pos, info.pos + info.len));
 				}
 			}
 		}
@@ -242,6 +244,22 @@ class Markdown
 	}
 
 	#if openfl
+	/**
+		Generates the default visual theme from the markdown interpreter's information.
+
+		If you want to edit the default visual theme, you can go to 
+		`Markdown.visualizer.markdownTextFormat`/`MarkdownVisualizer.markdownTextFormat` and change things there.
+
+		examples (with/without static extension):
+		```haxe
+		var visuals = new TextField();
+		visuals.text = "# hey everyone\n this is *so cool*"
+		Markdown.visualizeMarkdown(visuals);
+		//OR
+		visuals.visualizeMarkdown();
+		```
+
+	**/
 	public static overload extern inline function visualizeMarkdown(textField:openfl.text.TextField):openfl.text.TextField {
 		return visualizer.generateVisuals(textField);
 	}
