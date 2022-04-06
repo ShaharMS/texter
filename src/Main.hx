@@ -4,7 +4,6 @@ import openfl.events.Event;
 import texter.general.TextTools;
 import texter.general.markdown.MarkdownBlocks;
 import openfl.Lib;
-import js.Browser;
 import openfl.display.FPS;
 import texter.general.markdown.MarkdownVisualizer;
 import haxe.Timer;
@@ -35,9 +34,6 @@ class Main extends Sprite {
 		tf.wordWrap = true;
 		tf.multiline = true;
 		addChild(tf);
-		var ss = ~/abcdefg/g;
-		var sss = Std.string(@:privateAccess ss.r);
-		trace(sss);
 		var s = new TextField();
 		s.width = 700;
 		s.height = 700;
@@ -52,6 +48,7 @@ class Main extends Sprite {
 		s.selectable = true;
 		s.wordWrap = true;
 		s.multiline = true;
+		s.defaultTextFormat = tf.defaultTextFormat = MarkdownVisualizer.markdownTextFormat;
 		addChild(s);
 		tf.addEventListener(Event.CHANGE, (e) -> {
 			s.text = tf.text;

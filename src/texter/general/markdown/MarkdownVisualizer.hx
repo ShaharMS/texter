@@ -1,5 +1,8 @@
 package texter.general.markdown;
 
+import flash.display.BitmapData;
+import openfl.display.Bitmap;
+import openfl.display.DisplayObject;
 using texter.general.TextTools;
 
 /**
@@ -87,7 +90,7 @@ class MarkdownVisualizer
 	/**
 	 * When visualizing a given Markdown string, this `TextFormat` will be used.
 	 */
-	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat(null, 18, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 18, 0x000000, false, false, false, "", "", "left");
 
 	/**
 		Generates the default visual theme from the markdown interpreter's information.
@@ -105,6 +108,7 @@ class MarkdownVisualizer
 	public static overload extern inline function generateVisuals(field:openfl.text.TextField):openfl.text.TextField
 	{
 		field.defaultTextFormat = markdownTextFormat;
+		field.mask = new Bitmap(new BitmapData(Std.int(field.width), Std.int(field.height), true, 0x00000000));
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
 			field.text = markdownText;
@@ -112,7 +116,7 @@ class MarkdownVisualizer
 			{
 				switch e
 				{
-					case Emoji(type, start, end): trace(effects);
+					case Emoji(type, start, end): 
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
 					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2), start, end);
