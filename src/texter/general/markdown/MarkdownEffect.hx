@@ -2,6 +2,7 @@ package texter.general.markdown;
 
 enum MarkdownEffect
 {
+	Indent(level:Int, start:Int, end:Int);
 	Bold(start:Int, end:Int);
 	Italic(start:Int, end:Int);
 	StrikeThrough(start:Int, end:Int);

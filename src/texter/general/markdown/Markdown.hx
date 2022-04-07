@@ -48,6 +48,7 @@ class Markdown
 	public static var visualizer(default, null) = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
+		patterns.indentEReg, // Done.
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
 		patterns.codeblockEReg, // Done.
@@ -113,7 +114,7 @@ class Markdown
 	 */
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
-		var lineTexts = StringTools.replace(markdownText, "\r", "");
+		var lineTexts = StringTools.replace(markdownText, "\r", "") + "\n";
 		// fixes interpreter faults & matches the markdown rules.
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
@@ -122,6 +123,11 @@ class Markdown
 				continue;
 			while (rule.match(lineTexts))
 			{
+				if (rule == patterns.indentEReg) {
+					lineTexts = rule.replace(lineTexts, "​".multiply(rule.matched(1).length));
+					var info = rule.matchedPos();
+					effects.push(Indent(rule.matched(1).length, info.pos, info.pos + info.len));
+				}
 				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​$1​");
@@ -240,7 +246,7 @@ class Markdown
 				}
 			}
 		}
-		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
+		onComplete(lineTexts.replace("\r", "\n"), effects);
 	}
 
 	#if openfl

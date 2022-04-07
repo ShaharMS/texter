@@ -90,7 +90,7 @@ class MarkdownVisualizer
 	/**
 	 * When visualizing a given Markdown string, this `TextFormat` will be used.
 	 */
-	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 18, 0x000000, false, false, false, "", "", "left");
+	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 18, 0x000000, false, false, false, "", "", "left", 0, 0, 0, null);
 
 	/**
 		Generates the default visual theme from the markdown interpreter's information.
@@ -108,7 +108,6 @@ class MarkdownVisualizer
 	public static overload extern inline function generateVisuals(field:openfl.text.TextField):openfl.text.TextField
 	{
 		field.defaultTextFormat = markdownTextFormat;
-		field.mask = new Bitmap(new BitmapData(Std.int(field.width), Std.int(field.height), true, 0x00000000));
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
 			field.text = markdownText;
@@ -117,6 +116,7 @@ class MarkdownVisualizer
 				switch e
 				{
 					case Emoji(type, start, end): 
+					case Indent(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null,null, null, null, null , null, null, null, null, null, null, level * markdownTextFormat.size), start, end);
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
 					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2), start, end);
@@ -131,7 +131,7 @@ class MarkdownVisualizer
 						var lW = field.width - 2 - field.defaultTextFormat.rightMargin, x = field.x + field.defaultTextFormat.leftMargin + 2;
 					}
 					case CodeBlock(language, start, end): {
-						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, markdownTextFormat.size, markdownTextFormat.size), start, end);
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size), start, end);
 						try {
 							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
 							for (i in coloring) {
