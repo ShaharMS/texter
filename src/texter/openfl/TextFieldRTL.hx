@@ -1,4 +1,6 @@
 package texter.openfl;
+import haxe.Timer;
+import openfl.Lib;
 import openfl.text.TextFieldType;
 import texter.general.TextTools.TextDirection;
 import openfl.text.TextFormat;
@@ -85,7 +87,7 @@ class TextFieldRTL extends Sprite {
 
     public var markdownDisplay(default, null):TextField;
 
-    public var caretIndex(default, set):Int;
+    public var caretIndex(default, set):Int = 0;
 
     public var text(get, set):String;
 
@@ -118,27 +120,40 @@ class TextFieldRTL extends Sprite {
     var caret:Bitmap;
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool;
+	var caretTimer:Timer = new Timer(500);
 
     public function new() {
         super();
+		buttonMode = true;
+		mouseChildren = true;
+
         textField = new TextField();
 		addChild(textField);
 
         upperMask = new Sprite();
 		upperMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
-        caret = new Bitmap(new BitmapData(1, Std.int(height) - 4, true, 0x00000000));
+        caret = new Bitmap(new BitmapData(1, Std.int(textField.defaultTextFormat.size), false, 0x000000));
+		caret.x = caret.y = 2;
+		caret.visible = false;
+		caretTimer.run = caretBlink;
+		caretTimer.stop();
 
         addChild(upperMask);
         addChild(caret);
-        //if (stage == null) parent.addChild(new Bitmap(new BitmapData(1, 1, true, 0x00000000)));
-        stage.window.onTextInput.add(onTextInput);
-        stage.window.onKeyDown.add(onKeyDown);
+        Lib.application.window.onTextInput.add(onTextInput);
+        Lib.application.window.onKeyDown.add(onKeyDown);
 
-        addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		textField.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
+		upperMask.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
+        addEventListener(MouseEvent.MOUSE_DOWN, onFocusIn);
         addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
         addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
     }
+
+	function caretBlink() {
+		caret.visible = !caret.visible;
+	}
 
     function onFocusOut(e:FocusEvent) {
         hasFocus = false;
@@ -208,14 +223,17 @@ class TextFieldRTL extends Sprite {
 
 		if (t.length > 0)
 		{
+			insertSubstring(t, caretIndex);
 			caretIndex++;
-			insertSubstring(t, caretIndex - 1);
 			if (hasConverted) caretIndex++;
 			if (addedSpace) caretIndex++;
+			trace("caretIndex: " + caretIndex);
+			trace(getCharBoundaries(caretIndex));
 		}
     }
 
     function onKeyDown(key:KeyCode, modifier:KeyModifier) {
+		trace("called");
 		// if the user didnt intend to edit the text, dont do anything
 		if (!hasFocus)
 			return;
@@ -328,7 +346,7 @@ class TextFieldRTL extends Sprite {
 		else if (key == KeyCode.HOME) caretIndex = 0;
     }
 
-	function onMouseDown(e:MouseEvent) {
+	function onFocusIn(e:MouseEvent) {
         stage.window.textInputEnabled = true;
         if (type != INPUT) return;
         hasFocus = true;
@@ -345,16 +363,34 @@ class TextFieldRTL extends Sprite {
 	}
 
     public function getCaretIndexAtPoint(x:Float, y:Float):Int {
-        if (text.length == 0) return 0;
-
-        var bounds:Rectangle, point = new Point(x, y);
-        for (i in 0...text.length) {
-            bounds = getCharBoundaries(i);
-            if (!bounds.containsPoint(point)) continue;
-            return i;
-        }
-
-        return -1;
+        if (text.length > 0)
+		{
+			for (i in 0...text.length)
+			{
+				var r = getCharBoundaries(i);
+				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) // <----------------- CHANGE HERE
+				{
+					return i;
+				}
+				
+			}
+			//the mouse might have been pressed between the lines
+			var i = 0;
+			while (i < text.length) {
+				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
+				if (r == null) return 0;
+				if (y >= r.y && y <= r.bottom) {
+					if (i == 0) i--;
+					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
+					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
+					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
+				}
+				i++;
+			}
+			return text.length;
+		}
+		// place caret at leftmost position
+		return 0;
     }
 
     public function getCaretIndexOfMouse():Int {
@@ -521,10 +557,23 @@ class TextFieldRTL extends Sprite {
 
 	function set_caretIndex(index:Int):Int
 	{
+		caretIndex = index;
+
+		// If caret is too far to the right something is wrong
+		if (caretIndex > (text.length + 1))
+		{
+			caretIndex = text.length;
+		}
+		
 		var bounds = getCharBoundaries(index);
 		caret.height = bounds.height;
-		caret.x = bounds.x + bounds.width + 2;
+		caret.x = bounds.x + bounds.width;
 		caret.y = bounds.y;
+
+		if (caret.x < 0) caret.x = 2;
+		if (caret.y < 0) caret.y = 2;
+		if (caret.x > width) caret.x = width - 2;
+		if (caret.y > height) caret.y = height - 2;
 
 		return index;
 	}
@@ -569,7 +618,12 @@ class TextFieldRTL extends Sprite {
 		if (value)
 		{
 			stage.focus = this;
+			caret.visible = true;
+			caretTimer.run();
 			return value;
+		} else {
+			caretTimer.stop();
+			caret.visible = false;
 		}
 		return false;
 	}

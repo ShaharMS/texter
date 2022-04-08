@@ -71,10 +71,7 @@ class Main extends Sprite {
 
 	function tfrtl() {
 		var tf = new TextFieldRTL();
-		tf.width = 700;
-		tf.height = 700;
 		tf.text = "";
-		tf.x = tf.y = 50;
 		tf.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
 		tf.background = true;
 		tf.backgroundColor = 0xDDDDDD;
