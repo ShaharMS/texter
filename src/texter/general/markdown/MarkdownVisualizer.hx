@@ -1,8 +1,10 @@
 package texter.general.markdown;
 
-import flash.display.BitmapData;
+import flixel.FlxG;
+import openfl.display.BitmapData;
 import openfl.display.Bitmap;
-import openfl.display.DisplayObject;
+import openfl.text.TextField;
+import flixel.FlxSprite;
 using texter.general.TextTools;
 
 /**
@@ -110,6 +112,7 @@ class MarkdownVisualizer
 		field.defaultTextFormat = markdownTextFormat;
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
+			trace(effects);
 			field.text = markdownText;
 			for (e in effects)
 			{
@@ -148,27 +151,6 @@ class MarkdownVisualizer
 			}
 		});
 		return field;
-	}
-	#end
-
-	#if flixel
-	/**
-		Generates the default visual theme from the markdown interpreter's information.
-
-		examples (with/without static extension):
-
-		```haxe
-		var t = new FlxText();
-		t.text = "# hey everyone\n this is *so cool*"
-		var visuals = MarkdownVisualizer.generateTextFieldVisuals(t);
-		//OR
-		var visuals = t.generateTextFieldVisuals();
-		```
-
-	**/
-	public static overload extern inline function generateVisuals(field:flixel.text.FlxText)
-	{
-		throw "visualizer.generateVisuals not yet implemented for Flixel";
 	}
 	#end
 }

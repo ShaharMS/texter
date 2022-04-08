@@ -1,6 +1,7 @@
 #if flixel
 package texter.flixel;
 
+
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.events.KeyboardEvent;
@@ -8,6 +9,7 @@ import texter.general.CharTools;
 import flixel.FlxG;
 import openfl.desktop.Clipboard;
 import texter.flixel._internal.FlxInputText;
+import texter.general.TextTools.TextDirection;
 
 using StringTools;
 
@@ -335,10 +337,3 @@ class FlxInputTextRTL extends FlxInputText
 	}
 }
 #end
-
-enum TextDirection
-{
-	RTL;
-	LTR;
-	UNDETERMINED;
-}

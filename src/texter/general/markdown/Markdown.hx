@@ -114,7 +114,7 @@ class Markdown
 	 */
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
-		var lineTexts = StringTools.replace(markdownText, "\r", "") + "\n";
+		var lineTexts = StringTools.replace(markdownText, "\r", "");
 		// fixes interpreter faults & matches the markdown rules.
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
@@ -124,14 +124,15 @@ class Markdown
 			while (rule.match(lineTexts))
 			{
 				if (rule == patterns.indentEReg) {
-					lineTexts = rule.replace(lineTexts, "​".multiply(rule.matched(1).length));
-					var info = rule.matchedPos();
-					effects.push(Indent(rule.matched(1).length, info.pos, info.pos + info.len));
+					lineTexts = rule.replace(lineTexts, "​".multiply(rule.matched(1).length) + rule.matched(2));
+					final info = rule.matchedPos();
+					final pos = info.pos - 1 < 0 ? info.pos : info.pos - 1;
+					effects.push(Indent(rule.matched(1).length, pos, info.pos + info.len));
 				}
 				if (rule == patterns.italicEReg || rule == patterns.mathEReg || rule == patterns.codeEReg || rule == patterns.astItalicEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​$1​");
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(if (rule == patterns.mathEReg) Math(info.pos,
 						info.pos + info.len) else if (rule == patterns.codeEReg) Code(info.pos, info.pos + info.len) else
 						Italic(info.pos, info.pos + info.len));
@@ -139,20 +140,20 @@ class Markdown
 				else if (rule == patterns.boldEReg || rule == patterns.strikeThroughEReg || rule == patterns.astBoldEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​​$1​​");
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(if (rule == patterns.boldEReg || rule == patterns.astBoldEReg) Bold(info.pos,
 						info.pos + info.len) else StrikeThrough(info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.hRuleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, if (rule == patterns.parSepEReg) "\n\n" else "—".multiply(rule.matched(1).length));
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(HorizontalRule(rule.matched(1).charAt(0), info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.hRuledTitleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, rule.matched(1) + "\n" + "—".multiply(rule.matched(2).length));
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					var type = rule.matched(2).charAt(0);
 					if (rule.matched(1).charAt(0) == "#")
 						continue; // this is inteded to be a regular heading
@@ -164,7 +165,7 @@ class Markdown
 				{
 					var linkLength = "​".multiply(rule.matched(1).length);
 					lineTexts = rule.replace(lineTexts, "​$2​​​" + linkLength);
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(Link(rule.matched(1), info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.listItemEReg)
@@ -172,7 +173,7 @@ class Markdown
 					if (!rule.matched(2).contains("."))
 					{
 						var n = rule.matched(1).length;
-						var info = rule.matchedPos();
+						final info = rule.matchedPos();
 						var start = info.pos - 2;
 						if (start < 0)
 						{
@@ -217,14 +218,14 @@ class Markdown
 					else
 					{
 						lineTexts = rule.replace(lineTexts, rule.matched(1) + rule.matched(2).replace(".", "") + "․ $3");
-						var info = rule.matchedPos();
+						final info = rule.matchedPos();
 						effects.push(OrderedListItem(Std.parseInt(rule.matched(2)), rule.matched(1).length, info.pos, info.pos + info.len - 1));
 					}
 				}
 				else if (rule == patterns.titleEReg)
 				{
 					lineTexts = rule.replace(lineTexts, rule.matched(1).replace("#", "​") + "$2");
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.codeblockEReg)
@@ -233,7 +234,7 @@ class Markdown
 					while (langLength.length < rule.matched(1).length)
 						langLength += "​";
 					lineTexts = rule.replace(lineTexts, langLength + "​​​\r$2​​​");
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.emojiEReg) 
@@ -241,7 +242,7 @@ class Markdown
 					var emoji = '​${texter.general.Emoji.emojiFromString[rule.matched(1)]}${"​".multiply(rule.matched(1).length - 2)}';
 					if (emoji.contains("undefined")) emoji = rule.matched(1).replace(":", "​");
 					lineTexts = rule.replace(lineTexts, emoji);
-					var info = rule.matchedPos();
+					final info = rule.matchedPos();
 					effects.push(Emoji(emoji, info.pos, info.pos + info.len));
 				}
 			}

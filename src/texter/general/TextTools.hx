@@ -105,7 +105,7 @@ class TextTools
 		var stringcopy = string;
 		if (times <= 0)
 			return "";
-		while (times-- > 0)
+		while (--times > 0)
 		{
 			string += stringcopy;
 		}
@@ -178,3 +178,12 @@ class TextTools
 		
 	}
 }
+
+
+enum TextDirection
+{
+	RTL;
+	LTR;
+	UNDETERMINED;
+}
+

@@ -1,5 +1,11 @@
 package;
 
+import texter.openfl.TextFieldRTL;
+import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
+import flixel.FlxState;
+import texter.flixel.FlxInputTextRTL;
+import flixel.text.FlxText;
 import openfl.events.Event;
 import texter.general.TextTools;
 import texter.general.markdown.MarkdownBlocks;
@@ -19,7 +25,8 @@ class Main extends Sprite {
 
     public function new() {
         super();
-		md();
+		//md();
+		tfrtl();
 	}
 
 
@@ -60,5 +67,24 @@ class Main extends Sprite {
 			s.text = tf.text;
 			Markdown.visualizeMarkdown(s);
 		});
+	}
+
+	function tfrtl() {
+		var tf = new TextFieldRTL();
+		tf.width = 700;
+		tf.height = 700;
+		tf.text = "";
+		tf.x = tf.y = 50;
+		tf.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
+		tf.background = true;
+		tf.backgroundColor = 0xDDDDDD;
+		tf.border = true;
+		tf.borderColor = 0x0000FF;
+		tf.selectable = true;
+		tf.type = INPUT;
+		tf.wordWrap = true;
+		tf.multiline = true;
+
+		addChild(tf);
 	}
 }

@@ -19,5 +19,5 @@ class MarkdownPatterns
 	public static var mathEReg(default, null):EReg = ~/\$([^\$]+)\$/m;
 	public static var parSepEReg(default, null):EReg = ~/\n\n/gm;
 	public static var emojiEReg(default, null):EReg = ~/(:[^: ]+:)/m;
-	public static var indentEReg(default, null):EReg = ~/^(>+)/m;
+	public static var indentEReg(default, null):EReg = ~/^(>+)(.+)/m;
 }
