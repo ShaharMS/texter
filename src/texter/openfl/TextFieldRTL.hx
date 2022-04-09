@@ -1,29 +1,28 @@
 package texter.openfl;
-import haxe.Timer;
+import openfl.display.Shape;
+import openfl.utils.ByteArray;
+import openfl.events.Event;
+import openfl.events.TimerEvent;
+import openfl.utils.Timer;
+#if openfl
+import openfl.display.Sprite;
 import openfl.Lib;
 import openfl.text.TextFieldType;
 import texter.general.TextTools.TextDirection;
 import openfl.text.TextFormat;
 import openfl.desktop.Clipboard;
-import openfl.events.KeyboardEvent;
 import texter.general.CharTools;
 import openfl.events.FocusEvent;
-import openfl.events.TextEvent;
 import openfl.text.TextFieldAutoSize;
 import openfl.geom.Rectangle;
-import openfl.geom.Point;
 import openfl.ui.MouseCursor;
 import openfl.ui.Mouse;
 import openfl.events.MouseEvent;
-import openfl.events.Event;
 import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
-import texter.general.Char;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
 import openfl.text.TextField;
-#if openfl
-import openfl.display.Sprite;
 
 /**
  * `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things:
@@ -44,9 +43,6 @@ import openfl.display.Sprite;
  *  - getCaretIndexOfMouse()
  * 
  * And more.
- * 
- * If your only goal is to get RTL-supporting text on JS, you should use `TextField` Instead, 
- * as it *should* provide more natural RTL support. in `TextField`, RTL is only supported on JS
  */
 class TextFieldRTL extends Sprite {
     
@@ -81,11 +77,33 @@ class TextFieldRTL extends Sprite {
 	**/
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
-    public var upperMask(default, null):Sprite;
+    /**
+     * This `Sprite` is a mask that exists above the actual text. You can 
+	 * draw on it, add `DisplayObject`s to it, etc.
+     */
+    public var upperMask:Sprite;
 
+	/**
+	 * This `Sprite` is a mask that exists below the actual text. You can 
+	 * draw on it, add `DisplayObject`s to it, etc.
+	 * 
+	 * **NOTICE** - setting the `background` property to `true` will hide the lower mask.
+	 */
+	public var lowerMask:Sprite;
+
+
+    /**
+     * Whether or not to use the markdown display when this `TextFieldRTL` loses focus.
+	 * 
+	 * If set to true, this TextField will be hidden by the `markdownDisplay`,
+	 * which contains the visuals.
+	 * 
+	 * some things to notice:
+	 *  - The `markdownDisplay`'s properties
+     */
     public var useMarkdown(default, set):Bool;
 
-    public var markdownDisplay(default, null):TextField;
+    public var markdownDisplay(default, null):TextFieldRTL;
 
     public var caretIndex(default, set):Int = 0;
 
@@ -120,25 +138,39 @@ class TextFieldRTL extends Sprite {
     var caret:Bitmap;
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool;
+	var caretTimer = new Timer(500);
+	var selectionShape:Shape;
+	var hasMoved = false;
+	var startSelect = -1;
+	var selectedRange:Array<Int> = [-1, -1];
 
     public function new() {
         super();
-		buttonMode = true;
-		mouseChildren = true;
+
+		lowerMask = new Sprite();
+		lowerMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
+		addChild(lowerMask);
 
         textField = new TextField();
 		addChild(textField);
 
+		selectionShape = new Shape();
+		addChild(selectionShape);
+
+		background = false;
+		backgroundColor = 0x00000000;
         upperMask = new Sprite();
 		upperMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
-        caret = new Bitmap(new BitmapData(1, Std.int(textField.defaultTextFormat.size), false, 0x000000));
+        caret = new Bitmap(new BitmapData(1, 1, false, 0x000000));
+		caret.height = textField.defaultTextFormat.size;
 		caret.x = caret.y = 2;
-		caret.visible = true;
+		caret.visible = false;
+		caretTimer.addEventListener(TimerEvent.TIMER, caretBlink);
 
         addChild(upperMask);
         addChild(caret);
-        Lib.application.window.onTextInput.add(onTextInput);
-        Lib.application.window.onKeyDown.add(onKeyDown);
+        Lib.application.window.onTextInput.add(regularKeysDown);
+        Lib.application.window.onKeyDown.add(specialKeysDown);
 
 		textField.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
 		upperMask.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
@@ -146,10 +178,28 @@ class TextFieldRTL extends Sprite {
         addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
         addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
     }
 
-	function caretBlink() {
+	function caretBlink(e:TimerEvent) {
 		caret.visible = !caret.visible;
+	}
+
+	function onMouseMove(e:MouseEvent) {
+		if (!e.buttonDown) {
+			startSelect = -1;
+			hasMoved = false;
+			setSelection(-1, -1);
+			return;
+		}
+		else if (hasMoved) {
+			var lastBound = getCaretIndexOfMouse();
+			setSelection(startSelect, lastBound);
+		} else {
+			startSelect = getCaretIndexOfMouse();
+			hasMoved = true;
+		}
+
 	}
 
     function onFocusOut(e:FocusEvent) {
@@ -157,80 +207,135 @@ class TextFieldRTL extends Sprite {
         if (!useMarkdown) return;
     }
 
-    function onTextInput(letter:String) {
-        // if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
-		// if the caret is broken for some reason, fix it
-		if (caretIndex < 0) caretIndex = 0;
-		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
-		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
-		if (letter != null)
-		{
-			// logic for general RTL letters, spacebar, punctuation mark
-			if (CharTools.rtlLetters.match(letter)
-				|| (currentlyRTL && letter == " ")
-				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
-			{
-				currentlyNumbers = false;
-				t = CharTools.ZEROWIDTHSPACE + letter;
-				currentlyRTL = true;
-				if (openingDirection == UNDETERMINED || text == "")
-				{
-					if (autoAlign) alignment = RIGHT;
-					openingDirection = RTL;
-				}
-			}
-			// logic for when the user converted from RTL to LTR
-			else if (currentlyRTL)
-			{
-				t = letter;
-				currentlyRTL = false;
-				hasConverted = true;
-
-				// after conversion, the caret needs to move itself to he end of the RTL text.
-				// the last spacebar also needs to be moved
-				if (text.charAt(caretIndex) == " ")
-				{
-					t = CharTools.PDF + " " + letter;
-					text = text.substring(0, caretIndex) + text.substring(caretIndex, text.length);
-					addedSpace = true;
-				}
-				caretIndex++;
-
-				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
-					caretIndex++;
-			}
-			// logic for everything else - LTR letters, special chars...
-			else
-			{
-				t = letter;
-				if (openingDirection == UNDETERMINED || text == "")
-				{
-					if (autoAlign)
-						alignment = LEFT;
-					if (CharTools.generalMarks.contains(t))
-						openingDirection = UNDETERMINED
-					else
-						openingDirection = LTR;
-				}
-			}
-		}
-		else
-			"";
-
-		if (t.length > 0)
-		{
-			insertSubstring(t, caretIndex);
-			caretIndex++;
-			if (hasConverted) caretIndex++;
-			if (addedSpace) caretIndex++;
-			trace("caretIndex: " + caretIndex);
-			trace(getCharBoundaries(caretIndex));
-		}
+	function onFocusIn(e:MouseEvent) {
+		trace("focus");
+        stage.window.textInputEnabled = true;
+        if (type != INPUT) return;
+        hasFocus = true;
+        caretIndex = getCaretIndexOfMouse();
     }
 
-    function onKeyDown(key:KeyCode, modifier:KeyModifier) {
-		trace("called");
+	function onMouseOver(e:MouseEvent) {
+        Mouse.cursor = MouseCursor.IBEAM;
+    }
+
+	function onMouseOut(e:MouseEvent)
+	{
+		Mouse.cursor = MouseCursor.AUTO;
+	}
+
+	function onMouseWheel(e:MouseEvent) {
+		final del = Std.int(e.delta / 6);
+		textField.scrollV += del;
+	}
+
+    public function getCaretIndexAtPoint(x:Float, y:Float):Int {
+        if (text.length > 0)
+		{
+			for (i in 0...text.length)
+			{
+				var r = getCharBoundaries(i);
+				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) // <----------------- CHANGE HERE
+				{
+					return i;
+				}
+				
+			}
+			//the mouse might have been pressed between the lines
+			var i = 0;
+			while (i < text.length) {
+				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
+				if (r == null) return 0;
+				if (y >= r.y && y <= r.bottom) {
+					if (i == 0) i--;
+					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
+					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
+					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
+				}
+				i++;
+			}
+			return text.length;
+		}
+		// place caret at leftmost position
+		return 0;
+    }
+
+    public function getCaretIndexOfMouse():Int {
+        return getCaretIndexAtPoint(mouseX, mouseY);
+    }
+
+	public function getCharBoundaries(charIndex:Int):Rectangle
+	{
+		if (textField.getCharBoundaries(charIndex) != null) return textField.getCharBoundaries(charIndex);
+
+		if (charIndex <= 0) return new Rectangle(2, 2, 0, textField.defaultTextFormat.size);
+
+		var charBoundaries:Rectangle = new Rectangle();
+
+
+		if (text.charAt(charIndex) == "\n")
+		{
+			var diff = 1; // this is going to be used when a user presses enter twice to display the caret at the correct height
+			while (text.charAt(charIndex - 1) == "\n")
+			{
+				charIndex--;
+				diff++;
+			}
+			// if this is a spacebar, we cant use textField.getCharBoundaries() since itll return null
+			charBoundaries = getCharBoundaries(charIndex - 1);
+			charBoundaries.y += diff * charBoundaries.height;
+			if (alignment == RIGHT)
+				charBoundaries.x = x + width - 2
+			else if (alignment == CENTER)
+                charBoundaries.x = x + width / 2
+            else
+				charBoundaries.x = 2;
+			charBoundaries.width = 0;
+		}
+		else if (text.charAt(charIndex) == " ")
+		{
+			// we know that it doesnt matter how many spacebars are pressed,
+			// the first one after a char/at the start of the text
+			// is always defined and has the correct boundaries
+			var widthDiff = 0, originalIndex = charIndex;
+			while (text.charAt(charIndex - 1) == " " && charIndex != 0)
+			{
+				charIndex--;
+				widthDiff++;
+			}
+			charBoundaries = textField.getCharBoundaries(charIndex);
+			// removing this makes pressing between word-wrapped lines crash
+			if (charBoundaries == null)
+				charBoundaries = textField.getCharBoundaries(charIndex - 1);
+			charBoundaries.x += widthDiff * charBoundaries.width
+				- (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
+			// guessing line height differences when lots of spacebars are pressed and are being wordwrapped
+			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
+		}
+		return charBoundaries;
+	}
+
+    public function insertSubstring(insert:String, index:Int):TextFieldRTL
+	{
+		if (insert == "") {
+			if (selectedRange != [-1, -1]) {
+				text = text.substring(0, selectedRange[0]) + text.substring(selectedRange[1] + 1);
+				caretIndex = selectedRange[1];
+				selectedRange = [-1, -1];
+			} else {
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+			}
+			return this;
+		}
+
+		if (selectedRange != [-1, -1]) text = text.substring(0, selectedRange[0]) + insert + text.substring(selectedRange[1] + 1)
+		else text = text.substring(0, index) + insert + text.substring(index);
+		selectedRange = [-1, -1];
+        return this;
+	}
+
+	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
+	{
 		// if the user didnt intend to edit the text, dont do anything
 		if (!hasFocus)
 			return;
@@ -292,38 +397,48 @@ class TextFieldRTL extends Sprite {
 		{
 			if (caretIndex > 0)
 			{
+				#if !js
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+					insertSubstring("", caretIndex);
 				}
 				else
 				{
 					caretIndex--;
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+					insertSubstring("", caretIndex);
 				}
+				#else
+				caretIndex--;
+				insertSubstring("", caretIndex);
+				#end
+
 			}
 		}
 		else if (key == KeyCode.DELETE)
 		{
+			#if !js
 			if (text.length > 0 && caretIndex < text.length)
 			{
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
-					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
+					insertSubstring("", caretIndex - 1);
 					caretIndex--;
 				}
 				else
 				{
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+					insertSubstring("", caretIndex);
 				}
 			}
+			#else
+			insertSubstring("", caretIndex);
+			#end
 		}
 		else if (key == 13)
 		{
 			caretIndex++;
 			if (!currentlyRTL)
 			{
-				insertSubstring("\n", caretIndex - 1);
+				insertSubstring("\n", caretIndex);
 			}
 			else
 			{
@@ -339,116 +454,91 @@ class TextFieldRTL extends Sprite {
 				caretIndex = insertionIndex + 1;
 			}
 		}
-		else if (key == KeyCode.END) caretIndex = text.length;
-		else if (key == KeyCode.HOME) caretIndex = 0;
-    }
-
-	function onFocusIn(e:MouseEvent) {
-        stage.window.textInputEnabled = true;
-        if (type != INPUT) return;
-        hasFocus = true;
-        caretIndex = getCaretIndexOfMouse();
-    }
-
-	function onMouseOver(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.IBEAM;
-    }
-
-	function onMouseOut(e:MouseEvent)
-	{
-		Mouse.cursor = MouseCursor.AUTO;
+		else if (key == KeyCode.END)
+		{
+			caretIndex = text.length;
+		}
+		else if (key == KeyCode.HOME)
+		{
+			caretIndex = 0;
+		}
 	}
 
-    public function getCaretIndexAtPoint(x:Float, y:Float):Int {
-        if (text.length > 0)
+	function regularKeysDown(letter:String)
+	{
+		// if the user didnt intend to edit the text, dont do anything
+		if (!hasFocus)
+			return;
+		// if the caret is broken for some reason, fix it
+		if (caretIndex < 0)
+			caretIndex = 0;
+		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
+		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
+		#if !js
+		if (letter != null)
 		{
-			for (i in 0...text.length)
+			// logic for general RTL letters, spacebar, punctuation mark
+			if (CharTools.rtlLetters.match(letter)
+				|| (currentlyRTL && letter == " ")
+				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
-				var r = getCharBoundaries(i);
-				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) // <----------------- CHANGE HERE
+				currentlyNumbers = false;
+				t = CharTools.RLO + letter;
+				currentlyRTL = true;
+				if (openingDirection == UNDETERMINED || text == "")
 				{
-					return i;
+					if (autoAlign)
+						alignment = RIGHT;
+					openingDirection = RTL;
 				}
-				
 			}
-			//the mouse might have been pressed between the lines
-			var i = 0;
-			while (i < text.length) {
-				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
-				if (r == null) return 0;
-				if (y >= r.y && y <= r.bottom) {
-					if (i == 0) i--;
-					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
-					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
-					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
+			// logic for when the user converted from RTL to LTR
+			else if (currentlyRTL)
+			{
+				t = letter;
+				currentlyRTL = false;
+				hasConverted = true;
+
+				// after conversion, the caret needs to move itself to he end of the RTL text.
+				// the last spacebar also needs to be moved
+				if (text.charAt(caretIndex) == " ")
+				{
+					t = CharTools.PDF + " " + letter;
+					text = text.substring(0, caretIndex) + text.substring(caretIndex, text.length);
+					addedSpace = true;
 				}
-				i++;
+				caretIndex++;
+
+				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
+					caretIndex++;
 			}
-			return text.length;
-		}
-		// place caret at leftmost position
-		return 0;
-    }
-
-    public function getCaretIndexOfMouse():Int {
-        return getCaretIndexAtPoint(mouseX, mouseY);
-    }
-
-	public function getCharBoundaries(charIndex:Int):Rectangle
-	{
-		if (charIndex < 0) return new Rectangle();
-
-		var charBoundaries:Rectangle = new Rectangle();
-
-		if (textField.getCharBoundaries(charIndex) != null) return textField.getCharBoundaries(charIndex);
-
-		if (text.charAt(charIndex) == "\n")
-		{
-			var diff = 1; // this is going to be used when a user presses enter twice to display the caret at the correct height
-			while (text.charAt(charIndex - 1) == "\n")
+			// logic for everything else - LTR letters, special chars...
+			else
 			{
-				charIndex--;
-				diff++;
+				t = letter;
+				if (openingDirection == UNDETERMINED || text == "")
+				{
+					if (autoAlign)
+						alignment = LEFT;
+					if (CharTools.generalMarks.contains(t))
+						openingDirection = UNDETERMINED
+					else
+						openingDirection = LTR;
+				}
 			}
-			// if this is a spacebar, we cant use textField.getCharBoundaries() since itll return null
-			charBoundaries = getCharBoundaries(charIndex - 1);
-			charBoundaries.y += diff * charBoundaries.height;
-			if (alignment == RIGHT)
-				charBoundaries.x = x + width - 2
-			else if (alignment == CENTER)
-                charBoundaries.x = x + width / 2
-            else
-				charBoundaries.x = 2;
-			charBoundaries.width = 0;
 		}
-		else if (text.charAt(charIndex) == " ")
+		else
+			"";
+		#else
+		t = letter;
+		#end
+		if (t.length > 0)
 		{
-			// we know that it doesnt matter how many spacebars are pressed,
-			// the first one after a char/at the start of the text
-			// is always defined and has the correct boundaries
-			var widthDiff = 0, originalIndex = charIndex;
-			while (text.charAt(charIndex - 1) == " " && charIndex != 0)
-			{
-				charIndex--;
-				widthDiff++;
-			}
-			charBoundaries = textField.getCharBoundaries(charIndex);
-			// removing this makes pressing between word-wrapped lines crash
-			if (charBoundaries == null)
-				charBoundaries = textField.getCharBoundaries(charIndex - 1);
-			charBoundaries.x += widthDiff * charBoundaries.width
-				- (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
-			// guessing line height differences when lots of spacebars are pressed and are being wordwrapped
-			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
+			insertSubstring(t, caretIndex);
+			caretIndex++;
+			if (hasConverted) caretIndex++;
+			if (addedSpace) caretIndex++;
 		}
-		return charBoundaries;
-	}
-
-    public function insertSubstring(insert:String, index:Int):TextFieldRTL
-	{
-		if (index < text.length) text = text.substring(0, index) + insert + text.substring(index);
-		else text = text + insert;
-        return this;
 	}
 
     //----------------------------------
@@ -510,6 +600,17 @@ class TextFieldRTL extends Sprite {
         return textField.getLineOffset(lineIndex);
     }
 
+	public function setSelection(beginIndex:Int, endIndex:Int):Void
+	{
+		if (beginIndex > endIndex)
+		{
+			var temp:Int = beginIndex;
+			beginIndex = endIndex;
+			endIndex = temp;
+		}
+		trace("start: " + beginIndex + " end: " + endIndex);
+		selectedRange = [beginIndex, endIndex];
+	}
 	//---------------
 	// getters & setters (boilerplate)
 	// Now i get why TextField is 3500~ lines of code
@@ -553,16 +654,19 @@ class TextFieldRTL extends Sprite {
 	function set_caretIndex(index:Int):Int
 	{
 		caretIndex = index;
+		caretTimer.stop();
+		caret.visible = true;
+		caretTimer.start();
 
 		// If caret is too far to the right something is wrong
-		if (caretIndex > (text.length + 1))
+		if (caretIndex > text.length)
 		{
 			caretIndex = text.length;
 		}
 		
-		var bounds = getCharBoundaries(index);
+		var bounds = getCharBoundaries(index - 1 != 0 ? index - 1 : 0);
 		caret.height = bounds.height;
-		caret.x = bounds.x + bounds.width;
+		caret.x = if (CharTools.rtlLetters.match(text.charAt(index))) bounds.x else bounds.x + bounds.width;
 		caret.y = bounds.y;
 
 		if (caret.x < 0) caret.x = 2;
@@ -613,9 +717,12 @@ class TextFieldRTL extends Sprite {
 		if (value)
 		{
 			stage.focus = this;
+			caret.visible = true;
+			caretTimer.start();
 			return value;
-		} else {
 		}
+		caret.visible = false;
+		caretTimer.stop();
 		return false;
 	}
 
@@ -703,6 +810,27 @@ class TextFieldRTL extends Sprite {
 	{
 		return this.textField.selectable = selectable;
 	}
+
+	//----------------------------
+	// overriden getters & setters
+	//----------------------------
+
+	override function set_width(value:Float):Float
+	{
+		upperMask.removeChildAt(0);
+		upperMask.addChildAt(new Bitmap(new BitmapData(Std.int(value), Std.int(height), true, 0x00000000)), 0);
+		lowerMask.removeChildAt(0);
+		lowerMask.addChildAt(new Bitmap(new BitmapData(Std.int(value), Std.int(height), true, 0x00000000)), 0);
+
+		return textField.width = value;
+	}
+
+	override function set_height(value:Float):Float
+	{
+		return textField.height = value;
+	}
+
+	
 }
 
 #end
