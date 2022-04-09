@@ -54,6 +54,11 @@ class CharTools
 	public static var TAB(default, never):String = "\t";
 
 	/**
+	 * The `zeroWidthSpace` char used to add a zero width space to a string of text, usually to make it longer in length
+	 */
+	public static var ZEROWIDTHSPACE(default, never):String = "​";
+
+	/**
 	 * The `Right to Left Mark` Char.
 	 * 
 	 * - Code:  `"U+200F"`

@@ -120,7 +120,6 @@ class TextFieldRTL extends Sprite {
     var caret:Bitmap;
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool;
-	var caretTimer:Timer = new Timer(500);
 
     public function new() {
         super();
@@ -134,9 +133,7 @@ class TextFieldRTL extends Sprite {
 		upperMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
         caret = new Bitmap(new BitmapData(1, Std.int(textField.defaultTextFormat.size), false, 0x000000));
 		caret.x = caret.y = 2;
-		caret.visible = false;
-		caretTimer.run = caretBlink;
-		caretTimer.stop();
+		caret.visible = true;
 
         addChild(upperMask);
         addChild(caret);
@@ -175,7 +172,7 @@ class TextFieldRTL extends Sprite {
 				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
 				currentlyNumbers = false;
-				t = CharTools.RLO + letter;
+				t = CharTools.ZEROWIDTHSPACE + letter;
 				currentlyRTL = true;
 				if (openingDirection == UNDETERMINED || text == "")
 				{
@@ -403,11 +400,9 @@ class TextFieldRTL extends Sprite {
 
 		var charBoundaries:Rectangle = new Rectangle();
 
-		if (textField.getCharBoundaries(charIndex) != null)
-		{
-			charBoundaries = textField.getCharBoundaries(charIndex);
-		}
-		else if (text.charAt(charIndex) == "\n")
+		if (textField.getCharBoundaries(charIndex) != null) return textField.getCharBoundaries(charIndex);
+
+		if (text.charAt(charIndex) == "\n")
 		{
 			var diff = 1; // this is going to be used when a user presses enter twice to display the caret at the correct height
 			while (text.charAt(charIndex - 1) == "\n")
@@ -618,12 +613,8 @@ class TextFieldRTL extends Sprite {
 		if (value)
 		{
 			stage.focus = this;
-			caret.visible = true;
-			caretTimer.run();
 			return value;
 		} else {
-			caretTimer.stop();
-			caret.visible = false;
 		}
 		return false;
 	}
