@@ -1,9 +1,4 @@
 package texter.openfl;
-import openfl.display.Shape;
-import openfl.utils.ByteArray;
-import openfl.events.Event;
-import openfl.events.TimerEvent;
-import openfl.utils.Timer;
 #if openfl
 import openfl.display.Sprite;
 import openfl.Lib;
@@ -23,6 +18,17 @@ import lime.ui.KeyCode;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
 import openfl.text.TextField;
+import openfl.text.TextLineMetrics;
+import openfl.display.Shape;
+import openfl.utils.ByteArray;
+import openfl.events.Event;
+import openfl.events.TimerEvent;
+import openfl.utils.Timer;
+
+#if actuate
+import motion.Actuate;
+import motion.easing.Quad;
+#end
 
 /**
  * `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things:
@@ -133,7 +139,27 @@ class TextFieldRTL extends Sprite {
 
     public var borderColor(get, set):Int;
 
-    public var selectable(get, set):Bool;
+    public var selectable(default, set):Bool;
+
+	public var embedFonts(get, set):Bool;
+
+	public var textWidth(get, null):Float;
+
+	public var textHeight(get, null):Float;
+
+	public var maxChars(get, set):Int;
+
+	public var maxScrollH(get, never):Int;
+
+	public var maxScrollV(get, never):Int;
+
+	public var scrollH(get, set):Int;
+
+	public var scrollV(get, set):Int;
+
+	public var length(get, null):Int;
+
+	public var htmlText(get, set):openfl.text._internal.UTF8String;
 
     var caret:Bitmap;
 	var currentlyRTL:Bool = false;
@@ -143,24 +169,33 @@ class TextFieldRTL extends Sprite {
 	var hasMoved = false;
 	var startSelect = -1;
 	var selectedRange:Array<Int> = [-1, -1];
+	var maskRect:Shape = new Shape();
 
     public function new() {
         super();
 
-		lowerMask = new Sprite();
-		lowerMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
-		addChild(lowerMask);
 
         textField = new TextField();
+		textField.type = TextFieldType.DYNAMIC;
+		textField.selectable = false;
+		
+
+		//maskRect.graphics.beginFill();
+		//maskRect.graphics.drawRect(textField.x, textField.y, width, height);
+		//addChild(maskRect);
+		//mask = maskRect;
+
+		lowerMask = new Sprite();
+		addChild(lowerMask);
 		addChild(textField);
 
 		selectionShape = new Shape();
 		addChild(selectionShape);
 
-		background = false;
-		backgroundColor = 0x00000000;
+		background = true;
+		backgroundColor = 0xEEEEEE;
+
         upperMask = new Sprite();
-		upperMask.addChild(new Bitmap(new BitmapData(Std.int(width), Std.int(height), true, 0x00000000)));
         caret = new Bitmap(new BitmapData(1, 1, false, 0x000000));
 		caret.height = textField.defaultTextFormat.size;
 		caret.x = caret.y = 2;
@@ -172,7 +207,12 @@ class TextFieldRTL extends Sprite {
         Lib.application.window.onTextInput.add(regularKeysDown);
         Lib.application.window.onKeyDown.add(specialKeysDown);
 
+		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+
 		textField.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
+		textField.addEventListener(Event.SCROLL, onMouseWheel);
 		upperMask.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
         addEventListener(MouseEvent.MOUSE_DOWN, onFocusIn);
         addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
@@ -187,9 +227,7 @@ class TextFieldRTL extends Sprite {
 
 	function onMouseMove(e:MouseEvent) {
 		if (!e.buttonDown) {
-			startSelect = -1;
 			hasMoved = false;
-			setSelection(-1, -1);
 			return;
 		}
 		else if (hasMoved) {
@@ -224,9 +262,15 @@ class TextFieldRTL extends Sprite {
 		Mouse.cursor = MouseCursor.AUTO;
 	}
 
-	function onMouseWheel(e:MouseEvent) {
-		final del = Std.int(e.delta / 6);
-		textField.scrollV += del;
+	function onMouseWheel(e:Event) {
+		if (scrollV == 1) return;
+		var yVal:Float = 0;
+		for (i in 0...scrollV - 2) {
+			yVal -= getCharBoundaries(getLineOffset(i)).height + getCharBoundaries(getLineOffset(i)).y - 2;
+		}
+		for (o in [upperMask, lowerMask, selectionShape]) {
+			o.y = yVal;	
+		}
 	}
 
     public function getCaretIndexAtPoint(x:Float, y:Float):Int {
@@ -317,20 +361,27 @@ class TextFieldRTL extends Sprite {
 
     public function insertSubstring(insert:String, index:Int):TextFieldRTL
 	{
-		if (insert == "") {
-			if (selectedRange != [-1, -1]) {
+		Lib.application.window.textInputEnabled = true; // patches loss of text input after copy/past/cut
+		selectionShape.graphics.clear();
+		if (insert == "bsp" || insert == "del") {
+			if (selectedRange[0] != -1) {
 				text = text.substring(0, selectedRange[0]) + text.substring(selectedRange[1] + 1);
-				caretIndex = selectedRange[1];
-				selectedRange = [-1, -1];
+				caretIndex = if (insert == "bsp") selectedRange[0] + 1 else selectedRange[0];
+				setSelection(-1, -1);
 			} else {
-				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				text = text.substring(0, index) + text.substring(index + 1);
 			}
+			dispatchEvent(new Event(Event.CHANGE));
 			return this;
 		}
 
-		if (selectedRange != [-1, -1]) text = text.substring(0, selectedRange[0]) + insert + text.substring(selectedRange[1] + 1)
+		if (selectedRange[0] != -1) {
+			text = text.substring(0, selectedRange[0]) + insert + text.substring(selectedRange[1] + 1);
+			caretIndex = selectedRange[0];
+		}
 		else text = text.substring(0, index) + insert + text.substring(index);
-		selectedRange = [-1, -1];
+		dispatchEvent(new Event(Event.CHANGE));
+		setSelection(-1, -1);
         return this;
 	}
 
@@ -344,6 +395,7 @@ class TextFieldRTL extends Sprite {
 		{
 			if (key == KeyCode.V)
 			{
+				trace("Paste");
 				// paste text
 				var clipboardText = Clipboard.generalClipboard.getData(TEXT_FORMAT);
 				if (clipboardText == null)
@@ -351,6 +403,7 @@ class TextFieldRTL extends Sprite {
 				if (currentlyRTL)
 				{
 					insertSubstring(clipboardText, caretIndex);
+					trace("Paste: " + clipboardText);
 				}
 				else
 				{
@@ -359,6 +412,26 @@ class TextFieldRTL extends Sprite {
 					if (caretIndex > text.length)
 						caretIndex = text.length;
 				}
+			}
+			if (key == KeyCode.C && selectedRange[0] != -1) {
+				// copy text
+				var clipboardText = text.substring(selectedRange[0], selectedRange[1] + 1);
+				Clipboard.generalClipboard.setData(TEXT_FORMAT, clipboardText);
+			}
+			if (key == KeyCode.X && selectedRange[0] != -1) {
+				// cut text
+				var clipboardText = text.substring(selectedRange[0], selectedRange[1] + 1);
+				Clipboard.generalClipboard.setData(TEXT_FORMAT, clipboardText);
+				insertSubstring("del", selectedRange[0]);
+			}
+			if (key == KeyCode.A) {
+				// select all
+				setSelection(0, text.length - 1);
+			}
+			if (key == KeyCode.L) { //select the current line of text
+				var lineIndex = getLineIndexOfChar(caretIndex);
+				var lineStart = getLineOffset(lineIndex);
+				setSelection(lineStart, lineStart + getLineLength(lineIndex) - 1);
 			}
 		}
 		// those keys break the caret and place it in caretIndex -1
@@ -400,16 +473,16 @@ class TextFieldRTL extends Sprite {
 				#if !js
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
-					insertSubstring("", caretIndex);
+					insertSubstring("bsp", caretIndex);
 				}
 				else
 				{
+					insertSubstring("bsp", caretIndex - 1);
 					caretIndex--;
-					insertSubstring("", caretIndex);
 				}
 				#else
-				caretIndex--;
-				insertSubstring("", caretIndex);
+				insertSubstring("bsp", caretIndex - 1);
+				if (caretIndex != text.length) caretIndex--;
 				#end
 
 			}
@@ -421,24 +494,25 @@ class TextFieldRTL extends Sprite {
 			{
 				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
 				{
-					insertSubstring("", caretIndex - 1);
+					insertSubstring("sel", caretIndex - 1);
 					caretIndex--;
 				}
 				else
 				{
-					insertSubstring("", caretIndex);
+					insertSubstring("del", caretIndex);
 				}
 			}
 			#else
-			insertSubstring("", caretIndex);
+			insertSubstring("del", caretIndex);
 			#end
 		}
 		else if (key == 13)
 		{
-			caretIndex++;
+			#if !js
 			if (!currentlyRTL)
 			{
 				insertSubstring("\n", caretIndex);
+				caretIndex++;
 			}
 			else
 			{
@@ -452,7 +526,12 @@ class TextFieldRTL extends Sprite {
 					insertionIndex++;
 				insertSubstring("\n", insertionIndex);
 				caretIndex = insertionIndex + 1;
+				caretIndex++;
 			}
+			#else
+			insertSubstring("\n", caretIndex);
+			caretIndex++;
+			#end
 		}
 		else if (key == KeyCode.END)
 		{
@@ -535,7 +614,7 @@ class TextFieldRTL extends Sprite {
 		if (t.length > 0)
 		{
 			insertSubstring(t, caretIndex);
-			caretIndex++;
+			caretIndex += t.length;
 			if (hasConverted) caretIndex++;
 			if (addedSpace) caretIndex++;
 		}
@@ -565,6 +644,11 @@ class TextFieldRTL extends Sprite {
         return textField.getLineLength(lineIndex);
     }
 
+	public function getLineMetrics(lineIndex:Int):TextLineMetrics
+	{
+		return textField.getLineMetrics(lineIndex);
+	}
+
     public function getLineText(lineIndex:Int):String
     {
         return textField.getLineText(lineIndex);
@@ -582,7 +666,7 @@ class TextFieldRTL extends Sprite {
 
     public function setTextFormat(format:TextFormat ,beginIndex:Int, endIndex:Int)
     {
-        return textField.setTextFormat(format ,beginIndex, endIndex);
+        return textField.setTextFormat(format, beginIndex, endIndex);
     }
 
     public function getCharIndexAtPoint(x:Int, y:Int):Int
@@ -602,11 +686,33 @@ class TextFieldRTL extends Sprite {
 
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
-		if (beginIndex > endIndex)
+		if (beginIndex != -1)
 		{
-			var temp:Int = beginIndex;
-			beginIndex = endIndex;
-			endIndex = temp;
+			if (beginIndex > endIndex)
+			{
+				var temp:Int = beginIndex;
+				beginIndex = endIndex;
+				endIndex = temp;
+			}
+			if (beginIndex == endIndex) {
+				selectionShape.graphics.clear();
+				final bounds = textField.getCharBoundaries(beginIndex - 1);
+				if (bounds == null) return; //edge case: textfield loses focus while selection occurs
+				selectionShape.graphics.beginFill(0x333333, 0.2);
+				selectionShape.graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+				selectionShape.graphics.endFill();
+			} else {
+				selectionShape.graphics.clear();
+				selectionShape.graphics.beginFill(0x333333, 0.2);
+				var bounds:Rectangle;
+				for (i in beginIndex...endIndex + 1) {
+					bounds = textField.getCharBoundaries(i) != null ? textField.getCharBoundaries(i) : continue;
+					selectionShape.graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+				}
+				selectionShape.graphics.endFill();
+			}
+		} else {
+			selectionShape.graphics.clear();
 		}
 		trace("start: " + beginIndex + " end: " + endIndex);
 		selectedRange = [beginIndex, endIndex];
@@ -653,6 +759,7 @@ class TextFieldRTL extends Sprite {
 
 	function set_caretIndex(index:Int):Int
 	{
+		setSelection(-1, -1);
 		caretIndex = index;
 		caretTimer.stop();
 		caret.visible = true;
@@ -801,14 +908,89 @@ class TextFieldRTL extends Sprite {
 		return this.textField.type = type;
 	}
 
-	function get_selectable():Bool
-	{
-		return this.textField.selectable;
-	}
-
 	function set_selectable(selectable:Bool):Bool
 	{
-		return this.textField.selectable = selectable;
+		if (!selectable)
+		{
+			selectionShape.graphics.clear();
+			selectedRange = [-1, -1];
+		}
+		return this.selectable = selectable;
+	}
+
+	function get_textWidth():Float
+	{
+		return this.textField.textWidth;
+	}
+
+	function get_textHeight():Float
+	{
+		return this.textField.textHeight;
+	}
+
+	function get_maxChars():Int
+	{
+		return this.textField.maxChars;
+	}
+
+	function set_maxChars(value:Int):Int
+	{
+		return this.textField.maxChars = value;
+	}
+
+	function get_maxScrollH():Int
+	{
+		return this.textField.maxScrollH;
+	}
+
+	function get_maxScrollV():Int
+	{
+		return this.textField.maxScrollV;
+	}
+
+	function get_scrollH():Int
+	{
+		return this.textField.scrollH;
+	}
+
+	function set_scrollH(value:Int):Int
+	{
+		return this.textField.scrollH = value;
+	}
+
+	function get_scrollV():Int
+	{
+		return this.textField.scrollV;
+	}
+
+	function set_scrollV(value:Int):Int
+	{
+		return this.textField.scrollV = value;
+	}
+
+	function get_htmlText():String
+	{
+		return this.textField.htmlText;
+	}
+
+	function set_htmlText(value:String):String
+	{
+		return this.textField.htmlText = value;
+	}
+
+	function get_length():Int
+	{
+		return this.textField.length;
+	}
+
+	function get_embedFonts():Bool
+	{
+		return this.textField.embedFonts;
+	}
+
+	function set_embedFonts(value:Bool):Bool
+	{
+		return this.textField.embedFonts = value;
 	}
 
 	//----------------------------
@@ -817,20 +999,22 @@ class TextFieldRTL extends Sprite {
 
 	override function set_width(value:Float):Float
 	{
-		upperMask.removeChildAt(0);
-		upperMask.addChildAt(new Bitmap(new BitmapData(Std.int(value), Std.int(height), true, 0x00000000)), 0);
-		lowerMask.removeChildAt(0);
-		lowerMask.addChildAt(new Bitmap(new BitmapData(Std.int(value), Std.int(height), true, 0x00000000)), 0);
+		textField.width = value;
+		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
 
-		return textField.width = value;
+		return value;
 	}
 
 	override function set_height(value:Float):Float
 	{
-		return textField.height = value;
+		textField.height = value;
+		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		return value;
 	}
-
-	
 }
 
 #end

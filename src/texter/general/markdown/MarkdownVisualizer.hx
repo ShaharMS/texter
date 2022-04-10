@@ -1,5 +1,6 @@
 package texter.general.markdown;
 
+import texter.openfl.TextFieldRTL;
 import flixel.FlxG;
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
@@ -143,6 +144,70 @@ class MarkdownVisualizer
 						}  catch(e) trace(e);		
 					}
 					case StrikeThrough(start, end): continue;
+					case Image(altText, imageSource, start, end): continue;
+					case ParagraphGap(start, end): continue; // default behaviour
+
+					default: continue;
+				}
+			}
+		});
+		return field;
+	}
+
+	public static overload extern inline function generateVisuals(field:TextFieldRTL):TextFieldRTL {
+		field.defaultTextFormat = markdownTextFormat;
+		field.upperMask.graphics.clear();
+		field.lowerMask.graphics.clear();
+		Markdown.interpret(field.text, (markdownText, effects) ->
+		{
+			trace(effects);
+			field.text = markdownText;
+			for (e in effects)
+			{
+				switch e
+				{
+					case Emoji(type, start, end): 
+					case Indent(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null,null, null, null, null , null, null, null, null, null, null, level * markdownTextFormat.size), start, end);
+					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
+					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
+					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2), start, end);
+					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("_serif"), start, end);
+					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, ""), start, end);
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
+					case UnorderedListItem(nestingLevel, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel, start + nestingLevel + 1);			
+					case OrderedListItem(number, nestingLevel, start, end): continue;
+					case HorizontalRule(type, start, end): {
+						var bounds = field.getCharBoundaries(start + 1);
+						bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start, start + 1).size / 8;
+						var lW = field.width - 8 - field.getTextFormat(start + 1, start + 2).rightMargin - field.getTextFormat(start + 1, start + 2).leftMargin, x = 4 + field.getTextFormat(start + 1, start + 2).leftMargin;
+						//draw the HR according to the text's dimensions
+						var g = field.upperMask.graphics;
+						g.lineStyle(4, 0x000000, 1, false, NORMAL);
+						g.moveTo(x, bounds.y);
+						trace('x: ' + x + ' y: ' + bounds.y + ' width: ' + lW);
+						g.lineTo(x + lW, bounds.y);
+					}
+					case CodeBlock(language, start, end): {
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size), start, end);
+						try {
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
+							for (i in coloring) {
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
+							}
+						}  catch(e) trace(e);		
+					}
+					case StrikeThrough(start, end): {
+						//draw a strikethrough
+						var bounds = field.getCharBoundaries(start + 1);
+						bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start + 1, start + 2).size / 16;
+						var bounds2 = field.getCharBoundaries(end - 1);
+						bounds2.y = bounds2.y + bounds2.height / 2;
+						var g = field.upperMask.graphics;
+						g.lineStyle(field.getTextFormat(start + 1, start + 2).size / 8, 0x000000, 1, false, NORMAL, SQUARE);
+						g.moveTo(bounds.x, bounds.y);
+						g.lineTo(bounds2.x + bounds2.width, bounds.y);
+
+					}
 					case Image(altText, imageSource, start, end): continue;
 					case ParagraphGap(start, end): continue; // default behaviour
 

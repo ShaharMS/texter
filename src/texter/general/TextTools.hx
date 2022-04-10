@@ -170,7 +170,7 @@ class TextTools
 		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [];
 		while (ereg.match(string)) {
 			var info = ereg.matchedPos();
-			string = ereg.replace(string, multiply("⨔", info.len - 1));
+			string = ereg.replace(string, multiply("⨔", info.len));
 			indexArray.push({startIndex: info.pos, endIndex: info.pos + info.len});
 		}
 		

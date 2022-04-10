@@ -247,7 +247,7 @@ class Markdown
 				}
 			}
 		}
-		onComplete(lineTexts.replace("\r", "\n"), effects);
+		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
 	}
 
 	#if openfl
@@ -268,6 +268,10 @@ class Markdown
 
 	**/
 	public static overload extern inline function visualizeMarkdown(textField:openfl.text.TextField):openfl.text.TextField {
+		return visualizer.generateVisuals(textField);
+	}
+
+	public static overload extern inline function visualizeMarkdown(textField:texter.openfl.TextFieldRTL):texter.openfl.TextFieldRTL {
 		return visualizer.generateVisuals(textField);
 	}
 	#end

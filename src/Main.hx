@@ -25,20 +25,18 @@ class Main extends Sprite {
 
     public function new() {
         super();
-		//md();
-		tfrtl();
+		md();
+		//tfrtl();
 	}
 
 
 	function md() {
-		var tf = new TextField();
+		var tf = new TextFieldRTL();
 		tf.width = 700;
 		tf.height = 700;
 		tf.text = "";
 		tf.x = tf.y = 50;
 		tf.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
-		tf.background = true;
-		tf.backgroundColor = 0xDDDDDD;
 		tf.border = true;
 		tf.borderColor = 0x0000FF;
 		tf.selectable = true;
@@ -46,15 +44,13 @@ class Main extends Sprite {
 		tf.wordWrap = true;
 		tf.multiline = true;
 		addChild(tf);
-		var s = new TextField();
+		var s = new TextFieldRTL();
 		s.width = 700;
 		s.height = 700;
 		s.text = "";
 		s.x = 800;
 		s.y = 50;
 		s.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
-		s.background = true;
-		s.backgroundColor = 0xDDDDDD;
 		s.border = true;
 		s.borderColor = 0x0000FF;
 		s.selectable = true;
@@ -65,6 +61,7 @@ class Main extends Sprite {
 		tf.addEventListener(Event.CHANGE, (e) ->
 		{
 			s.text = tf.text;
+			s.dispatchEvent(new Event(Event.CHANGE));
 			Markdown.visualizeMarkdown(s);
 		});
 	}
@@ -74,8 +71,6 @@ class Main extends Sprite {
 		tf.width = tf.height = 400;
 		tf.text = "";
 		tf.defaultTextFormat = new TextFormat("assets/V.ttf", 16, 0x000000, false, false, false, "", "", "left");
-		tf.background = true;
-		tf.backgroundColor = 0xDDDDDD;
 		tf.border = true;
 		tf.borderColor = 0x0000FF;
 		tf.selectable = true;
