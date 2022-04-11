@@ -31,8 +31,6 @@
 
 	<set name="BUILD_DIR" value="export" />
 	<source path="src" />
-	<assets path="assets" />
-
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />

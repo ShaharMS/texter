@@ -1,4 +1,6 @@
 package texter.openfl;
+import texter.general.markdown.Markdown;
+import texter.general.markdown.MarkdownVisualizer;
 #if openfl
 import openfl.display.Sprite;
 import openfl.Lib;
@@ -97,32 +99,83 @@ class TextFieldRTL extends Sprite {
 	 */
 	public var lowerMask:Sprite;
 
-
     /**
-     * Whether or not to use the markdown display when this `TextFieldRTL` loses focus.
+     * Similar to `TextField`s caretIndex, but its editable.
 	 * 
-	 * If set to true, this TextField will be hidden by the `markdownDisplay`,
-	 * which contains the visuals.
+	 * The caret is the blinking cursor that appears when you're typing. 
+	 * its always before the character you're typing.
 	 * 
-	 * some things to notice:
-	 *  - The `markdownDisplay`'s properties
-     */
-    public var useMarkdown(default, set):Bool;
-
-    public var markdownDisplay(default, null):TextFieldRTL;
-
+	 * For example (`⸽` is the caret): **`index - 0`**
+	 * 
+	 * empty text field:
+	 * ```
+	 * ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+	 * ▏⸽                   ▎
+	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+	 * ```
+	 * 
+	 * caret at the end of the text field: **`index - text.length`**
+	 * ```
+	 * ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+	 * ▏hey there friend⸽   ▎
+	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+	 * ```
+	 * 
+	 * caret at index 1 (after the first character at index `0`): **`index - 1`**
+	 * ```
+	 * ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+	 * ▏h⸽ey there friend   ▎
+	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+	 * ```
+	 */
     public var caretIndex(default, set):Int = 0;
 
+	/**
+	 * The text that is currently being edited/displayed.
+	 */
     public var text(get, set):String;
 
+    /**
+     * Similar to the `alignment` property of `TextFieldRTL`, and only exists for compatibility with `TextField`.
+	 * The reason for adding the `alignment` property in the first place is to make it easier to use `TextFieldRTL` objects.
+     */
     public var autoSize(get, set):TextFieldAutoSize;
     
+    /**
+		Controls automatic sizing and alignment of this `TextFieldRTL`.
+		| mode | description |
+		| --- | --- |
+		| `TextFieldAutoSize.NONE` | no automatic sizing or alignment |
+		| `TextFieldAutoSize.LEFT` | the text is treated as left-justified text, meaning that the left margin of the text field remains fixed and any resizing of a single line of the text field is on the right margin. If the text includes a line break(for example, `"\n"` or `"\r"`), the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the right side remains fixed. |
+		| `TextFieldAutoSize.RIGHT` | the text is treated as right-justified text, meaning that the right margin of the text field remains fixed and any resizing of a single line of the text field is on the left margin. If the text includes a line break(for example, `"\n" or "\r")`, the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the left side remains fixed.
+		| `TextFieldAutoSize.CENTER` | the text is treated as center-justified text, meaning that any resizing of a single line of the text field is equally distributed to both the right and left margins. If the text includes a line break(for example, `"\n"` or `"\r"`), the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the left and right sides remain fixed.|
+     **/
     public var alignment(get, set):TextFieldAutoSize;
 
+    /**
+     * The default font color that will be used to draw the text.
+     */
     public var textColor(get, set):Int;
 
+    /**
+     * The default background color that will be used to draw the text.
+	 * 
+	 * **Note** - when using the `lowerMask` property, you might want to set the `background` property
+	 * to false. this also means the color applied here wont do anything. If you want to color the `lowerMask`'s
+	 * background, you can do this:
+	 * ```haxe
+	 * lowerMask.graphics.beginFill(yourColor);
+	 * lowerMask.graphics.drawRect(0, 0, textField.width, textField.textHeight);
+	 * lowerMask.graphics.endFill();
+	 * ```
+	 */
     public var backgroundColor(get, set):Int;
 
+    /**
+     * Whether or not this `TextFieldRTL` has a background.
+	 * 
+	 * **Note** - when using the `lowerMask` property, you might want to set this property to false to avoid hiding the `lowerMask`.
+     */
     public var background(get, set):Bool;
 
     public var wordWrap(get, set):Bool;
@@ -173,17 +226,12 @@ class TextFieldRTL extends Sprite {
 
     public function new() {
         super();
-
+		//dont activate getter/setter
+		Reflect.setField(this, "useMarkdown", false);
 
         textField = new TextField();
 		textField.type = TextFieldType.DYNAMIC;
 		textField.selectable = false;
-		
-
-		//maskRect.graphics.beginFill();
-		//maskRect.graphics.drawRect(textField.x, textField.y, width, height);
-		//addChild(maskRect);
-		//mask = maskRect;
 
 		lowerMask = new Sprite();
 		addChild(lowerMask);
@@ -218,7 +266,7 @@ class TextFieldRTL extends Sprite {
         addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
         addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
-		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);	
     }
 
 	function caretBlink(e:TimerEvent) {
@@ -241,8 +289,8 @@ class TextFieldRTL extends Sprite {
 	}
 
     function onFocusOut(e:FocusEvent) {
+		if (stage == null) return;
         hasFocus = false;
-        if (!useMarkdown) return;
     }
 
 	function onFocusIn(e:MouseEvent) {
@@ -263,13 +311,10 @@ class TextFieldRTL extends Sprite {
 	}
 
 	function onMouseWheel(e:Event) {
-		if (scrollV == 1) return;
-		var yVal:Float = 0;
-		for (i in 0...scrollV - 2) {
-			yVal -= getCharBoundaries(getLineOffset(i)).height + getCharBoundaries(getLineOffset(i)).y - 2;
-		}
+		var yVal = -getCharBoundaries(getLineOffset(scrollV - 1)).y + 2;
+		
 		for (o in [upperMask, lowerMask, selectionShape]) {
-			o.y = yVal;	
+			o.y = yVal != null ? yVal : 0;	
 		}
 	}
 
@@ -279,11 +324,8 @@ class TextFieldRTL extends Sprite {
 			for (i in 0...text.length)
 			{
 				var r = getCharBoundaries(i);
-				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) // <----------------- CHANGE HERE
-				{
-					return i;
-				}
-				
+				//take scrolling into account
+				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) return i;			
 			}
 			//the mouse might have been pressed between the lines
 			var i = 0;
@@ -310,7 +352,11 @@ class TextFieldRTL extends Sprite {
 
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		if (textField.getCharBoundaries(charIndex) != null) return textField.getCharBoundaries(charIndex);
+		if (textField.getCharBoundaries(charIndex) != null) {
+			final bounds = textField.getCharBoundaries(charIndex);
+			bounds.y -= bounds.height * (scrollV - 1);
+			return bounds;
+		}
 
 		if (charIndex <= 0) return new Rectangle(2, 2, 0, textField.defaultTextFormat.size);
 
@@ -356,6 +402,7 @@ class TextFieldRTL extends Sprite {
 			// guessing line height differences when lots of spacebars are pressed and are being wordwrapped
 			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
 		}
+		charBoundaries.y -= charBoundaries.height * (scrollV - 1);
 		return charBoundaries;
 	}
 
@@ -752,11 +799,6 @@ class TextFieldRTL extends Sprite {
 		return textField.textColor = textColor;
 	}
 
-	function set_useMarkdown(value:Bool):Bool
-	{
-		throw new haxe.exceptions.NotImplementedException();
-	}
-
 	function set_caretIndex(index:Int):Int
 	{
 		setSelection(-1, -1);
@@ -775,11 +817,10 @@ class TextFieldRTL extends Sprite {
 		caret.height = bounds.height;
 		caret.x = if (CharTools.rtlLetters.match(text.charAt(index))) bounds.x else bounds.x + bounds.width;
 		caret.y = bounds.y;
+		trace("caretY " + caret.y + " textFieldHeight " + textField.height);
+		
 
-		if (caret.x < 0) caret.x = 2;
-		if (caret.y < 0) caret.y = 2;
-		if (caret.x > width) caret.x = width - 2;
-		if (caret.y > height) caret.y = height - 2;
+		textField.setSelection(index, index);
 
 		return index;
 	}

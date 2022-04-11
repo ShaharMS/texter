@@ -184,7 +184,7 @@ class MarkdownVisualizer
 		field.lowerMask.graphics.clear();
 		field.background = false;
 		field.lowerMask.graphics.beginFill(field.backgroundColor);
-		field.lowerMask.graphics.drawRect(0, 0, field.width, field.height);
+		field.lowerMask.graphics.drawRect(0, 0, field.width, field.textHeight > field.height ? field.textHeight : field.height);
 		field.lowerMask.graphics.endFill();
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
