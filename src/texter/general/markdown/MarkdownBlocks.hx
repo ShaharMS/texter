@@ -100,6 +100,8 @@ class MarkdownBlocks {
 			"vhdl" => parseVHDL,
 			"wasm" => parseWASM,
 			"solidity" => parseSolidity,	
+			"cmake" => parseCMake,
+			"default" => parseDefault
 		];
 
 	
@@ -135,7 +137,7 @@ class MarkdownBlocks {
 	}
 	public static dynamic function parseHaxe(text:String):Array<{color:Int, start:Int, end:Int}> 
 	{
-		var interp:Array<{color:Int, start:Int, end:Int}> = [];
+		var interp:Array<{color:Int, start:Int, end:Int}> = []; 
 		var indexOfBlue = text.indexesFromEReg(~/(?:\(| |\n|^)(overload|true|false|null|public|static|dynamic|extern|inline|override|macro|abstract|final|var|function|package|enum|typedef|in|is|trace|new|this|class|super|extends|implements|interface|->)/m),
 			indexOfPurple = text.indexesFromArray([ "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "try", "catch", "throw", "import"]), 
 			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m),
@@ -158,12 +160,11 @@ class MarkdownBlocks {
     public static dynamic function parseCSharp(text:String):Array<{color:Int, start:Int, end:Int}> 
 	{
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
-		trace("tryParse");
 		var indexOfBlue = text.indexesFromEReg(~/(?:\(| |\n|^)(virtual|true|false|null|public|static|as|base|bool|byte|abstract|char|var|checked|class|enum|const|int|is|decimal|new|this|delegate|super|double|extern|float|in|inerface|internal|long|namespace|object|override|private|protected|readonly|short|sizeof|string|struct|typeof|uint|ulong|ushort|using|void|volatile|dynamic|where|yield|to|partial)/m),
 			indexOfPurple = text.indexesFromEReg(~/(?:\(| |\n|^)(foreach|if|else|for|while|do|switch|case|default|break|continue|try|catch|throw|return)/m),
 			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m),
 			indexOfClassName = text.indexesFromEReg(~/(?:\(| |\n|^)[A-Z]+[a-z]+/m),
-			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
+			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'|\$".*?"/),
 			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
 			indexOfComments = text.indexesFromEReg(~/\/\/.*/m);
 		trace("endParse");
@@ -236,4 +237,6 @@ class MarkdownBlocks {
 	public static dynamic function parseVHDL	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 	public static dynamic function parseWASM	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 	public static dynamic function parseSolidity(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseCMake	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
+	public static dynamic function parseDefault	(text:String):Array<{color:Int, start:Int, end:Int}> return [];
 }

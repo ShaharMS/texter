@@ -11,6 +11,7 @@ enum MarkdownEffect
 	HorizontalRule(type:String, start:Int, end:Int);
 	ParagraphGap(start:Int, end:Int);
 	CodeBlock(language:String, start:Int, end:Int);
+	TabCodeBlock(start:Int, end:Int);
 	Link(link:String, start:Int, end:Int);
 	Image(altText:String, imageSource:String, start:Int, end:Int);
 	Emoji(type:String, start:Int, end:Int);

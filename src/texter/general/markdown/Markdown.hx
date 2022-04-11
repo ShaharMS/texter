@@ -39,19 +39,21 @@ class Markdown
 	 * `syntaxBlocks` is a field representing a class that contains many syntax coloring
 	 * methods for codeblocks.
 	 */
-	public static var syntaxBlocks(default, null) = MarkdownBlocks;
+	public static var syntaxBlocks(default, set) = MarkdownBlocks;
 
 	/**
 	 * If you want to modify certain visual aspects of the markdown text, you can 
 	 * gain access to those via the `visualizer` field.
 	 */
-	public static var visualizer(default, null) = MarkdownVisualizer;
+	public static var visualizer(default, set) = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.indentEReg, // Done.
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
 		patterns.codeblockEReg, // Done.
+		patterns.tildeCodeblockEReg, // Done.
+		patterns.tabCodeblockEReg, // Done.
 		patterns.emojiEReg, // Done.
 		patterns.boldEReg, // Done.
 		patterns.astBoldEReg, // Done.
@@ -97,7 +99,7 @@ class Markdown
 	 *  - The interpreter doesnt support everything markdown has to offer (yet). supported markups:  
 	 * 	  - **Headings**: #, ##, ###, ####, #####, ######, #######
 	 * 	  - **Lists (also nested)**: -, *, +, 1., 2.
-	 * 	  - **CodeBlocks**: ``````
+	 * 	  - **CodeBlocks**: ``````, ~~~~~~, four spaces
 	 * 	  - **Inline Code**: ``
 	 * 	  - **Italics**: _, *
 	 * 	  - **Bolds**: **, __
@@ -228,7 +230,7 @@ class Markdown
 					final info = rule.matchedPos();
 					effects.push(Heading(rule.matched(1).length, info.pos, info.pos + info.len));
 				}
-				else if (rule == patterns.codeblockEReg)
+				else if (rule == patterns.codeblockEReg || rule == patterns.tildeCodeblockEReg)
 				{
 					var langLength = "";
 					while (langLength.length < rule.matched(1).length)
@@ -236,6 +238,12 @@ class Markdown
 					lineTexts = rule.replace(lineTexts, langLength + "​​​\r$2​​​");
 					final info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
+				}
+				else if (rule == patterns.tabCodeblockEReg) 
+				{
+					lineTexts = rule.replace(lineTexts, "​​​​" + "​​​$1​​​");
+					final info = rule.matchedPos();
+					effects.push(TabCodeBlock(info.pos, info.pos + info.len + 4));
 				}
 				else if (rule == patterns.emojiEReg) 
 				{
@@ -275,4 +283,7 @@ class Markdown
 		return visualizer.generateVisuals(textField);
 	}
 	#end
+
+	static function set_syntaxBlocks(value) return cast syntaxBlocks = MarkdownBlocks;
+	static function set_visualizer(value) return cast visualizer = MarkdownVisualizer;
 }

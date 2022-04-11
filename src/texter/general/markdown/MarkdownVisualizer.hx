@@ -1,11 +1,9 @@
 package texter.general.markdown;
-
+import openfl.text.TextFormat;
+#if openfl
 import texter.openfl.TextFieldRTL;
-import flixel.FlxG;
-import openfl.display.BitmapData;
-import openfl.display.Bitmap;
 import openfl.text.TextField;
-import flixel.FlxSprite;
+#end
 using texter.general.TextTools;
 
 /**
@@ -40,7 +38,11 @@ using texter.general.TextTools;
  * ```
  * 
  * **Second, in the body of the anonymus function, you implement this *giant*
- *  switch-case to handle all of the effects you want to handle, as well as make your text "markdown-artifact-free":**
+ * switch-case to handle all of the effects you want to handle, as well as make your text "markdown-artifact-free".**
+ *  - **start** contains the starting index of the effect.
+ *  - **end** contains the ending index of the effect, but not included!
+ *  - **any extra argument** this is for effects that require extra information to be rendered correctly - language for codeblocks, level for headings...
+ * 
  * ```haxe
  * 	function displayMarkdown(textField:Text):Text {
  * 		textField.textStyle = defaultTextStyle;
@@ -73,7 +75,7 @@ using texter.general.TextTools;
  * 	}
  * ```
  * 
- * **And FInally, you can add your desired effect in the switch-case:**
+ * **And Finally, you can add your desired effect in each of the cases.**
  * ```haxe
  * case Bold: textField.setBold(start, end);
  * case Italic: textField.setItalic(start, end);
@@ -89,12 +91,34 @@ using texter.general.TextTools;
  */
 class MarkdownVisualizer
 {
+	/**
+	 * `visualConfig` is a "dictionary" containing all of the configuration options for the visualizer.
+	 * **NOTE** - because its a cross-framework field, and not every framework supports the same options,
+	 * You cant exect everything to work in every framework.
+	 */
+	public static var visualConfig:VisualConfig = @:privateAccess new VisualConfig();
 	#if openfl
 	/**
 	 * When visualizing a given Markdown string, this `TextFormat` will be used.
+	 * You can modify the `TextFormat` to change the style of the text via `visualConfig`;
 	 */
-	public static var markdownTextFormat(default, never):openfl.text.TextFormat = new openfl.text.TextFormat("_sans", 18, 0x000000, false, false, false, "", "", "left", 0, 0, 0, null);
-
+	public static var markdownTextFormat(get, never):openfl.text.TextFormat;
+	@:noCompletion static function get_markdownTextFormat():TextFormat {
+		return new openfl.text.TextFormat(
+			visualConfig.font,
+			visualConfig.size,
+			visualConfig.color,
+			false,
+			false,
+			false,
+			"",
+			"",
+			visualConfig.alignment,
+			visualConfig.leftMargin,
+			visualConfig.rightMargin,
+			visualConfig.indent,
+			visualConfig.leading);
+	}
 	/**
 		Generates the default visual theme from the markdown interpreter's information.
 
@@ -158,6 +182,10 @@ class MarkdownVisualizer
 		field.defaultTextFormat = markdownTextFormat;
 		field.upperMask.graphics.clear();
 		field.lowerMask.graphics.clear();
+		field.background = false;
+		field.lowerMask.graphics.beginFill(field.backgroundColor);
+		field.lowerMask.graphics.drawRect(0, 0, field.width, field.height);
+		field.lowerMask.graphics.endFill();
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
 			trace(effects);
@@ -179,22 +207,48 @@ class MarkdownVisualizer
 					case HorizontalRule(type, start, end): {
 						var bounds = field.getCharBoundaries(start + 1);
 						bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start, start + 1).size / 8;
-						var lW = field.width - 8 - field.getTextFormat(start + 1, start + 2).rightMargin - field.getTextFormat(start + 1, start + 2).leftMargin, x = 4 + field.getTextFormat(start + 1, start + 2).leftMargin;
+						var lW = field.width - 8 - field.getTextFormat(start, start + 1).rightMargin - field.getTextFormat(start, start + 1).leftMargin, x = 4 + field.getTextFormat(start + 1, start + 2).leftMargin;
 						//draw the HR according to the text's dimensions
 						var g = field.upperMask.graphics;
 						g.lineStyle(4, 0x000000, 1, false, NORMAL);
 						g.moveTo(x, bounds.y);
-						trace('x: ' + x + ' y: ' + bounds.y + ' width: ' + lW);
 						g.lineTo(x + lW, bounds.y);
 					}
 					case CodeBlock(language, start, end): {
 						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size), start, end);
+						//preparing the background
+						var g = field.lowerMask.graphics;
+						g.lineStyle(1, 0x000000, 1, false, NORMAL);
+						g.beginFill(0xCCCCCC, 0.5);
+						var bounds = field.getCharBoundaries(start + 3 + language.length + 1);// +3 for the ```, +1 for the \n and +langLength for the language
+						var bounds2 = field.getCharBoundaries(end - 3 - 2);// -3 for the ```, -2 for the \n and because end is not icluded
+						bounds.y = bounds.y + bounds.height / 8 - 2; bounds2.y = bounds2.y + bounds2.height / 8 + 2;
+						g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
+						g.endFill();
 						try {
 							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start, end));
 							for (i in coloring) {
 								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 							}
 						}  catch(e) trace(e);		
+					}
+					case TabCodeBlock(start, end): {
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null, null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size), start, end);
+						//preparing the background
+						var g = field.lowerMask.graphics;
+						g.lineStyle(1, 0x000000, 1, false, NORMAL);
+						g.beginFill(0xCCCCCC, 0.5);
+						var bounds = field.getCharBoundaries(start + 4);// + 4 for the spaces
+						var bounds2 = field.getCharBoundaries(end - 1);// -1 because end is not included
+						bounds.y = bounds.y + bounds.height / 8 - 2; bounds2.y = bounds2.y + bounds2.height / 8 + 2;
+						g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
+						g.endFill();
+						try {
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap["default"](field.text.substring(start, end));
+							for (i in coloring) {
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
+							}
+						}  catch(e) trace(e);
 					}
 					case StrikeThrough(start, end): {
 						//draw a strikethrough
@@ -218,4 +272,66 @@ class MarkdownVisualizer
 		return field;
 	}
 	#end
+}
+
+private class VisualConfig {
+	
+	@:noCompletion private function new() return;
+	public var size:Int = 18;
+	public var color:Int = 0x000000;
+	public var font:String = "_sans";
+	public var leftMargin:Int = 0;
+	public var rightMargin:Int = 0;
+	public var indent:Int = 0;
+	public var leading:Int;
+	public var blockIndent:Int = 18;
+	public var alignment:String = "left";
+	public var border:Bool = true;
+	public var borderColor:Int = 0x000000;
+	public var borderSize:Int = 1;
+	public var background:Bool = false;
+	public var backgroundColor:Int = 0xEEEEEE;
+	public var codeblockBackgroundColor:Int = 0xCCCCCC;
+
+	/**
+	 * Set all the properties of the default visual configuration at once.
+	 * to skip values, set them to `null`.
+	 * @param size the size of the text
+	 * @param color the color of the text
+	 * @param font specify the font of the text, use the path to your font: `path/to/font.ttf`
+	 * @param leftMargin the left margin of the text (how far will the text be away from the left border, in pixels)
+	 * @param rightMargin the right margin of the text (how far will the text be away from the right border, in pixels)
+	 * @param indent the indent of the text (how far will the text be away from the left margin, in pixels)
+	 * @param leading the spacing between lines, in pixels
+	 * @param blockIndent the right & left margin used when displaying a code block
+	 *  characters the contain the symbols; the first character is the symbol for the
+	 *  first-level bullet point, the second character is the symbol for the second-level bullet point.
+	 * @param alignment the alignment of the text, can be `left`, `right`, `center` or `justify`
+	 * @param border whether to draw a border around the text
+	 * @param borderColor the color of the border
+	 * @param borderSize the size of the border (the thickness of the border, in pixels)
+	 * @param background whether to draw a background behind the text
+	 * @param backgroundColor the color of the background
+	 * @param codeblockBackgroundColor the color of the background behind code blocks
+	 */
+	public function setAll(?size:Int, ?color:Int, ?font:String, ?leftMargin:Int, ?rightMargin:Int, ?indent:Int, ?leading:Int, ?blockIndent:Int, ?alignment:String, ?border:Bool, ?borderColor:Int, ?borderSize:Int, ?background:Bool, ?backgroundColor:Int, ?codeblockBackgroundColor:Int):VisualConfig {
+		this.size = size != null ? size : this.size;
+		this.color = color != null ? color : this.color;
+		this.font = font != null ? font : this.font;
+		this.leftMargin = leftMargin != null ? leftMargin : this.leftMargin;
+		this.rightMargin = rightMargin != null ? rightMargin : this.rightMargin;
+		this.indent = indent != null ? indent : this.indent;
+		this.leading = leading != null ? leading : this.leading;
+		this.blockIndent = blockIndent != null ? blockIndent : this.blockIndent;
+		this.alignment = alignment != null ? alignment : this.alignment;
+		this.border = border != null ? border : this.border;
+		this.borderColor = borderColor != null ? borderColor : this.borderColor;
+		this.borderSize = borderSize != null ? borderSize : this.borderSize;
+		this.background = background != null ? background : this.background;
+		this.backgroundColor = backgroundColor != null ? backgroundColor : this.backgroundColor;
+		this.codeblockBackgroundColor = codeblockBackgroundColor != null ? codeblockBackgroundColor : this.codeblockBackgroundColor;
+		return this;
+	}
+
+
 }
