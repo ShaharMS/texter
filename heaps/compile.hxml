@@ -1,6 +1,0 @@
--cp src
--lib heaps
--lib texter
--js text.js
--main HeapsMain
--debug

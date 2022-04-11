@@ -1,11 +1,12 @@
 {
-    "name": "texter",
-    "classPath": "src/",
-    "license": "MIT",
-    "releasenote": "The next big thing for texter - Markdown! \n\n texter can now handle markdown for various frameworks, and also bundles its own basic interpreter to build your own styles on top of it.\n for more information, see CHANGELOG.md",
-    "url": "https://github.com/ShaharMS/texter",
-    "contributors": ["ShaharMS"],
-    "version": "2.0.0",
-    "tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown"],
-    "description": "adding more support for general text input, regular text, markdown text and more in multiple libraries such as HaxeFlixel, OpenFL and more"
+	"name": "texter",
+	"url" : "https://github.com/ShaharMS/texter",
+	"license": "MIT",
+	"tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown"],
+    "description": "Advanced text tools for Haxe game engines"
+	"version": "0.0.1",
+	"classPath": "src/",
+	"releasenote": "The next big thing for texter - Markdown! \n\n texter can now handle markdown for various frameworks, and also bundles its own basic interpreter to build your own styles on top of it.\n for more information, see CHANGELOG.md",
+	"contributors": [ "ShaharMS" ],
+	"dependencies": { }
 }
