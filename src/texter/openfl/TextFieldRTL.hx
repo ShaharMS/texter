@@ -214,6 +214,8 @@ class TextFieldRTL extends Sprite {
 
 	public var htmlText(get, set):openfl.text._internal.UTF8String;
 
+	public var markdownText(default, set):String;
+
     var caret:Bitmap;
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool;
@@ -260,7 +262,7 @@ class TextFieldRTL extends Sprite {
 		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
 
 		textField.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
-		textField.addEventListener(Event.SCROLL, onMouseWheel);
+		addEventListener(Event.EXIT_FRAME, onMouseWheel);
 		upperMask.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
         addEventListener(MouseEvent.MOUSE_DOWN, onFocusIn);
         addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
@@ -311,10 +313,10 @@ class TextFieldRTL extends Sprite {
 	}
 
 	function onMouseWheel(e:Event) {
-		var yVal = -getCharBoundaries(getLineOffset(scrollV - 1)).y + 2;
+		var yVal = getCharBoundaries(0);
 		
 		for (o in [upperMask, lowerMask, selectionShape]) {
-			o.y = yVal != null ? yVal : 0;	
+			o.y = yVal.y;	
 		}
 	}
 
@@ -336,7 +338,7 @@ class TextFieldRTL extends Sprite {
 					if (i == 0) i--;
 					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
 					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
-					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
+					return i + (if (scrollV == 1) 1 else 0) + StringTools.replace(textField.getLineText(line), "\n", "").length;
 				}
 				i++;
 			}
@@ -374,6 +376,7 @@ class TextFieldRTL extends Sprite {
 			// if this is a spacebar, we cant use textField.getCharBoundaries() since itll return null
 			charBoundaries = getCharBoundaries(charIndex - 1);
 			charBoundaries.y += diff * charBoundaries.height;
+			charBoundaries.y -= charBoundaries.height * (scrollV - 1);
 			if (alignment == RIGHT)
 				charBoundaries.x = x + width - 2
 			else if (alignment == CENTER)
@@ -395,14 +398,12 @@ class TextFieldRTL extends Sprite {
 			}
 			charBoundaries = textField.getCharBoundaries(charIndex);
 			// removing this makes pressing between word-wrapped lines crash
-			if (charBoundaries == null)
-				charBoundaries = textField.getCharBoundaries(charIndex - 1);
-			charBoundaries.x += widthDiff * charBoundaries.width
-				- (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
+			if (charBoundaries == null) charBoundaries = textField.getCharBoundaries(charIndex - 1);
+			charBoundaries.x += widthDiff * charBoundaries.width - (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
 			// guessing line height differences when lots of spacebars are pressed and are being wordwrapped
 			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
+			charBoundaries.y -= charBoundaries.height * (scrollV - 1);
 		}
-		charBoundaries.y -= charBoundaries.height * (scrollV - 1);
 		return charBoundaries;
 	}
 
@@ -1032,6 +1033,14 @@ class TextFieldRTL extends Sprite {
 	function set_embedFonts(value:Bool):Bool
 	{
 		return this.textField.embedFonts = value;
+	}
+
+	function set_markdownText(text:String):String
+	{
+		if (text == null || text == "") return "";
+		this.text = text;
+		Markdown.visualizeMarkdown(this);
+		return text;
 	}
 
 	//----------------------------
