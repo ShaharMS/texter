@@ -5,7 +5,7 @@ I promised for every major update to have a new framework supported, and the new
 ### 🥁
 ### 🥁
 **OpenFL!**
-### New Features:
+### **New Features:**
 
 **TextFeildRTL - new class!**
 `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things, such as **right-to-left text** and **built-in markdown visualization**.
@@ -15,8 +15,8 @@ It also adds some convenience methods & fields for working with the object, that
  - added `autoAlign` property - aligns the text according to the first strongly typed character
  - added `openningDirection` (read-only) - specifies the base direction of the text
  - added `alignment` property, similar to `autoSize` but more understandable
- - added `upperMask` property, you can now draw on top of the text
- - added `lowerMask` property, you can now draw below the text
+ - added `overlay` property, you can now draw on top of the text
+ - added `underlay` property, you can now draw below the text
  - added `markdownText` property - you can set this to make the text display things in markdown format
  - `caretIndex` is now an editable property
  - added `hasFocus` property for easy focus access
@@ -25,6 +25,10 @@ It also adds some convenience methods & fields for working with the object, that
  - added `getCaretIndexOfMouse()`
  - RTL text input is now supported on platforms other then the web
  - the text selection's background now has a nicer & more natural look
+ - extended markdown visualization support. also supports:
+    - Horizontal Rules
+    - Code Background
+    - Strikethrough
 
 
 **CharTools:**

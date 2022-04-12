@@ -1,32 +1,32 @@
 package texter.openfl;
+
 import texter.general.markdown.Markdown;
 import texter.general.markdown.MarkdownVisualizer;
 #if openfl
-import openfl.display.Sprite;
-import openfl.Lib;
-import openfl.text.TextFieldType;
-import texter.general.TextTools.TextDirection;
-import openfl.text.TextFormat;
-import openfl.desktop.Clipboard;
-import texter.general.CharTools;
-import openfl.events.FocusEvent;
-import openfl.text.TextFieldAutoSize;
-import openfl.geom.Rectangle;
-import openfl.ui.MouseCursor;
-import openfl.ui.Mouse;
-import openfl.events.MouseEvent;
-import lime.ui.KeyModifier;
 import lime.ui.KeyCode;
-import openfl.display.BitmapData;
+import lime.ui.KeyModifier;
+import openfl.Lib;
+import openfl.desktop.Clipboard;
 import openfl.display.Bitmap;
-import openfl.text.TextField;
-import openfl.text.TextLineMetrics;
+import openfl.display.BitmapData;
 import openfl.display.Shape;
-import openfl.utils.ByteArray;
+import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.FocusEvent;
+import openfl.events.MouseEvent;
 import openfl.events.TimerEvent;
+import openfl.geom.Rectangle;
+import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFieldType;
+import openfl.text.TextFormat;
+import openfl.text.TextLineMetrics;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
+import openfl.utils.ByteArray;
 import openfl.utils.Timer;
-
+import texter.general.CharTools;
+import texter.general.TextTools.TextDirection;
 #if actuate
 import motion.Actuate;
 import motion.easing.Quad;
@@ -40,8 +40,8 @@ import motion.easing.Quad;
  * It also adds some convenience methods & fields for working with the object, that `TextField` doesn't have:
  * 
  *  - alignment
- *  - upperMask
- *  - lowerMask
+ *  - overlay
+ *  - underlay
  *  - markdownText
  *  - editable `caretIndex`
  *  - hasFocus
@@ -51,22 +51,20 @@ import motion.easing.Quad;
  * 
  * And more.
  */
-class TextFieldRTL extends Sprite {
-    
-	@:noCompletion static var c:Int;
+class TextFieldRTL extends Sprite
+{
+	public var textField:TextField;
 
-    public var textField:TextField;
-
-    /**
+	/**
 		Whether or not the text is aligned according to the first typed character:
 
 		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`.
 		 - if the character is from any other language - `alignment` will be set to `LEFT`.
 		 - if the character is not from any specific language - `alignment` will be set to `UNDETERMINED`.
-		
-		
-		
-		 **`autoAlign` does not default to a certine direction when set to `false`**. it will
+
+
+
+		**`autoAlign` does not default to a certine direction when set to `false`**. it will
 		use the last direction it remembers when this `TextFieldRTL` was created/when `autoAlign` was still true;
 	**/
 	public var autoAlign(default, set):Bool = true;
@@ -86,22 +84,22 @@ class TextFieldRTL extends Sprite {
 	**/
 	public var openingDirection(default, null):TextDirection = UNDETERMINED;
 
-    /**
-     * This `Sprite` is a mask that exists above the actual text. You can 
+	/**
+	 * This `Sprite` is a "mask" that exists above the actual text. You can 
 	 * draw on it, add `DisplayObject`s to it, etc.
-     */
-    public var upperMask:Sprite;
+	 */
+	public var overlay:Sprite;
 
 	/**
-	 * This `Sprite` is a mask that exists below the actual text. You can 
+	 * This `Sprite` is a "mask" that exists below the actual text. You can 
 	 * draw on it, add `DisplayObject`s to it, etc.
 	 * 
-	 * **NOTICE** - setting the `background` property to `true` will hide the lower mask.
+	 * **NOTICE** - setting the `background` property to `true` will hide the underlay.
 	 */
-	public var lowerMask:Sprite;
+	public var underlay:Sprite;
 
-    /**
-     * Similar to `TextField`s caretIndex, but its editable.
+	/**
+	 * Similar to `TextField`s caretIndex, but its editable.
 	 * 
 	 * The caret is the blinking cursor that appears when you're typing. 
 	 * its always before the character you're typing.
@@ -129,20 +127,20 @@ class TextFieldRTL extends Sprite {
 	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
 	 * ```
 	 */
-    public var caretIndex(default, set):Int = 0;
+	public var caretIndex(default, set):Int = 0;
 
 	/**
 	 * The text that is currently being edited/displayed.
 	 */
-    public var text(get, set):String;
+	public var text(get, set):String;
 
-    /**
-     * Similar to the `alignment` property of `TextFieldRTL`, and only exists for compatibility with `TextField`.
+	/**
+	 * Similar to the `alignment` property of `TextFieldRTL`, and only exists for compatibility with `TextField`.
 	 * The reason for adding the `alignment` property in the first place is to make it easier to use `TextFieldRTL` objects.
-     */
-    public var autoSize(get, set):TextFieldAutoSize;
-    
-    /**
+	 */
+	public var autoSize(get, set):TextFieldAutoSize;
+
+	/**
 		Controls automatic sizing and alignment of this `TextFieldRTL`.
 		| mode | description |
 		| --- | --- |
@@ -150,50 +148,50 @@ class TextFieldRTL extends Sprite {
 		| `TextFieldAutoSize.LEFT` | the text is treated as left-justified text, meaning that the left margin of the text field remains fixed and any resizing of a single line of the text field is on the right margin. If the text includes a line break(for example, `"\n"` or `"\r"`), the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the right side remains fixed. |
 		| `TextFieldAutoSize.RIGHT` | the text is treated as right-justified text, meaning that the right margin of the text field remains fixed and any resizing of a single line of the text field is on the left margin. If the text includes a line break(for example, `"\n" or "\r")`, the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the left side remains fixed.
 		| `TextFieldAutoSize.CENTER` | the text is treated as center-justified text, meaning that any resizing of a single line of the text field is equally distributed to both the right and left margins. If the text includes a line break(for example, `"\n"` or `"\r"`), the bottom is also resized to fit the next line of text. If `wordWrap` is also set to `true`, only the bottom of the text field is resized and the left and right sides remain fixed.|
-     **/
-    public var alignment(get, set):TextFieldAutoSize;
+	**/
+	public var alignment(get, set):TextFieldAutoSize;
 
-    /**
-     * The default font color that will be used to draw the text.
-     */
-    public var textColor(get, set):Int;
+	/**
+	 * The default font color that will be used to draw the text.
+	 */
+	public var textColor(get, set):Int;
 
-    /**
-     * The default background color that will be used to draw the text.
+	/**
+	 * The default background color that will be used to draw the text.
 	 * 
-	 * **Note** - when using the `lowerMask` property, you might want to set the `background` property
-	 * to false. this also means the color applied here wont do anything. If you want to color the `lowerMask`'s
+	 * **Note** - when using the `underlay` property, you might want to set the `background` property
+	 * to false. this also means the color applied here wont do anything. If you want to color the `underlay`'s
 	 * background, you can do this:
 	 * ```haxe
-	 * lowerMask.graphics.beginFill(yourColor);
-	 * lowerMask.graphics.drawRect(0, 0, textField.width, textField.textHeight);
-	 * lowerMask.graphics.endFill();
+	 * underlay.graphics.beginFill(yourColor);
+	 * underlay.graphics.drawRect(0, 0, textField.width, textField.textHeight);
+	 * underlay.graphics.endFill();
 	 * ```
 	 */
-    public var backgroundColor(get, set):Int;
+	public var backgroundColor(get, set):Int;
 
-    /**
-     * Whether or not this `TextFieldRTL` has a background.
+	/**
+	 * Whether or not this `TextFieldRTL` has a background.
 	 * 
-	 * **Note** - when using the `lowerMask` property, you might want to set this property to false to avoid hiding the `lowerMask`.
-     */
-    public var background(get, set):Bool;
+	 * **Note** - when using the `underlay` property, you might want to set this property to false to avoid hiding the `underlay`.
+	 */
+	public var background(get, set):Bool;
 
-    public var wordWrap(get, set):Bool;
+	public var wordWrap(get, set):Bool;
 
-    public var multiline(get, set):Bool;
+	public var multiline(get, set):Bool;
 
-    public var hasFocus(get, set):Bool;
+	public var hasFocus(get, set):Bool;
 
-    public var defaultTextFormat(get, set):TextFormat;
+	public var defaultTextFormat(get, set):TextFormat;
 
-    public var type(get, set):TextFieldType;
+	public var type(get, set):TextFieldType;
 
-    public var border(get, set):Bool;
+	public var border(get, set):Bool;
 
-    public var borderColor(get, set):Int;
+	public var borderColor(get, set):Int;
 
-    public var selectable(default, set):Bool;
+	public var selectable(default, set):Bool;
 
 	public var embedFonts(get, set):Bool;
 
@@ -217,7 +215,7 @@ class TextFieldRTL extends Sprite {
 
 	public var markdownText(default, set):String;
 
-    var caret:Bitmap;
+	var caret:Bitmap;
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool;
 	var caretTimer = new Timer(500);
@@ -226,125 +224,144 @@ class TextFieldRTL extends Sprite {
 	var startSelect = -1;
 	var selectedRange:Array<Int> = [-1, -1];
 	var maskRect:Shape = new Shape();
+	var surface:Sprite = new Sprite();
 
-    public function new() {
-        super();
+	public function new()
+	{
+		super();
 
-        textField = new TextField();
+		textField = new TextField();
 		textField.type = TextFieldType.DYNAMIC;
 		textField.selectable = false;
 
-		lowerMask = new Sprite();
-		addChild(lowerMask);
-		addChild(textField);
+		underlay = new Sprite();
+		surface.addChild(underlay);
+		surface.addChild(textField);
 
 		selectionShape = new Shape();
-		addChild(selectionShape);
+		surface.addChild(selectionShape);
 
 		background = true;
 		backgroundColor = 0xEEEEEE;
 
-        upperMask = new Sprite();
-        caret = new Bitmap(new BitmapData(1, 1, false, 0x000000));
+		overlay = new Sprite();
+		caret = new Bitmap(new BitmapData(1, 1, false, 0x000000));
 		caret.height = textField.defaultTextFormat.size;
 		caret.x = caret.y = 2;
 		caret.visible = false;
 		caretTimer.addEventListener(TimerEvent.TIMER, caretBlink);
 
-        addChild(upperMask);
-        addChild(caret);
-        Lib.application.window.onTextInput.add(regularKeysDown);
-        Lib.application.window.onKeyDown.add(specialKeysDown);
-
-		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
+		surface.addChild(overlay);
+		surface.addChild(caret);
+		addChild(surface);
+		Lib.application.window.onTextInput.add(regularKeysDown);
+		Lib.application.window.onKeyDown.add(specialKeysDown);
 
 		textField.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
 		addEventListener(Event.EXIT_FRAME, onMouseWheel);
-		upperMask.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
-        addEventListener(MouseEvent.MOUSE_DOWN, onFocusIn);
-        addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-        addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-        addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
-		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);	
-		addEventListener(Event.ADDED_TO_STAGE, (e) -> {
-			var maskRect = new Shape();
+		overlay.addEventListener(FocusEvent.FOCUS_IN, (e) -> stage.focus = this);
+		addEventListener(MouseEvent.MOUSE_DOWN, onFocusIn);
+		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+		addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		addEventListener(Event.ADDED_TO_STAGE, (e) ->
+		{
 			maskRect.graphics.beginFill();
 			maskRect.graphics.drawRect(textField.x, textField.y, width, height);
-			parent.addChild(maskRect);
-			mask = maskRect;
+			addChild(maskRect);
+			surface.mask = maskRect;
 		});
-		
-    }
+	}
 
-	function caretBlink(e:TimerEvent) {
+	function caretBlink(e:TimerEvent)
+	{
 		caret.visible = !caret.visible;
 	}
 
-	function onMouseMove(e:MouseEvent) {
-		if (!e.buttonDown) {
+	function onMouseMove(e:MouseEvent)
+	{
+		if (!e.buttonDown)
+		{
 			hasMoved = false;
 			return;
 		}
-		else if (hasMoved) {
+		else if (hasMoved)
+		{
 			var lastBound = getCaretIndexOfMouse();
 			setSelection(startSelect, lastBound);
-		} else {
+		}
+		else
+		{
 			startSelect = getCaretIndexOfMouse();
 			hasMoved = true;
 		}
-
 	}
 
-    function onFocusOut(e:FocusEvent) {
-		if (stage == null) return;
-        hasFocus = false;
-    }
+	function onFocusOut(e:FocusEvent)
+	{
+		if (stage == null)
+			return;
+		hasFocus = false;
+	}
 
-	function onFocusIn(e:MouseEvent) {
+	function onFocusIn(e:MouseEvent)
+	{
 		trace("focus");
-        stage.window.textInputEnabled = true;
-        if (type != INPUT) return;
-        hasFocus = true;
-        caretIndex = getCaretIndexOfMouse();
-    }
+		stage.window.textInputEnabled = true;
+		if (type != INPUT)
+			return;
+		hasFocus = true;
+		caretIndex = getCaretIndexOfMouse();
+	}
 
-	function onMouseOver(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.IBEAM;
-    }
+	function onMouseOver(e:MouseEvent)
+	{
+		Mouse.cursor = MouseCursor.IBEAM;
+	}
 
 	function onMouseOut(e:MouseEvent)
 	{
 		Mouse.cursor = MouseCursor.AUTO;
 	}
 
-	function onMouseWheel(e:Event) {
+	function onMouseWheel(e:Event)
+	{
 		var yVal = getCharBoundaries(0);
-		
-		for (o in [upperMask, lowerMask, selectionShape]) {
-			o.y = yVal.y;	
+
+		for (o in [overlay, underlay, selectionShape])
+		{
+			o.y = yVal.y;
 		}
 	}
 
-    public function getCaretIndexAtPoint(x:Float, y:Float):Int {
-        if (text.length > 0)
+	public function getCaretIndexAtPoint(x:Float, y:Float):Int
+	{
+		if (text.length > 0)
 		{
 			for (i in 0...text.length)
 			{
 				var r = getCharBoundaries(i);
-				//take scrolling into account
-				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) return i;			
+				// take scrolling into account
+				if ((x >= r.x && x <= r.right && y >= r.y && y <= r.bottom))
+					return i;
 			}
-			//the mouse might have been pressed between the lines
+			// the mouse might have been pressed between the lines
 			var i = 0;
-			while (i < text.length) {
-				var r = getCharBoundaries(i), line = textField.getLineIndexOfChar(i + 1);
-				if (r == null) return 0;
-				if (y >= r.y && y <= r.bottom) {
-					if (i == 0) i--;
-					if (i != -1 && !StringTools.contains(text, "\n")) i -= 2;
-					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1) i++;
+			while (i < text.length)
+			{
+				var r = getCharBoundaries(i),
+					line = textField.getLineIndexOfChar(i + 1);
+				if (r == null)
+					return 0;
+				if (y >= r.y && y <= r.bottom)
+				{
+					if (i == 0)
+						i--;
+					if (i != -1 && !StringTools.contains(text, "\n"))
+						i -= 2;
+					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1)
+						i++;
 					return i + (if (scrollV == 1) 1 else 0) + StringTools.replace(textField.getLineText(line), "\n", "").length;
 				}
 				i++;
@@ -353,24 +370,26 @@ class TextFieldRTL extends Sprite {
 		}
 		// place caret at leftmost position
 		return 0;
-    }
+	}
 
-    public function getCaretIndexOfMouse():Int {
-        return getCaretIndexAtPoint(mouseX, mouseY);
-    }
+	public function getCaretIndexOfMouse():Int
+	{
+		return getCaretIndexAtPoint(mouseX, mouseY);
+	}
 
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		if (textField.getCharBoundaries(charIndex) != null) {
+		if (textField.getCharBoundaries(charIndex) != null)
+		{
 			final bounds = textField.getCharBoundaries(charIndex);
 			bounds.y -= bounds.height * (scrollV - 1);
 			return bounds;
 		}
 
-		if (charIndex <= 0) return new Rectangle(2, 2, 0, textField.defaultTextFormat.size);
+		if (charIndex <= 0)
+			return new Rectangle(2, 2, 0, textField.defaultTextFormat.size);
 
 		var charBoundaries:Rectangle = new Rectangle();
-
 
 		if (text.charAt(charIndex) == "\n")
 		{
@@ -387,8 +406,8 @@ class TextFieldRTL extends Sprite {
 			if (alignment == RIGHT)
 				charBoundaries.x = x + width - 2
 			else if (alignment == CENTER)
-                charBoundaries.x = x + width / 2
-            else
+				charBoundaries.x = x + width / 2
+			else
 				charBoundaries.x = 2;
 			charBoundaries.width = 0;
 		}
@@ -405,8 +424,10 @@ class TextFieldRTL extends Sprite {
 			}
 			charBoundaries = textField.getCharBoundaries(charIndex);
 			// removing this makes pressing between word-wrapped lines crash
-			if (charBoundaries == null) charBoundaries = textField.getCharBoundaries(charIndex - 1);
-			charBoundaries.x += widthDiff * charBoundaries.width - (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
+			if (charBoundaries == null)
+				charBoundaries = textField.getCharBoundaries(charIndex - 1);
+			charBoundaries.x += widthDiff * charBoundaries.width
+				- (width - 4) * (textField.getLineIndexOfChar(originalIndex) - textField.getLineIndexOfChar(charIndex));
 			// guessing line height differences when lots of spacebars are pressed and are being wordwrapped
 			charBoundaries.y = textField.getLineIndexOfChar(originalIndex) * charBoundaries.height;
 			charBoundaries.y -= charBoundaries.height * (scrollV - 1);
@@ -414,30 +435,36 @@ class TextFieldRTL extends Sprite {
 		return charBoundaries;
 	}
 
-    public function insertSubstring(insert:String, index:Int):TextFieldRTL
+	public function insertSubstring(insert:String, index:Int):TextFieldRTL
 	{
 		Lib.application.window.textInputEnabled = true; // patches loss of text input after copy/past/cut
 		selectionShape.graphics.clear();
-		if (insert == "bsp" || insert == "del") {
-			if (selectedRange[0] != -1) {
+		if (insert == "bsp" || insert == "del")
+		{
+			if (selectedRange[0] != -1)
+			{
 				text = text.substring(0, selectedRange[0]) + text.substring(selectedRange[1] + 1);
 				caretIndex = if (insert == "bsp") selectedRange[0] + 1 else selectedRange[0];
 				setSelection(-1, -1);
-			} else {
+			}
+			else
+			{
 				text = text.substring(0, index) + text.substring(index + 1);
 			}
 			dispatchEvent(new Event(Event.CHANGE));
 			return this;
 		}
 
-		if (selectedRange[0] != -1) {
+		if (selectedRange[0] != -1)
+		{
 			text = text.substring(0, selectedRange[0]) + insert + text.substring(selectedRange[1] + 1);
 			caretIndex = selectedRange[0];
 		}
-		else text = text.substring(0, index) + insert + text.substring(index);
+		else
+			text = text.substring(0, index) + insert + text.substring(index);
 		dispatchEvent(new Event(Event.CHANGE));
 		setSelection(-1, -1);
-        return this;
+		return this;
 	}
 
 	function specialKeysDown(key:KeyCode, modifier:KeyModifier)
@@ -468,22 +495,26 @@ class TextFieldRTL extends Sprite {
 						caretIndex = text.length;
 				}
 			}
-			if (key == KeyCode.C && selectedRange[0] != -1) {
+			if (key == KeyCode.C && selectedRange[0] != -1)
+			{
 				// copy text
 				var clipboardText = text.substring(selectedRange[0], selectedRange[1] + 1);
 				Clipboard.generalClipboard.setData(TEXT_FORMAT, clipboardText);
 			}
-			if (key == KeyCode.X && selectedRange[0] != -1) {
+			if (key == KeyCode.X && selectedRange[0] != -1)
+			{
 				// cut text
 				var clipboardText = text.substring(selectedRange[0], selectedRange[1] + 1);
 				Clipboard.generalClipboard.setData(TEXT_FORMAT, clipboardText);
 				insertSubstring("del", selectedRange[0]);
 			}
-			if (key == KeyCode.A) {
+			if (key == KeyCode.A)
+			{
 				// select all
 				setSelection(0, text.length - 1);
 			}
-			if (key == KeyCode.L) { //select the current line of text
+			if (key == KeyCode.L)
+			{ // select the current line of text
 				var lineIndex = getLineIndexOfChar(caretIndex);
 				var lineStart = getLineOffset(lineIndex);
 				setSelection(lineStart, lineStart + getLineLength(lineIndex) - 1);
@@ -497,6 +528,10 @@ class TextFieldRTL extends Sprite {
 		if (caretIndex < 0)
 			caretIndex = 0;
 
+		if (key == KeyCode.PAGE_DOWN)
+			scrollV++;
+		if (key == KeyCode.PAGE_UP)
+			scrollV--;
 		if (key == KeyCode.RIGHT && caretIndex < text.length)
 			caretIndex++;
 		if (key == KeyCode.LEFT && caretIndex > 0)
@@ -537,9 +572,9 @@ class TextFieldRTL extends Sprite {
 				}
 				#else
 				insertSubstring("bsp", caretIndex - 1);
-				if (caretIndex != text.length) caretIndex--;
+				if (caretIndex != text.length)
+					caretIndex--;
 				#end
-
 			}
 		}
 		else if (key == KeyCode.DELETE)
@@ -670,74 +705,76 @@ class TextFieldRTL extends Sprite {
 		{
 			insertSubstring(t, caretIndex);
 			caretIndex += t.length;
-			if (hasConverted) caretIndex++;
-			if (addedSpace) caretIndex++;
+			if (hasConverted)
+				caretIndex++;
+			if (addedSpace)
+				caretIndex++;
 		}
 	}
 
-    //----------------------------------
-    // TextField Compatibility
-    //----------------------------------
+	//----------------------------------
+	// TextField Compatibility
+	//----------------------------------
 
-    public function replaceSelectedText(value:String):Void
-    {
-        textField.replaceSelectedText(value);
-    }
+	public function replaceSelectedText(value:String):Void
+	{
+		textField.replaceSelectedText(value);
+	}
 
-    public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
-    {
-        textField.replaceText(beginIndex, endIndex, newText);
-    }
+	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
+	{
+		textField.replaceText(beginIndex, endIndex, newText);
+	}
 
-    public function getLineIndexOfChar(charIndex:Int):Int
-    {
-        return textField.getLineIndexOfChar(charIndex);
-    }
+	public function getLineIndexOfChar(charIndex:Int):Int
+	{
+		return textField.getLineIndexOfChar(charIndex);
+	}
 
-    public function getLineLength(lineIndex:Int):Int
-    {
-        return textField.getLineLength(lineIndex);
-    }
+	public function getLineLength(lineIndex:Int):Int
+	{
+		return textField.getLineLength(lineIndex);
+	}
 
 	public function getLineMetrics(lineIndex:Int):TextLineMetrics
 	{
 		return textField.getLineMetrics(lineIndex);
 	}
 
-    public function getLineText(lineIndex:Int):String
-    {
-        return textField.getLineText(lineIndex);
-    }
+	public function getLineText(lineIndex:Int):String
+	{
+		return textField.getLineText(lineIndex);
+	}
 
-    public function getParagraphLength(charIndex:Int):Int
-    {
-        return textField.getParagraphLength(charIndex);
-    }
+	public function getParagraphLength(charIndex:Int):Int
+	{
+		return textField.getParagraphLength(charIndex);
+	}
 
-    public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat
-    {
-        return textField.getTextFormat(beginIndex, endIndex);
-    }
+	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat
+	{
+		return textField.getTextFormat(beginIndex, endIndex);
+	}
 
-    public function setTextFormat(format:TextFormat ,beginIndex:Int, endIndex:Int)
-    {
-        return textField.setTextFormat(format, beginIndex, endIndex);
-    }
+	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int)
+	{
+		return textField.setTextFormat(format, beginIndex, endIndex);
+	}
 
-    public function getCharIndexAtPoint(x:Int, y:Int):Int
-    {
-        return getCaretIndexAtPoint(x, y);
-    }
+	public function getCharIndexAtPoint(x:Int, y:Int):Int
+	{
+		return getCaretIndexAtPoint(x, y);
+	}
 
-    public function getLineIndexAtPoint(x:Int, y:Int):Int
-    {
-        return textField.getLineIndexAtPoint(x, y);
-    }
+	public function getLineIndexAtPoint(x:Int, y:Int):Int
+	{
+		return textField.getLineIndexAtPoint(x, y);
+	}
 
-    public function getLineOffset(lineIndex:Int):Int
-    {
-        return textField.getLineOffset(lineIndex);
-    }
+	public function getLineOffset(lineIndex:Int):Int
+	{
+		return textField.getLineOffset(lineIndex);
+	}
 
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
@@ -749,29 +786,37 @@ class TextFieldRTL extends Sprite {
 				beginIndex = endIndex;
 				endIndex = temp;
 			}
-			if (beginIndex == endIndex) {
+			if (beginIndex == endIndex)
+			{
 				selectionShape.graphics.clear();
 				final bounds = textField.getCharBoundaries(beginIndex - 1);
-				if (bounds == null) return; //edge case: textfield loses focus while selection occurs
+				if (bounds == null)
+					return; // edge case: textfield loses focus while selection occurs
 				selectionShape.graphics.beginFill(0x333333, 0.2);
 				selectionShape.graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 				selectionShape.graphics.endFill();
-			} else {
+			}
+			else
+			{
 				selectionShape.graphics.clear();
 				selectionShape.graphics.beginFill(0x333333, 0.2);
 				var bounds:Rectangle;
-				for (i in beginIndex...endIndex + 1) {
+				for (i in beginIndex...endIndex + 1)
+				{
 					bounds = textField.getCharBoundaries(i) != null ? textField.getCharBoundaries(i) : continue;
 					selectionShape.graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 				}
 				selectionShape.graphics.endFill();
 			}
-		} else {
+		}
+		else
+		{
 			selectionShape.graphics.clear();
 		}
 		trace("start: " + beginIndex + " end: " + endIndex);
 		selectedRange = [beginIndex, endIndex];
 	}
+
 	//---------------
 	// getters & setters (boilerplate)
 	// Now i get why TextField is 3500~ lines of code
@@ -820,13 +865,12 @@ class TextFieldRTL extends Sprite {
 		{
 			caretIndex = text.length;
 		}
-		
+
 		var bounds = getCharBoundaries(index - 1 != 0 ? index - 1 : 0);
 		caret.height = bounds.height;
 		caret.x = if (CharTools.rtlLetters.match(text.charAt(index))) bounds.x else bounds.x + bounds.width;
 		caret.y = bounds.y;
 		trace("caretY " + caret.y + " textFieldHeight " + textField.height);
-		
 
 		textField.setSelection(index, index);
 
@@ -1014,7 +1058,9 @@ class TextFieldRTL extends Sprite {
 
 	function set_scrollV(value:Int):Int
 	{
-		return this.textField.scrollV = value;
+		textField.scrollV = value;
+		caretIndex = caretIndex;
+		return value;
 	}
 
 	function get_htmlText():String
@@ -1044,7 +1090,8 @@ class TextFieldRTL extends Sprite {
 
 	function set_markdownText(text:String):String
 	{
-		if (text == null || text == "") return "";
+		if (text == null || text == "")
+			return "";
 		this.text = text;
 		Markdown.visualizeMarkdown(this);
 		return text;
@@ -1057,21 +1104,13 @@ class TextFieldRTL extends Sprite {
 	override function set_width(value:Float):Float
 	{
 		textField.width = value;
-		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-
 		return value;
 	}
 
 	override function set_height(value:Float):Float
 	{
 		textField.height = value;
-		upperMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		lowerMask.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
-		selectionShape.scrollRect = new Rectangle(0, 0, textField.width, textField.height);
 		return value;
 	}
 }
-
 #end
