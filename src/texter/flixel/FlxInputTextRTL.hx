@@ -75,7 +75,7 @@ class FlxInputTextRTL extends FlxInputText
 			BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
-		#if js wordWrap = false; lines = 1;#else wordWrap = true; #end
+		//textField.wordWrap = true;
 		FlxG.stage.window.onTextInput.add(regularKeysDown, false, 1);
 		FlxG.stage.window.onKeyDown.add(specialKeysDown, false, 2);
 		#if js FlxG.stage.window.onFocusOut.add(() -> hasFocus = false); #end
@@ -313,7 +313,7 @@ class FlxInputTextRTL extends FlxInputText
 		#else t = letter; #end
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
-			caretIndex++;
+			caretIndex += t.length;
 			text = insertSubstring(text, t, caretIndex - 1);
 			if (hasConverted) caretIndex++;
 			if (addedSpace) caretIndex++;

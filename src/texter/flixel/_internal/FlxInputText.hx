@@ -82,18 +82,14 @@ class FlxInputText extends FlxText
 
 	function set_caretColor(i:Int):Int
 	{
-		caretColor = i;
-		dirty = true;
-		return caretColor;
+		return i;
 	}
 
 	public var caretWidth(default, set):Int = 1;
 
 	function set_caretWidth(i:Int):Int
 	{
-		caretWidth = i;
-		dirty = true;
-		return caretWidth;
+		return i;
 	}
 
 	/**
@@ -467,7 +463,7 @@ class FlxInputText extends FlxText
 	{
 		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0) return new Rectangle();
 		
-		var charBoundaries:Rectangle = new Rectangle();
+		var charBoundaries:Rectangle = new Rectangle(2, 2, 0, caret.height);
 
 		if (textField.getCharBoundaries(charIndex) != null) {
 			charBoundaries = textField.getCharBoundaries(charIndex);
@@ -506,12 +502,11 @@ class FlxInputText extends FlxText
 	// ----------------------------------
 	private override function set_text(Text:String):String
 	{
-		#if !js
+		
 		if (textField != null)
 		{
 			lastScroll = textField.scrollH;
 		}
-		#end
 		var return_text:String = super.set_text(Text);
 
 		if (textField == null)
@@ -531,10 +526,8 @@ class FlxInputText extends FlxText
 	// ----------------------------------
 	public function getCharIndexAtPoint(X:Float, Y:Float):Int
 	{
-		var i:Int = 0;
-		#if !js
+		
 		X += textField.scrollH + 2;
-		#end
 
 		// place caret at matching char position
 		if (text.length > 0)
@@ -597,41 +590,12 @@ class FlxInputText extends FlxText
 	 */
 	private function onSetTextCheck():Void
 	{
-		#if !js
+		
 		var boundary:Rectangle = null;
-		if (caretIndex == -1)
-		{
-			boundary = getCharBoundaries(text.length - 1);
-		}
-		else
-		{
-			boundary = getCharBoundaries(caretIndex);
-		}
-
-		if (boundary != null)
-		{
-			// Checks if caret is out of textfield bounds
-			// if it is update scroll, otherwise maintain the same scroll as last check.
-			var diffW:Int = 0;
-			if (boundary.right > lastScroll + textField.width - 2)
-			{
-				diffW = -Std.int((textField.width - 2) - boundary.right); // caret to the right of textfield.
-			}
-			else if (boundary.left < lastScroll)
-			{
-				diffW = Std.int(boundary.left) - 2; // caret to the left of textfield
-			}
-			else
-			{
-				diffW = lastScroll; // no scroll change
-			}
-
-			#if !js
-			textField.scrollH = diffW;
-			#end
-			calcFrame();
-		}
-		#end
+		boundary = getCharBoundaries(caretIndex > 0 ? caretIndex : 0);
+		textField.setSelection(caretIndex, caretIndex);
+		calcFrame();
+		
 	}
 
 	// ----------------------------------
@@ -646,15 +610,19 @@ class FlxInputText extends FlxText
 	{
 		super.calcFrame(RunOnCpp);
 
+		// if the text is empty, set it to the zero-width-space character
+		// now, the char that "remains" is invisible
+		#if js if (caret != null && text == "") text = "​"; #end 
+		var cheight = getCharBoundaries(text.length - 1).bottom;
+		cheight = cheight != 0 ? cheight : size + 12;
 		if (fieldBorderSprite != null)
 		{
 			if (fieldBorderThickness > 0)
 			{
-				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(height + fieldBorderThickness * 2), fieldBorderColor);
-				fieldBorderSprite.x = x - fieldBorderThickness;
-				fieldBorderSprite.y = y - fieldBorderThickness;
+				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(cheight + fieldBorderThickness * 2), fieldBorderColor);
+				fieldBorderSprite.setPosition(x - fieldBorderThickness, y - fieldBorderThickness);
 			}
-			else if (fieldBorderThickness == 0)
+			else 
 			{
 				fieldBorderSprite.visible = false;
 			}
@@ -664,9 +632,8 @@ class FlxInputText extends FlxText
 		{
 			if (background)
 			{
-				backgroundSprite.makeGraphic(Std.int(width), Std.int(height), backgroundColor);
-				backgroundSprite.x = x;
-				backgroundSprite.y = y;
+				backgroundSprite.makeGraphic(Std.int(width), Std.int(cheight), backgroundColor);
+				backgroundSprite.setPosition(x, y);
 			}
 			else
 			{
@@ -727,10 +694,7 @@ class FlxInputText extends FlxText
 	/**
 	 * Turns the caret on/off for the caret flashing animation.
 	 */
-	private inline function toggleCaret(timer:FlxTimer):Void
-	{
-		caret.visible = !caret.visible;
-	}
+	inline function toggleCaret(timer:FlxTimer) caret.visible = !caret.visible;
 
 	/**
 	 * Checks an input string against the current
@@ -848,34 +812,22 @@ class FlxInputText extends FlxText
 			// Caret is not to the right of text
 			if (caretIndex < text.length)
 			{
-				boundaries = getCharBoundaries(caretIndex - 1);
-				if (boundaries != null)
-				{
-					caret.x = boundaries.right + x; 
-					caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
-				}
+				boundaries = getCharBoundaries(caretIndex - 1 > 0 ? caretIndex - 1 : 0);
+				caret.x = boundaries.right + x; 
+				caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
+				
 			}
 			// Caret is to the right of text
 			else
 			{
-				boundaries = getCharBoundaries(caretIndex - 1);
-				if (boundaries != null)
-				{
-					caret.x = boundaries.right + x;
-					caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
-				}
-				else if (text.length == 0)
-				{
-					// 2 px gutters
-					caret.x = x + 2;
-					caret.y = y + (backgroundSprite.height + borderSize * 2) / 2 - caret.height / 2;
-				}
+				boundaries = getCharBoundaries(caretIndex - 1 > 0 ? caretIndex - 1 : 0);
+				caret.x = boundaries.right + x;
+				caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
 			}
 		}
 
-		#if !js
+		
 		caret.x -= textField.scrollH;
-		#end
 
 		// Make sure the caret doesn't leave the textfield on single-line input texts
 		if ((lines == 1) && (caret.x + caret.width) > (x + width))
@@ -904,33 +856,18 @@ class FlxInputText extends FlxText
 		return Value;
 	}
 
-	private function set_maxLength(Value:Int):Int
+	private function set_maxLength(value:Int):Int
 	{
-		maxLength = Value;
-		if (text.length > maxLength)
-		{
-			text = text.substring(0, maxLength);
-		}
+		text = text.substring(0, value); //if value is greater than the current length, length will be used
 		return maxLength;
 	}
 
-	private function set_lines(Value:Int):Int
+	private function set_lines(value:Int):Int
 	{
-		if (Value == 0)
-			return 0;
+		if (value == 0) return lines;
 
-		if (Value > 1)
-		{
-			textField.wordWrap = true;
-			textField.multiline = true;
-		}
-		else
-		{
-			textField.wordWrap = false;
-			textField.multiline = false;
-		}
-
-		lines = Value;
+		textField.multiline = textField.wordWrap = value > 1; //basically, if the text has more lines, value is greater than 1, and the textfield is multiline.
+		lines = value;
 		calcFrame();
 		return lines;
 	}
@@ -974,10 +911,5 @@ class FlxInputText extends FlxText
 		calcFrame();
 		return backgroundColor;
 	}
-}
-typedef NamedString =
-{
-	name:String,
-	value:String
 }
 #end

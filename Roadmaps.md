@@ -28,17 +28,17 @@ Reguar FlxInputText with extended support for:
 | RTL Delete                    | ✅ | ✅ | The regular `delete` deletion for RTL languages|
 | LTR Caret                     | ✅ | ✅ | The letter insertion/deletion point|
 | RTL Caret                     | ✅ | ✅ | The letter insertion/deletion point|
-| Text Auto-Alignment           | ❌ | ✅ | Aligns the text inside of the text input according to the direction of the first character|
-| Multiline text                | ❌ | ✅ | Expands the input verticly and escapes words to the next line|
+| Text Auto-Alignment           | ✅ | ✅ | Aligns the text inside of the text input according to the direction of the first character|
+| Multiline text                | ✅ | ✅ | Expands the input verticly and escapes words to the next line|
 | Scrolling Single-Line text    | ✅ | ✅ | Doesn't expand the input, but moves the text so the caret will be visible|
 | Left\Right Arrow Keys         | ✅ | ✅ | Used to move the caret between letters/signs|
-| Up/Down Arrow Keys            | ❌ | ✅ | Used to move the caret between lines. Not available on JS targets as multiline crashes them|
-| LTR/RTL Enter                 | ❌ | ✅ | Forces a new line and makes the caret appear on a side corresponding to the current language|
-| LTR WordWrapping              | ❌ | ✅ | When a sentence/word is too long for a multiline text input, some words will be escaped to the next line|
-| RTL WordWrapping              | ❌ | ❌ | When a sentence/word is too long for a multiline text input, some words will be escaped to the next line|
+| Up/Down Arrow Keys            | ✅ | ✅ | Used to move the caret between lines. Not available on JS targets as multiline crashes them|
+| LTR/RTL Enter                 | ✅ | ✅ | Forces a new line and makes the caret appear on a side corresponding to the current language|
+| LTR WordWrapping              | ✅ | ✅ | When a sentence/word is too long for a multiline text input, some words will be escaped to the next line|
+| RTL WordWrapping              | ✅ | ❌ | When a sentence/word is too long for a multiline text input, some words will be escaped to the next line|
 | Unicode BiDi Algorithm (UBA)  | ✅ | ✅ | When a user tries to type in both a LTR language and a RTL language, the text input should be able to handle that correctly with alignments, moving the caret and placing certine unicode characters differently|
 | Selection                     | ❌ | ❌ | When dragging & pressing the mouse across the text, a visual selection background should appear. that background tells you those characters can be deleted, copied, cut, pasted over or moved|
-| Text Copy/Paste               | ❌ | ✅ | Pressing `CTRL` + `C` copies the selected text. Pressing `CTRL` + `V` - pastes text from the clipboard|
+| Text Copy/Paste               | ✅ | ✅ | Pressing `CTRL` + `C` copies the selected text. Pressing `CTRL` + `V` - pastes text from the clipboard|
 
 ## **FlxTextButton**
 

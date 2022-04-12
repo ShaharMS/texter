@@ -25,8 +25,9 @@ class Main extends Sprite {
 
     public function new() {
         super();
-		md();
+		//md();
 		//tfrtl();
+		fitrtl();
 	}
 
 
@@ -79,5 +80,19 @@ class Main extends Sprite {
 		tf.multiline = true;
 
 		addChild(tf);
+	}
+	
+	function fitrtl() {
+		addChild(new FlxGame(0, 0, S, 1, 60, 60, true));
+	}
+}
+
+class S extends FlxState{
+	
+	//override create
+	override public function create() {
+
+		var t = new FlxInputTextRTL(0, 0, 400, "", 40);
+		add(t);
 	}
 }

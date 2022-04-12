@@ -1,9 +1,19 @@
 2.0.0 (April X, 2022) - Major Update!
 ===
+
+### Bug Fixes:
+
 **FlxInputTextRTL:**
 
  - removed bulky and old code
  - fixed lag spikes when the textfield is selected for a long time
+
+**FlxInputText**
+ - fixed first char nor disappearing after deleting all of the text (JS)
+ - fixed multiline crashing the app on JS
+ - fixed wierd bugs with the height's consistency
+ - fixed horizontal scrolling behaving wierdly on multiline text
+### New Features:
 
 **CharTools:**
 
