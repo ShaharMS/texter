@@ -4,7 +4,7 @@ class MarkdownPatterns
 {	
 	public static var hRuledTitleEReg(default, null):EReg = ~/([^\n]+)\n^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
 	public static var linkEReg(default, null):EReg = ~/\[([^\]]+)\]\(([^)]+)\)/m;
-	public static var codeEReg(default, null):EReg = ~/`([^`\n]+)`/;
+	public static var codeEReg(default, null):EReg = ~/`([^`\n]+?)`/;
 	public static var codeblockEReg(default, null):EReg = ~/```([^\n]*)\n(..+?)```/s;
 	public static var tildeCodeblockEReg(default, null):EReg = ~/~~~([^\n]*)\n*(..+?)~~~/s;
 	public static var tabCodeblockEReg(default, null):EReg = ~/ {4}(.+)/m;

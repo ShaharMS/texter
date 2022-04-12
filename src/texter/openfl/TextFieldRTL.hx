@@ -36,14 +36,13 @@ import motion.easing.Quad;
  * `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things:
  *  - right-to-left text
  *  - built-in markdown visualization
- *  - built in syntax highlighter
  * 
  * It also adds some convenience methods & fields for working with the object, that `TextField` doesn't have:
  * 
  *  - alignment
  *  - upperMask
- *  - useMarkdown
- *  - markdownDisplay
+ *  - lowerMask
+ *  - markdownText
  *  - editable `caretIndex`
  *  - hasFocus
  *  - insertSubstring()
@@ -54,6 +53,8 @@ import motion.easing.Quad;
  */
 class TextFieldRTL extends Sprite {
     
+	@:noCompletion static var c:Int;
+
     public var textField:TextField;
 
     /**
@@ -228,8 +229,6 @@ class TextFieldRTL extends Sprite {
 
     public function new() {
         super();
-		//dont activate getter/setter
-		Reflect.setField(this, "useMarkdown", false);
 
         textField = new TextField();
 		textField.type = TextFieldType.DYNAMIC;
@@ -269,6 +268,14 @@ class TextFieldRTL extends Sprite {
         addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);	
+		addEventListener(Event.ADDED_TO_STAGE, (e) -> {
+			var maskRect = new Shape();
+			maskRect.graphics.beginFill();
+			maskRect.graphics.drawRect(textField.x, textField.y, width, height);
+			parent.addChild(maskRect);
+			mask = maskRect;
+		});
+		
     }
 
 	function caretBlink(e:TimerEvent) {

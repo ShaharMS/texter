@@ -1,25 +1,38 @@
 2.0.0 (April X, 2022) - Major Update!
 ===
-
-### Bug Fixes:
-
-**FlxInputTextRTL:**
-
- - removed bulky and old code
- - fixed lag spikes when the textfield is selected for a long time
-
-**FlxInputText**
- - fixed first char nor disappearing after deleting all of the text (JS)
- - fixed multiline crashing the app on JS
- - fixed wierd bugs with the height's consistency
- - fixed horizontal scrolling behaving wierdly on multiline text
+I promised for every major update to have a new framework supported, and the new framework is  
+### 🥁  
+### 🥁
+### 🥁
+**OpenFL!**
 ### New Features:
+
+**TextFeildRTL - new class!**
+`TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things, such as **right-to-left text** and **built-in markdown visualization**.
+
+It also adds some convenience methods & fields for working with the object, that `TextField` doesn't have.
+
+ - added `autoAlign` property - aligns the text according to the first strongly typed character
+ - added `openningDirection` (read-only) - specifies the base direction of the text
+ - added `alignment` property, similar to `autoSize` but more understandable
+ - added `upperMask` property, you can now draw on top of the text
+ - added `lowerMask` property, you can now draw below the text
+ - added `markdownText` property - you can set this to make the text display things in markdown format
+ - `caretIndex` is now an editable property
+ - added `hasFocus` property for easy focus access
+ - added `insertSubstring()`
+ - added `getCaretIndexAtPoint()`
+ - added `getCaretIndexOfMouse()`
+ - RTL text input is now supported on platforms other then the web
+ - the text selection's background now has a nicer & more natural look
+
 
 **CharTools:**
 
  - added `charFromValue` map
  - added `charToValue` map
  - `fromCharArray` and `toCharArray` now use `Char`s instead of `String`s
+
 
 **Markdown - new class! features:**
 
@@ -32,28 +45,32 @@
 **MarkdownPatterns - new class!**
 
 `MarkdownPatterns` is a class consisting of the following markdown patterns: (more will be added in the future)
- - `hRuleEReg`
  - `hRuledTitleEReg`
- - `boldEReg`
+ - `linkEReg`
+ - `codeEReg`
+ - `codeblockEReg`
+ - `tildeCodeblockEReg`
+ - `tabCodeblockEReg`
+ - `imageEReg`
+ - `listItemEReg`
+ - `unorderedListItemEReg`
+ - `titleEReg`
+ - `hRuleEReg`
  - `astBoldEReg`
+ - `boldEReg`
+ - `strikeThroughEReg`
  - `italicEReg`
  - `astItalicEReg`
  - `mathEReg`
- - `strikeThroughEReg`
  - `parSepEReg`
  - `emojiEReg`
- - `titleEReg`
- - `listItemEReg`
- - `unorderedListItemEReg`
- - `imageEReg`
- - `codeblockEReg`
- - `linkEReg`
+ - `indentEReg`
 
 **MarkdownVisualizer - new class!**
 
 `MarkdownVisualizer` is a class consisting of the framework-specific markdown visualization methods. For now, only supports visualization for:
 
- - OpenFL (via `TextField`)
+ - OpenFL (via `TextField`, `TextFieldRTL`)
 
 **MarkdownBlocks - new class!**
 
@@ -81,6 +98,29 @@ More will be added in the future :)
  - `indexesFromArray()` finds and reports all occurrences of the supplied substrings inside a string
  - `indexesFromEReg()` finds and reports all occurences of the findings of a regex pattern in a string.
  
+**Emoji - new class!**
+
+the `Emoji` class is pretty simple, yet powerful. it has mapping for very single emoji that github support:
+
+ - :joy: turns into 😂
+ - :flushed: turns into 😳
+etc.
+
+I want to thank **PXShadow** for providing the map itself and making this possible
+
+### Bug Fixes:
+
+**FlxInputTextRTL:**
+
+ - removed bulky and old code
+ - fixed lag spikes when the textfield is selected for a long time
+
+**FlxInputText**
+ - fixed first char nor disappearing after deleting all of the text (JS)
+ - fixed multiline crashing the app on JS
+ - fixed wierd bugs with the height's consistency
+ - fixed horizontal scrolling behaving wierdly on multiline text
+
 1.1.4 (March 20, 2022)
 ===
 ### **Bug Fix:**

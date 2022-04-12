@@ -217,9 +217,8 @@ class MarkdownVisualizer
 						var g = field.lowerMask.graphics;
 						g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
 						g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
-						var bounds = field.getCharBoundaries(start), bounds2 = field.getCharBoundaries(end -1);
-						bounds.y = bounds.y + bounds.height / 8 - 2; bounds2.y = bounds2.y + bounds2.height / 8 + 2;
-						g.drawRoundRect(bounds.x , bounds.y, bounds2.x + bounds2.width, bounds2.y + (bounds2.height * 4 / 5), 5, 5);
+						var bounds = field.getCharBoundaries(start), bounds2 = field.textField.getCharBoundaries(end - 1);
+						g.drawRoundRect(bounds.x , bounds.y, bounds2.x + bounds2.width - bounds.x, bounds2.height, 5, 5);
 						g.endFill();
 					}
 					case HorizontalRule(type, start, end): {
@@ -240,7 +239,6 @@ class MarkdownVisualizer
 						g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
 						var bounds = field.getCharBoundaries(start + 3 + language.length + 1);// +3 for the ```, +1 for the \n and +langLength for the language
 						var bounds2 = field.getCharBoundaries(end - 3 - 2);// -3 for the ```, -2 for the \n and because end is not icluded
-						bounds.y = bounds.y + bounds.height / 8 - 2; bounds2.y = bounds2.y + bounds2.height / 8 + 2;
 						g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
 						g.endFill();
 						try {

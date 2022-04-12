@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.Shape;
 import texter.openfl.TextFieldRTL;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -25,11 +26,36 @@ class Main extends Sprite {
 
     public function new() {
         super();
-		//md();
+		md();
 		//tfrtl();
-		fitrtl();
+		//fitrtl();
+		//ghi();
 	}
 
+
+	function ghi() {
+		var txt = new TextField();
+		txt.text = "hello1";
+		txt.setTextFormat(new TextFormat(null, 20, 0xFFFFFF));
+		addChild(txt);
+		var maskRect = new Shape();
+		maskRect.graphics.beginFill();
+		maskRect.graphics.drawRect(txt.x, txt.y, width, height);
+		parent.addChild(maskRect);
+		txt.mask = maskRect;
+
+		var txt2 = new TextField();
+		txt2.text = "hello2";
+		txt2.setTextFormat(new TextFormat(null, 20, 0xFFFFFF));
+		txt2.x = txt.x + txt.width + 20;
+		addChild(txt2);
+		var maskRect2 = new Shape();
+		maskRect2.graphics.beginFill();
+		maskRect2.graphics.drawRect(txt2.x, txt2.y, width, height);
+		parent.addChild(maskRect2);
+		txt2.mask = maskRect2;
+		
+	}
 
 	function md() {
 		var tf = new TextFieldRTL();
@@ -46,6 +72,7 @@ class Main extends Sprite {
 		tf.multiline = true;
 		addChild(tf);
 		var s = new TextFieldRTL();
+		s.type = INPUT;
 		s.width = 700;
 		s.height = 700;
 		s.text = "";
