@@ -177,42 +177,230 @@ class TextFieldRTL extends Sprite
 	 */
 	public var background(get, set):Bool;
 
+	/**
+	 * Whether or not the this textfield will try to escape words that are too long to fit in the textfield.
+	 * 
+	 * without wordWrap (whats outside of the textfield isnt visible):
+	 * 
+	 * ```txt
+	 * ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+	 * ▏hello there everyone▎its your friend here
+	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+	 * ```
+	 * 
+	 * with wordWrap:
+	 * ```txt
+	 * ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+	 * ▏hello there everyone▎
+	 * ▏its your friend here▎
+	 * ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+	 * ```
+	 */
 	public var wordWrap(get, set):Bool;
 
+	/**
+	 * Whether or not this field of text will accept multiline
+	 * input (make another line when adding a `\n`)
+	 */
 	public var multiline(get, set):Bool;
 
+	/**
+	 * Whether or not this field of text is currently in focus.
+	 * 
+	 * In INPUT mode, when the user clicks on the textfield, it will gain focus and the user can start typing.
+	 * In STAIC and DYNAMIC modes, the textfield gains focus whenever the user clicks on it/starts selecting text.
+	 */
 	public var hasFocus(get, set):Bool;
 
+	/**
+		Specifies the format applied to newly inserted text, such as text entered
+		by a user or text inserted with the `replaceSelectedText()`
+		method.
+
+		**Note:** When selecting characters to be replaced with
+		`setSelection()` and `replaceSelectedText()`, the
+		`defaultTextFormat` will be applied only if the text has been
+		selected up to and including the last character. Here is an example:
+
+		```haxe
+		var textField:TextField = new TextField();
+		textField.text = "Flash Macintosh version";
+		var format:TextFormat = new TextFormat();
+		format.color = 0xFF0000; 
+		textField.defaultTextFormat = format;
+		textField.setSelection(6,15); // partial text selected - defaultTextFormat not applied 
+		textField.setSelection(6,23); // text selected to end - defaultTextFormat applied 
+		textField.replaceSelectedText("Windows version");
+		```
+
+		When you access the `defaultTextFormat` property, the
+		returned TextFormat object has all of its properties defined. No property
+		is `null`.
+
+		**Note:** You can't set this property if a style sheet is applied to
+		the text field.
+	**/
 	public var defaultTextFormat(get, set):TextFormat;
 
+	/**
+		The type of the text field.
+		| mode | description |
+		| --- | --- |
+		| `TextFieldType.DYNAMIC` | If you load text into the `TextField` by using the `text` or `htmlText` property and then you want to display the loaded text, set the `type` property of the `TextField` to `TextFieldType.DYNAMIC`.
+		| `TextFieldType.INPUT` | If you do not want the text in the `TextField` to be editable, set the `type` property of the `TextField` to `TextFieldType.INPUT`.
+	**/
 	public var type(get, set):TextFieldType;
 
+	/**
+		Specifies whether the text field has a border. If `true`, the
+		text field has a border. If `false`, the text field has no
+		border. Use the `borderColor` property to set the border color.
+
+		defaults to false.
+	**/
 	public var border(get, set):Bool;
 
+	/**
+		The color of the text field border. The default value is
+		`0x000000`(black). This property can be retrieved or set, even
+		if there currently is no border. the color is visible only
+		if the text field has the `border` property set to `true`.
+	**/
 	public var borderColor(get, set):Int;
 
+	/**
+		A Boolean value that indicates whether the text field is selectable. The
+		value `true` indicates that the text is selectable. The
+		`selectable` property controls whether a text field is
+		selectable, not whether a text field is editable. A dynamic text field can
+		be selectable even if it is not editable. If a dynamic text field is not
+		selectable, the user cannot select its text.
+
+		If `selectable` is set to `false`, the text in
+		the text field does not respond to selection commands from the mouse or
+		keyboard, and the text cannot be copied with the Copy command. If
+		`selectable` is set to `true`, the text in the text
+		field can be selected with the mouse or keyboard, and the text can be
+		copied with the Copy command. You can select text this way even if the
+		text field is a dynamic text field instead of an input text field.
+
+		defaults to true.
+	**/
 	public var selectable(default, set):Bool;
 
+	/**
+	 * Whether or not this field of text uses embedded fonts
+	 */
 	public var embedFonts(get, set):Bool;
 
+	/**
+	 * The width of the text, in pixels.
+	 */
 	public var textWidth(get, null):Float;
 
+	/**
+	 * The height of the text, in pixels.
+	 */
 	public var textHeight(get, null):Float;
 
+	/**
+	 * The maximum number of characters that the text field can contain, as entered
+	 * by a user. A script can insert more text than
+	 * `maxChars` allows; the `maxChars` property indicates only how much text a
+	 * user can enter. If the value of this property is `0`, a user can enter an
+	 * unlimited amount of text.
+	 */
 	public var maxChars(get, set):Int;
 
+	/**
+	 * The maximum value of `scrollH` - the maximum amount of horizontal scrolling.
+	 */
 	public var maxScrollH(get, never):Int;
 
+	/**
+	 * The maximum value of `scrollV` - the maximum amount of vertical scrolling.
+	 */
 	public var maxScrollV(get, never):Int;
 
+	/**
+		The current horizontal scrolling position. If the `scrollH`
+		property is 0, the text is not horizontally scrolled. This property value
+		is an integer that represents the horizontal position in pixels.
+
+		The units of horizontal scrolling are pixels, whereas the units of
+		vertical scrolling are lines. Horizontal scrolling is measured in pixels
+		because most fonts you typically use are proportionally spaced; that is,
+		the characters can have different widths. Flash Player performs vertical
+		scrolling by line because users usually want to see a complete line of
+		text rather than a partial line. Even if a line uses multiple fonts, the
+		height of the line adjusts to fit the largest font in use.
+
+		**Note: **The `scrollH` property is zero-based, not
+		1-based like the `scrollV` vertical scrolling property.
+	**/
 	public var scrollH(get, set):Int;
 
+	/**
+		The vertical position of text in a text field. The `scrollV`
+		property is useful for directing users to a specific paragraph in a long
+		passage, or creating scrolling text fields.
+
+		The units of vertical scrolling are lines, whereas the units of
+		horizontal scrolling are pixels. If the first line displayed is the first
+		line in the text field, scrollV is set to 1(not 0). Horizontal scrolling
+		is measured in pixels because most fonts are proportionally spaced; that
+		is, the characters can have different widths. Flash performs vertical
+		scrolling by line because users usually want to see a complete line of
+		text rather than a partial line. Even if there are multiple fonts on a
+		line, the height of the line adjusts to fit the largest font in use.
+	**/
 	public var scrollV(get, set):Int;
 
+	/**
+	 * A shortcut to `text.length`.
+	 */
 	public var length(get, null):Int;
 
+	/**
+		Contains the HTML representation of the text field contents.
+		Flash Player supports the following HTML tags:
+
+		| Tag |  Description  |
+		| --- | --- |
+		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or an ActionScript `link` event.The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute an ActionScript function in a SWF file instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create an ActionScript function that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
+		| Bold tag | The `<b>` tag renders text as bold. A bold typeface must be available for the font used. |
+		| Break tag | The `<br>` tag creates a line break in the text field. Set the text field to be a multiline text field to use this tag.  |
+		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case Flash Player selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, Flash Player selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
+		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with ActionScript.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in ActionScript TextField objects. This is to prevent possible phishing attacks. |
+		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
+		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
+		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
+		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
+		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
+		| Underline tag | The `<u>` tag underlines the tagged text. |
+
+		Flash Player and AIR support the following HTML entities:
+
+		| Entity | Description |
+		| --- | --- |
+		| &amp;lt; | < (less than) |
+		| &amp;gt; | > (greater than) |
+		| &amp;amp; | & (ampersand) |
+		| &amp;quot; | " (double quotes) |
+		| &amp;apos; | ' (apostrophe, single quote) |
+
+		Flash Player and AIR also support explicit character codes, such as
+		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
+	**/
 	public var htmlText(get, set):openfl.text._internal.UTF8String;
 
+	/**
+	 * Contains a markdown formatted string.
+	 * 
+	 * When set, it will be parsed and the resulting text will be displayed with the corresponding markup
+	 * 
+	 * *more information in `Markdown` and `MarkdownVisualizer` classes*
+	 */
 	public var markdownText(default, set):String;
 
 	var caret:Bitmap;
