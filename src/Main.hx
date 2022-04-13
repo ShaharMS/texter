@@ -26,9 +26,9 @@ class Main extends Sprite {
 
     public function new() {
         super();
-		//md();
+		md();
 		//tfrtl();
-		fitrtl();
+		//fitrtl();
 		//ghi();
 	}
 

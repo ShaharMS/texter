@@ -1,7 +1,5 @@
 package texter.openfl;
 
-import texter.general.markdown.Markdown;
-import texter.general.markdown.MarkdownVisualizer;
 #if openfl
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -27,10 +25,7 @@ import openfl.utils.ByteArray;
 import openfl.utils.Timer;
 import texter.general.CharTools;
 import texter.general.TextTools.TextDirection;
-#if actuate
-import motion.Actuate;
-import motion.easing.Quad;
-#end
+import texter.general.markdown.Markdown;
 
 /**
  * `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things:

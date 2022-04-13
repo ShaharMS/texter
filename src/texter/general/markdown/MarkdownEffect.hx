@@ -18,4 +18,5 @@ enum MarkdownEffect
 	Heading(level:Int, start:Int, end:Int);
 	UnorderedListItem(nestingLevel:Int, start:Int, end:Int);
 	OrderedListItem(number:Int, nestingLevel:Int, start:Int, end:Int);
+	Alignment(alignment:String, start:Int, end:Int);
 }

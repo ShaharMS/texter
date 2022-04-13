@@ -34,7 +34,6 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
-	<haxelib name="actuate" />
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
 

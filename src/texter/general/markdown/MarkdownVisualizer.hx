@@ -138,60 +138,49 @@ class MarkdownVisualizer
 				switch e
 				{
 					case Emoji(type, start, end):
-					case Indent(level, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, null, null, null, null, null, null, null,
-							level * markdownTextFormat.size),
-							start, end);
+					case Alignment(alignment, start, end): field.setTextFormat(new openfl.text.TextFormat( null, null, null, null, null, null, null, null, alignment), start, end);
+					case Indent(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, null, null, null, null, null, null, null, level * markdownTextFormat.size), start, end);
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
-					case Code(start,
-						end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", field.getTextFormat(start, end).size + 2), start, end);
+					case Code(start, end): field.setTextFormat(new openfl.text.TextFormat("_typewriter", field.getTextFormat(start, end).size + 2), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("_serif"), start, end);
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, ""), start, end);
-					case Heading(level, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
-					case UnorderedListItem(nestingLevel, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel,
-							start + nestingLevel + 1);
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
+					case UnorderedListItem(nestingLevel, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel, start + nestingLevel + 1);
 					case OrderedListItem(number, nestingLevel, start, end): continue;
-					case HorizontalRule(type, start, end): {
-							var bounds = field.getCharBoundaries(start + 1);
-							bounds.y = bounds.y + bounds.height / 2;
-							var lW = field.width - 2 - field.defaultTextFormat.rightMargin,
-								x = field.x + field.defaultTextFormat.leftMargin + 2;
-						}
+					case HorizontalRule(type, start, end): continue;
 					case CodeBlock(language, start, end): {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
-								null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
-								start, end);
-							try
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
+							null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
+							start, end);
+						try
+						{
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start,
+								end));
+							for (i in coloring)
 							{
-								var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start,
-									end));
-								for (i in coloring)
-								{
-									field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
-								}
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 							}
-							catch (e)
-								trace(e);
 						}
+						catch (e)
+							trace(e);
+					}
 					case TabCodeBlock(start, end): {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
-								null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
-								start, end);
-							try
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
+							null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
+							start, end);
+						try
+						{
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap["default"](field.text.substring(start,
+								end));
+							for (i in coloring)
 							{
-								var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap["default"](field.text.substring(start,
-									end));
-								for (i in coloring)
-								{
-									field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
-								}
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 							}
-							catch (e)
-								trace(e);
 						}
+						catch (e)
+							trace(e);
+					}
 					case StrikeThrough(start, end): continue;
 					case Image(altText, imageSource, start, end): continue;
 					case ParagraphGap(start, end): continue; // default behaviour
@@ -214,112 +203,105 @@ class MarkdownVisualizer
 		field.underlay.graphics.endFill();
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
-			trace(effects);
 			field.text = markdownText;
 			for (e in effects)
 			{
 				switch e
 				{
-					case Emoji(type, start, end):
-					case Indent(level, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, null, null, null, null, null, null, null,
-							level * markdownTextFormat.size),
-							start, end);
+					case Alignment(alignment, start, end): field.setTextFormat(new openfl.text.TextFormat( null, null, null, null, null, null, null, null, alignment), start, end);
+					case Indent(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, null, null, null, null, null, null, null, level * markdownTextFormat.size), start, end);
 					case Bold(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, true, null), start, end);
 					case Italic(start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, null, null, true), start, end);
 					case Math(start, end): field.setTextFormat(new openfl.text.TextFormat("_serif"), start, end);
 					case Link(link, start, end): field.setTextFormat(new openfl.text.TextFormat(null, null, 0x008080, null, null, true, link, ""), start, end);
-					case Heading(level, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
-					case UnorderedListItem(nestingLevel, start,
-						end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel,
-							start + nestingLevel + 1);
+					case Heading(level, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size * 3 - Std.int(level * 10), null, true), start, end);
+					case UnorderedListItem(nestingLevel, start, end): field.setTextFormat(new openfl.text.TextFormat(null, markdownTextFormat.size, null, true), start + nestingLevel, start + nestingLevel + 1);
 					case OrderedListItem(number, nestingLevel, start, end): continue;
 					case Code(start, end): {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", field.getTextFormat(start, end).size + 2), start, end);
-							var g = field.underlay.graphics;
-							g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
-							g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
-							var bounds = field.getCharBoundaries(start),
-								bounds2 = field.textField.getCharBoundaries(end - 1);
-							g.drawRoundRect(bounds.x, bounds.y, bounds2.x + bounds2.width - bounds.x, bounds2.height, 5, 5);
-							g.endFill();
-						}
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", field.getTextFormat(start, end).size + 2), start, end);
+						var g = field.underlay.graphics;
+						g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
+						g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
+						var bounds = field.getCharBoundaries(start),
+							bounds2 = field.textField.getCharBoundaries(end - 1);
+						g.drawRoundRect(bounds.x, bounds.y, bounds2.x + bounds2.width - bounds.x, bounds2.height, 5, 5);
+						g.endFill();
+					}
 					case HorizontalRule(type, start, end): {
-							var bounds = field.getCharBoundaries(start + 1);
-							bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start, start + 1).size / 8;
-							var lW = field.width - 8 - field.getTextFormat(start, start + 1).rightMargin - field.getTextFormat(start, start + 1).leftMargin,
-								x = 4 + field.getTextFormat(start + 1, start + 2).leftMargin;
-							// draw the HR according to the text's dimensions
-							var g = field.overlay.graphics;
-							g.lineStyle(4, 0x000000, 1, false, NORMAL);
-							g.moveTo(x, bounds.y);
-							g.lineTo(x + lW, bounds.y);
-						}
+						var bounds = field.getCharBoundaries(start + 1);
+						bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start, start + 1).size / 8;
+						var lW = field.width - 8 - field.getTextFormat(start, start + 1).rightMargin - field.getTextFormat(start, start + 1).leftMargin,
+							x = 4 + field.getTextFormat(start + 1, start + 2).leftMargin;
+						// draw the HR according to the text's dimensions
+						var g = field.overlay.graphics;
+						g.lineStyle(4, 0x000000, 1, false, NORMAL);
+						g.moveTo(x, bounds.y);
+						g.lineTo(x + lW, bounds.y);
+					}
 					case CodeBlock(language, start, end): {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
-								null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
-								start, end);
-							// preparing the background
-							var g = field.underlay.graphics;
-							g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
-							g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
-							var bounds = field.getCharBoundaries(start + 3 + language.length +
-								1); // +3 for the ```, +1 for the \n and +langLength for the language
-							var bounds2 = field.getCharBoundaries(end - 3 - 2); // -3 for the ```, -2 for the \n and because end is not icluded
-							g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
-							g.endFill();
-							try
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
+							null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
+							start, end);
+						// preparing the background
+						var g = field.underlay.graphics;
+						g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
+						g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
+						var bounds = field.getCharBoundaries(start + 3 + language.length +
+							1); // +3 for the ```, +1 for the \n and +langLength for the language
+						var bounds2 = field.getCharBoundaries(end - 3 - 2); // -3 for the ```, -2 for the \n and because end is not icluded
+						g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
+						g.endFill();
+						try
+						{
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start,
+								end));
+							for (i in coloring)
 							{
-								var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap[language](field.text.substring(start,
-									end));
-								for (i in coloring)
-								{
-									field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
-								}
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 							}
-							catch (e)
-								trace(e);
 						}
+						catch (e)
+							trace(e);
+					}
 					case TabCodeBlock(start, end): {
-							field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
-								null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
-								start, end);
-							// preparing the background
-							var g = field.underlay.graphics;
-							g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
-							g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
-							var bounds = field.getCharBoundaries(start + 4); // + 4 for the spaces
-							var bounds2 = field.getCharBoundaries(end - 1); // -1 because end is not included
-							bounds.y = bounds.y + bounds.height / 8 - 2;
-							bounds2.y = bounds2.y + bounds2.height / 8 + 2;
-							g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
-							g.endFill();
-							try
+						field.setTextFormat(new openfl.text.TextFormat("_typewriter", markdownTextFormat.size + 2, markdownTextFormat.color, null, null,
+							null, null, null, null, field.getTextFormat(start, end).leftMargin + markdownTextFormat.size, markdownTextFormat.size),
+							start, end);
+						// preparing the background
+						var g = field.underlay.graphics;
+						g.lineStyle(visualConfig.borderSize, visualConfig.borderColor, 1, false, NORMAL);
+						g.beginFill(visualConfig.codeblockBackgroundColor, 0.5);
+						var bounds = field.getCharBoundaries(start + 4); // + 4 for the spaces
+						var bounds2 = field.getCharBoundaries(end - 1); // -1 because end is not included
+						bounds.y = bounds.y + bounds.height / 8 - 2;
+						bounds2.y = bounds2.y + bounds2.height / 8 + 2;
+						g.drawRoundRect(bounds.x - 2, bounds.y, field.width - bounds.x * 2 - 4 + 2, bounds2.y - bounds.y + bounds2.height, 5, 5);
+						g.endFill();
+						try
+						{
+							var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap["default"](field.text.substring(start,
+								end));
+							for (i in coloring)
 							{
-								var coloring:Array<{color:Int, start:Int, end:Int}> = Markdown.syntaxBlocks.blockSyntaxMap["default"](field.text.substring(start,
-									end));
-								for (i in coloring)
-								{
-									field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
-								}
+								field.setTextFormat(new openfl.text.TextFormat("_typewriter", null, i.color), start + i.start, start + i.end);
 							}
-							catch (e)
-								trace(e);
 						}
+						catch (e)
+							trace(e);
+					}
 					case StrikeThrough(start, end): {
-							// draw a strikethrough
-							var bounds = field.getCharBoundaries(start + 1);
-							bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start + 1, start + 2).size / 16;
-							var bounds2 = field.getCharBoundaries(end - 1);
-							bounds2.y = bounds2.y + bounds2.height / 2;
-							var g = field.overlay.graphics;
-							g.lineStyle(field.getTextFormat(start + 1, start + 2).size / 8, 0x000000, 1, false, NORMAL, SQUARE);
-							g.moveTo(bounds.x, bounds.y);
-							g.lineTo(bounds2.x + bounds2.width, bounds.y);
-						}
+						var bounds = field.getCharBoundaries(start + 1);
+						bounds.y = bounds.y + bounds.height / 2 + field.getTextFormat(start + 1, start + 2).size / 16;
+						var bounds2 = field.getCharBoundaries(end - 1);
+						bounds2.y = bounds2.y + bounds2.height / 2;
+						var g = field.overlay.graphics;
+						g.lineStyle(field.getTextFormat(start + 1, start + 2).size / 8, 0x000000, 1, false, NORMAL, SQUARE);
+						g.moveTo(bounds.x, bounds.y);
+						g.lineTo(bounds2.x + bounds2.width, bounds.y);
+					}
 					case Image(altText, imageSource, start, end): continue;
 					case ParagraphGap(start, end): continue; // default behaviour
+					case Emoji(type, start, end): continue; // default behaviour
 
 					default: continue;
 				}

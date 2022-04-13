@@ -1,3 +1,36 @@
+2.0.2 (April 13, 2022)
+===
+
+**Markdown:**
+
+added more supported markup to the markdown interpreter:
+
+ - `\t` - tab
+ - `<align=""></align>` - alignment
+ - `  ` or `\` at the end of the line - newline character
+
+**MarkdownPatterns:**
+
+added a couple more patterns to match markdown's markup:
+
+ - `doubleSpaceNewlineEReg`
+ - `backslashNewlineEReg`
+ - `alignmentEReg`
+ - `linkEReg` (fix)
+
+**TextFieldRTL**
+ 
+ - removed unused imports
+
+2.0.1 (April 13, 2022)
+===
+
+ - fixed some README markup issues & mistakes
+ - minimal re-write of FlxInputText, should now fully work with touch devices
+ - removed framework specific import from MarkdownVIsualizer, preventing the library from working without OpenFL
+ - fixed documentation
+
+
 2.0.0 (April 12, 2022) - Major Update!
 ===
 I promised for every major update to have a new framework supported, and the new framework is  
@@ -49,6 +82,7 @@ It also adds some convenience methods & fields for working with the object, that
 **MarkdownPatterns - new class!**
 
 `MarkdownPatterns` is a class consisting of the following markdown patterns: (more will be added in the future)
+
  - `hRuledTitleEReg`
  - `linkEReg`
  - `codeEReg`
@@ -108,6 +142,8 @@ the `Emoji` class is pretty simple, yet powerful. it has mapping for very single
 
  - :joy: turns into 😂
  - :flushed: turns into 😳
+
+
 etc.
 
 I want to thank **PXShadow** for providing the map itself and making this possible
