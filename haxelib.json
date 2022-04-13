@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown", "textfield", "FlxInputTextRTL", "TextFieldRTL"],
     "description": "Advanced text tools for Haxe game engines & frameworks.",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"classPath": "src/",
-	"releasenote": "fixed minor issues & bugs",
+	"releasenote": "Added more patterns for detecting markdown's markup",
 	"contributors": [ "ShaharMS" ]
 }

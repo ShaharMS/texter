@@ -1,4 +1,4 @@
-2.0.2 (April 13, 2022)
+2.0.2 & 2.0.3 (April 13, 2022)
 ===
 
 **Markdown:**
@@ -8,6 +8,8 @@ added more supported markup to the markdown interpreter:
  - `\t` - tab
  - `<align=""></align>` - alignment
  - `  ` or `\` at the end of the line - newline character
+
+fixed interpreter faults with `ParagraphGap`
 
 **MarkdownPatterns:**
 
