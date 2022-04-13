@@ -1,10 +1,9 @@
 package texter.general.markdown;
 
-import openfl.text.TextFormat;
-
 using texter.general.TextTools;
 
 #if openfl
+import openfl.text.TextFormat;
 import openfl.text.TextField;
 import texter.openfl.TextFieldRTL;
 #end
@@ -14,7 +13,7 @@ import texter.openfl.TextFieldRTL;
 	* 
 	* For now, visualization is only supported for these frameworks:
 	* 
-	*  - OpenFL (via `TextField`)
+	*  - OpenFL (via `TextField`, `TextFieldRTL`)
 	* 
 	* If you'd like for more frameworks to be added you can do a couple of things:
 	* 

@@ -1,4 +1,4 @@
-2.0.0 (April X, 2022) - Major Update!
+2.0.0 (April 12, 2022) - Major Update!
 ===
 I promised for every major update to have a new framework supported, and the new framework is  
 ### 🥁  

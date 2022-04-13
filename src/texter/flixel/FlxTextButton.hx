@@ -15,7 +15,7 @@ class FlxTextButton extends FlxSpriteGroup {
         An Instance of FlxInputTextRTL, will handle the
         text visulas & input.
     **/
-    public var label(default, null):FlxInputTextRTL;
+    public var label:FlxInputTextRTL;
 
     /**
         The current state of the button:

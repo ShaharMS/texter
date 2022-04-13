@@ -1,5 +1,4 @@
 package texter.flixel._internal;
-import texter.general.CharTools;
 #if flixel
 import flash.errors.Error;
 import flash.events.KeyboardEvent;
@@ -12,6 +11,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
+import texter.general.CharTools;
 
 /**
  * FlxInputText v1.11, ported to Haxe
@@ -31,7 +31,8 @@ import flixel.util.FlxTimer;
  * @link http://creativecommons.org/licenses/by/3.0/us/
  * 
  * 
- * **WARNING** - used here as an engine, so some features may be altered
+ * **Note** - This is a heavily modified version of the original FlxInputText.
+ * Most of the features should work the same/better, but some things may not work as they did before.
  */
 class FlxInputText extends FlxText
 {
@@ -60,9 +61,8 @@ class FlxInputText extends FlxText
 
 	function set_customFilterPattern(cfp:EReg)
 	{
-		customFilterPattern = cfp;
 		filterMode = CUSTOM_FILTER;
-		return customFilterPattern;
+		return cfp;
 	}
 
 	/**
@@ -78,19 +78,12 @@ class FlxInputText extends FlxText
 	/**
 	 * The caret's color. Has the same color as the text by default.
 	 */
-	public var caretColor(default, set):Int;
+	public var caretColor:Int;
 
-	function set_caretColor(i:Int):Int
-	{
-		return i;
-	}
-
-	public var caretWidth(default, set):Int = 1;
-
-	function set_caretWidth(i:Int):Int
-	{
-		return i;
-	}
+	/**
+	 * The caret's graphic width.
+	 */
+	public var caretWidth:Int = 1;
 
 	/**
 	 * Whether or not the textfield is a password textfield
@@ -111,13 +104,13 @@ class FlxInputText extends FlxText
 	 * callback that is triggered when this text field gets focus
 	 * @since 2.2.0
 	 */
-	public var focusGained:Void -> Void;
+	public var focusGained:Void -> Void = () -> return;
 
 	/**
 	 * callback that is triggered when this text field loses focus
 	 * @since 2.2.0
 	 */
-	public var focusLost:Void -> Void;
+	public var focusLost:Void -> Void = () -> return;
 
 	/**
 	 * The Case that's being enforced. Either ALL_CASES, UPPER_CASE or LOWER_CASE.
@@ -161,33 +154,10 @@ class FlxInputText extends FlxText
 	 */
 	private var backgroundSprite:FlxSprite;
 
-	/**
-	 * A timer for the flashing caret effect.
-	 */
-	private var _caretTimer:FlxTimer;
 
-	/**
-	 * A FlxSprite representing the flashing caret when editing text.
-	 */
-	private var caret:FlxSprite;
-
-	/**
-	 * A FlxSprite representing the fieldBorders.
-	 */
-	private var fieldBorderSprite:FlxSprite;
-
-	/**
-	 * The left- and right- most fully visible character indeces
-	 */
-	private var _scrollBoundIndeces:{left:Int, right:Int} = {left: 0, right: 0};
-
-	// workaround to deal with non-availability of getCharIndexAtPoint or getCharBoundaries on cpp/neko targets
-	private var _charBoundaries:Array<FlxRect>;
-
-	/**
-	 * Stores last input text scroll.
-	 */
-	private var lastScroll:Int;
+	var _caretTimer:FlxTimer;
+	var caret:FlxSprite;
+	var fieldBorderSprite:FlxSprite;
 
 	/**
 	 * @param	X				The X position of the text.
@@ -305,23 +275,32 @@ class FlxInputText extends FlxText
 
 		#if FLX_MOUSE
 		// Set focus and caretIndex as a response to mouse press
-		if (FlxG.mouse.justPressed)
+		if (FlxG.mouse.overlaps(this) && FlxG.mouse.pressed)
 		{
-			var hadFocus:Bool = hasFocus;
-			if (FlxG.mouse.overlaps(this))
+			caretIndex = getCaretIndex();
+			hasFocus = true;
+			focusGained();
+		}
+		else if (FlxG.mouse.pressed && hasFocus)
+		{
+			hasFocus = false;
+			focusLost();
+		}
+		#else
+		for (touch in FlxG.touches.list) {
+			if (touch.overlaps(this) && touch.pressed)
 			{
 				caretIndex = getCaretIndex();
 				hasFocus = true;
-				if (!hadFocus && focusGained != null)
-					focusGained();
+				focusGained();
 			}
-			else
+			else if (FlxG.touches.pressed && hasFocus)
 			{
 				hasFocus = false;
-				if (hadFocus && focusLost != null)
-					focusLost();
+				focusLost();
 			}
 		}
+		
 		#end
 	}
 
@@ -335,71 +314,34 @@ class FlxInputText extends FlxText
 		if (hasFocus)
 		{
 			// Do nothing for Shift, Ctrl, Esc, and flixel console hotkey
-			if (key == 16 || key == 17 || key == 220 || key == 27)
-			{
-				return;
-			}
+			if (key == 16 || key == 17 || key == 220 || key == 27) return;
 			// Left arrow
-			else if (key == 37)
-			{
-				if (caretIndex > 0)
-				{
-					caretIndex--;
-					text = text; // forces scroll update
-				}
-			}
+			else if (key == 37 && caretIndex > 0) caretIndex--;
 			// Right arrow
-			else if (key == 39)
-			{
-				if (caretIndex < text.length)
-				{
-					caretIndex++;
-					text = text; // forces scroll update
-				}
-			}
+			else if (key == 39 && caretIndex < text.length) caretIndex++;
 			// End key
-			else if (key == 35)
-			{
-				caretIndex = text.length;
-				text = text; // forces scroll update
-			}
+			else if (key == 35) caretIndex = text.length;
 			// Home key
-			else if (key == 36)
-			{
-				caretIndex = 0;
-				text = text;
-			}
+			else if (key == 36) caretIndex = 0;
 			// Backspace
-			else if (key == 8)
+			else if (key == 8 && caretIndex > 0)
 			{
-				if (caretIndex > 0)
-				{
-					caretIndex--;
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-					onChange(BACKSPACE_ACTION);
-				}
+				caretIndex--;
+				text = text.substr(0, caretIndex) + text.substr(caretIndex + 1);
+				onChange(BACKSPACE_ACTION);
 			}
 			// Delete
-			else if (key == 46)
+			else if (key == 46 && (text.length > 0 && caretIndex < text.length))
 			{
-				if (text.length > 0 && caretIndex < text.length)
-				{
-					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-					onChange(DELETE_ACTION);
-				}
+				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+				onChange(DELETE_ACTION);
 			}
 			// Enter
-			else if (key == 13)
-			{
-				onChange(ENTER_ACTION);
-			}
+			else if (key == 13) onChange(ENTER_ACTION);
 			// Actually add some text
 			else
 			{
-				if (e.charCode == 0) // non-printable characters crash String.fromCharCode
-				{
-					return;
-				}
+				if (e.charCode == 0) return; // non-printable characters crash String.fromCharCode
 				var newText:String = filter(String.fromCharCode(e.charCode));
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
@@ -452,16 +394,17 @@ class FlxInputText extends FlxText
 		var hit = FlxPoint.get(FlxG.mouse.x - x, FlxG.mouse.y - y);
 		return getCharIndexAtPoint(hit.x, hit.y);
 		#else
+		for (touch in FlxG.touches.list) {
+			var hit = FlxPoint.get(touch.screenX - x, touch.screenY - y);
+			return getCharIndexAtPoint(hit.x, hit.y);
+		}
 		return 0;
 		#end
 	}
 
-	// -------------------
-	// HAS BEEN CHANGED
-	// ----------------------
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0) return new Rectangle();
+		if (charIndex < 0) return new Rectangle();
 		
 		var charBoundaries:Rectangle = new Rectangle(2, 2, 0, caret.height);
 
@@ -497,33 +440,16 @@ class FlxInputText extends FlxText
 		return charBoundaries;
 	}
 
-	// ----------------------------------
-	// HAS BEEN CHANGED
-	// ----------------------------------
 	private override function set_text(Text:String):String
 	{
-		
-		if (textField != null)
-		{
-			lastScroll = textField.scrollH;
-		}
-		var return_text:String = super.set_text(Text);
+		if (textField == null) return super.set_text(Text);
 
-		if (textField == null)
-		{
-			return return_text;
-		}
-
-		var numChars:Int = Text.length;
-		prepareCharBoundaries(numChars);
 		textField.text = Text;
 		onSetTextCheck();
-		return return_text;
+		return super.set_text(Text);
 	}
 
-	// ----------------------------------
-	// HAS BEEN CHANGED
-	// ----------------------------------
+
 	public function getCharIndexAtPoint(X:Float, Y:Float):Int
 	{
 		
@@ -560,53 +486,22 @@ class FlxInputText extends FlxText
 		return 0;
 	}
 
-	private function prepareCharBoundaries(numChars:Int):Void
-	{
-		if (_charBoundaries == null)
-		{
-			_charBoundaries = [];
-		}
-
-		if (_charBoundaries.length > numChars)
-		{
-			var diff:Int = _charBoundaries.length - numChars;
-			for (i in 0...diff)
-			{
-				_charBoundaries.pop();
-			}
-		}
-
-		for (i in 0...numChars)
-		{
-			if (_charBoundaries.length - 1 < i)
-			{
-				_charBoundaries.push(FlxRect.get(0, 0, 0, 0));
-			}
-		}
-	}
-
 	/**
 	 * Called every time the text is changed (for both flash/cpp) to update scrolling, etc
 	 */
 	private function onSetTextCheck():Void
-	{
-		
-		var boundary:Rectangle = null;
-		boundary = getCharBoundaries(caretIndex > 0 ? caretIndex : 0);
+	{	
+		var boundary = getCharBoundaries(caretIndex > 0 ? caretIndex : 0);
 		textField.setSelection(caretIndex, caretIndex);
 		calcFrame();
-		
 	}
 
-	// ----------------------------------
-	// HAS BEEN CHANGED
-	// ----------------------------------
 	/**
 	 * Draws the frame of animation for the input text.
 	 *
 	 * @param	RunOnCpp	Whether the frame should also be recalculated if we're on a non-flash target
 	 */
-	private override function calcFrame(RunOnCpp:Bool = false):Void
+	override function calcFrame(RunOnCpp:Bool = false):Void
 	{
 		super.calcFrame(RunOnCpp);
 
@@ -622,10 +517,7 @@ class FlxInputText extends FlxText
 				fieldBorderSprite.makeGraphic(Std.int(width + fieldBorderThickness * 2), Std.int(cheight + fieldBorderThickness * 2), fieldBorderColor);
 				fieldBorderSprite.setPosition(x - fieldBorderThickness, y - fieldBorderThickness);
 			}
-			else 
-			{
-				fieldBorderSprite.visible = false;
-			}
+			else fieldBorderSprite.visible = false;
 		}
 
 		if (backgroundSprite != null)
@@ -635,10 +527,7 @@ class FlxInputText extends FlxText
 				backgroundSprite.makeGraphic(Std.int(width), Std.int(cheight), backgroundColor);
 				backgroundSprite.setPosition(x, y);
 			}
-			else
-			{
-				backgroundSprite.visible = false;
-			}
+			else backgroundSprite.visible = false;
 		}
 
 		if (caret != null)
@@ -691,10 +580,7 @@ class FlxInputText extends FlxText
 		}
 	}
 
-	/**
-	 * Turns the caret on/off for the caret flashing animation.
-	 */
-	inline function toggleCaret(timer:FlxTimer) caret.visible = !caret.visible;
+	inline function toggleCaret(timer:FlxTimer) caret.visible = !caret.visible; //Turns the caret on/off for the caret flashing animation.
 
 	/**
 	 * Checks an input string against the current
@@ -725,7 +611,7 @@ class FlxInputText extends FlxText
 				case CUSTOM_FILTER:
 					pattern = customFilterPattern;
 				default:
-					throw new Error("FlxInputText: Unknown filterMode (" + filterMode + ")");
+					throw "FlxInputText: Unknown filterMode (" + filterMode + ")";
 			}
 			text = pattern.replace(text, "");
 		}
@@ -734,27 +620,15 @@ class FlxInputText extends FlxText
 
 	private override function set_x(X:Float):Float
 	{
-		if ((fieldBorderSprite != null) && fieldBorderThickness > 0)
-		{
-			fieldBorderSprite.x = X - fieldBorderThickness;
-		}
-		if ((backgroundSprite != null) && background)
-		{
-			backgroundSprite.x = X;
-		}
+		if ((fieldBorderSprite != null) && fieldBorderThickness > 0) fieldBorderSprite.x = X - fieldBorderThickness;
+		if ((backgroundSprite != null) && background) backgroundSprite.x = X;
 		return super.set_x(X);
 	}
 
 	private override function set_y(Y:Float):Float
 	{
-		if ((fieldBorderSprite != null) && fieldBorderThickness > 0)
-		{
-			fieldBorderSprite.y = Y - fieldBorderThickness;
-		}
-		if ((backgroundSprite != null) && background)
-		{
-			backgroundSprite.y = Y;
-		}
+		if (fieldBorderSprite != null && fieldBorderThickness > 0) fieldBorderSprite.y = Y - fieldBorderThickness;
+		if (backgroundSprite != null && background) backgroundSprite.y = Y;
 		return super.set_y(Y);
 	}
 
@@ -799,41 +673,17 @@ class FlxInputText extends FlxText
 		caretIndex = newCaretIndex;
 
 		// If caret is too far to the right something is wrong
-		if (caretIndex > (text.length + 1))
-		{
-			caretIndex = text.length;
-		}
-
+		if (caretIndex > (text.length + 1)) caretIndex = text.length;
+		if (caretIndex < 0) caretIndex = 0;
 		// Caret is OK, proceed to position
-		if (caretIndex != -1)
-		{
-			var boundaries:Rectangle = null;
-
-			// Caret is not to the right of text
-			if (caretIndex < text.length)
-			{
-				boundaries = getCharBoundaries(caretIndex - 1 > 0 ? caretIndex - 1 : 0);
-				caret.x = boundaries.right + x; 
-				caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
-				
-			}
-			// Caret is to the right of text
-			else
-			{
-				boundaries = getCharBoundaries(caretIndex - 1 > 0 ? caretIndex - 1 : 0);
-				caret.x = boundaries.right + x;
-				caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
-			}
-		}
-
-		
-		caret.x -= textField.scrollH;
-
-		// Make sure the caret doesn't leave the textfield on single-line input texts
-		if ((lines == 1) && (caret.x + caret.width) > (x + width))
-		{
-			caret.x = x + width - 2;
-		}
+		var boundaries:Rectangle = getCharBoundaries(caretIndex - 1 > 0 ? caretIndex - 1 : 0);
+		if (boundaries == null) boundaries = new Rectangle(2,2,0, size);
+		caret.x = boundaries.right + x - 2;
+		caret.y = boundaries.top + y + boundaries.height / 2 - caret.height / 2;
+			
+		textField.setSelection(caretIndex, caretIndex);
+		// Make sure the caret doesn't leave the textfield
+		if (caret.x + caret.width > x + width) caret.x = x + width - 2;
 		//and that the caret is not above the textfield
 		if (caret.y < y) caret.y = y + 2;
 		//and that the caret is not stuck to the text box
