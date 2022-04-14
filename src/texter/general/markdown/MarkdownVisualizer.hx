@@ -131,7 +131,6 @@ class MarkdownVisualizer
 		field.defaultTextFormat = markdownTextFormat;
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
-			trace(effects);
 			field.text = markdownText;
 			for (e in effects)
 			{

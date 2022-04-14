@@ -262,9 +262,9 @@ class Markdown
 					effects.push(Emoji(emoji, info.pos, info.pos + info.len));
 				} 
 				else if (rule == patterns.parSepEReg) {
-					lineTexts = rule.replace(lineTexts, "​\r\r");
+					lineTexts = rule.replace(lineTexts, "\r\r");
 					final info = rule.matchedPos();
-					effects.push(ParagraphGap(info.pos, info.pos + info.len));
+					effects.push(ParagraphGap(info.pos, info.pos + 2));
 				} 
 				else if (rule == patterns.alignmentEReg) {
 					final align = rule.matched(1);

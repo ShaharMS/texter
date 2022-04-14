@@ -19,7 +19,7 @@ class MarkdownPatterns
 	public static var italicEReg(default, null):EReg = ~/_([^\n]+)_/m;
 	public static var astItalicEReg(default, null):EReg = ~/\*([^\n]+)\*/m;
 	public static var mathEReg(default, null):EReg = ~/\$([^\$]+?)\$/m;
-	public static var parSepEReg(default, null):EReg = ~/\n\n/gm;
+	public static var parSepEReg(default, null):EReg = ~/\n\n/m;
 	public static var emojiEReg(default, null):EReg = ~/(:[^: ]+:)/m;
 	public static var indentEReg(default, null):EReg = ~/^(>+)(.+)/m;
 	public static var doubleSpaceNewlineEReg(default, null):EReg = ~/  $/m;
