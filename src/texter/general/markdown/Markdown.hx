@@ -33,19 +33,19 @@ class Markdown
 	 * 
 	 * If you want to access them individually, you can do it using this field
 	 */
-	public static var patterns(default, never) = MarkdownPatterns;
+	public static inline var patterns = MarkdownPatterns;
 
 	/**
 	 * `syntaxBlocks` is a field representing a class that contains many syntax coloring
 	 * methods for codeblocks.
 	 */
-	public static var syntaxBlocks(default, set) = MarkdownBlocks;
+	public static inline var syntaxBlocks = MarkdownBlocks;
 
 	/**
 	 * If you want to modify certain visual aspects of the markdown text, you can 
 	 * gain access to those via the `visualizer` field.
 	 */
-	public static var visualizer(default, set) = MarkdownVisualizer;
+	public static inline var visualizer = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.doubleSpaceNewlineEReg, //Done.
@@ -306,7 +306,4 @@ class Markdown
 		return visualizer.generateVisuals(textField);
 	}
 	#end
-
-	static function set_syntaxBlocks(value) return cast syntaxBlocks = MarkdownBlocks;
-	static function set_visualizer(value) return cast visualizer = MarkdownVisualizer;
 }
