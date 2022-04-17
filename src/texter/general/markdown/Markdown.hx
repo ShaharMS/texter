@@ -48,6 +48,8 @@ class Markdown
 	public static var visualizer(default, set) = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
+		patterns.doubleSpaceNewlineEReg, //Done.
+		patterns.backslashNewlineEReg, //Done.
 		patterns.indentEReg, // Done.
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
@@ -62,10 +64,11 @@ class Markdown
 		patterns.astItalicEReg, // Done.
 		patterns.mathEReg, // Done.
 		patterns.codeEReg, // Done.
-		patterns.parSepEReg, // Done.
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
-		patterns.hRuleEReg // Done.
+		patterns.hRuleEReg, // Done.
+		patterns.parSepEReg, // Done.
+		patterns.alignmentEReg // Done.
 	];
 
 	/**
@@ -110,6 +113,13 @@ class Markdown
 	 * 	  - **HRules**: ---, ***, ___, ===, +++
 	 * 	  - **HRuledHeadings**: H1 - title\n===,+++,***, H2 - title\n---,___
 	 * 	  - **Paragraph Gaps** (two or more newlines)
+	 *    - **NewLines** \ or double-whitespace at the end of the line
+	 * 
+	 * 	  There are also some extra additions:
+	 * 
+	 * 	  - **Alignment**: <align="left">, <align="right">, <align="center">, <align="justify"> -> </align>
+	 * 	  - **Tabs**: \t
+	 * 
 	 * 
 	 * @param markdownText Just a plain string with markdown formatting. If you want to make sure 
 	 * the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
@@ -121,8 +131,6 @@ class Markdown
 		var effects:Array<MarkdownEffect> = [];
 		for (rule in markdownRules)
 		{
-			if (rule == patterns.parSepEReg)
-				continue;
 			while (rule.match(lineTexts))
 			{
 				if (rule == patterns.indentEReg) {
@@ -165,10 +173,10 @@ class Markdown
 				}
 				else if (rule == patterns.linkEReg)
 				{
-					var linkLength = "​".multiply(rule.matched(1).length);
-					lineTexts = rule.replace(lineTexts, "​$2​​​" + linkLength);
+					var linkLength = "​".multiply(rule.matched(2).length);
+					lineTexts = rule.replace(lineTexts, "​$1​​​" + linkLength);
 					final info = rule.matchedPos();
-					effects.push(Link(rule.matched(1), info.pos, info.pos + info.len));
+					effects.push(Link(rule.matched(2), info.pos, info.pos + info.len));
 				}
 				else if (rule == patterns.listItemEReg)
 				{
@@ -252,10 +260,25 @@ class Markdown
 					lineTexts = rule.replace(lineTexts, emoji);
 					final info = rule.matchedPos();
 					effects.push(Emoji(emoji, info.pos, info.pos + info.len));
+				} 
+				else if (rule == patterns.parSepEReg) {
+					lineTexts = rule.replace(lineTexts, "\r\r");
+					final info = rule.matchedPos();
+					effects.push(ParagraphGap(info.pos, info.pos + 2));
+				} 
+				else if (rule == patterns.alignmentEReg) {
+					final align = rule.matched(1);
+					var placeholder = "​".multiply(align.length);
+					lineTexts = rule.replace(lineTexts, "​".multiply(10) + placeholder + rule.matched(2) + "​".multiply(8));
+					final info = rule.matchedPos();
+					effects.push(Alignment(align, info.pos, info.pos + info.len));
 				}
+				else if (rule == patterns.backslashNewlineEReg) lineTexts = rule.replace(lineTexts, "\n");
+				else if (rule == patterns.doubleSpaceNewlineEReg) lineTexts = rule.replace(lineTexts, "\n" + "​");
+
 			}
 		}
-		onComplete(lineTexts.replace("\r", "\n") + "\n", effects);
+		onComplete(lineTexts.replace("\r", "\n").replace("\\t", "  ") + "\n", effects);
 	}
 
 	#if openfl

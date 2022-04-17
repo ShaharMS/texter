@@ -4,9 +4,8 @@
 	"license": "MIT",
 	"tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown", "textfield", "FlxInputTextRTL", "TextFieldRTL"],
     "description": "Advanced text tools for Haxe game engines & frameworks.",
-	"version": "2.0.0",
+	"version": "2.0.2",
 	"classPath": "src/",
-	"releasenote": "The next big thing for texter - Markdown! \n\n texter can now handle markdown for various frameworks, and also bundles its own basic interpreter to build your own styles on top of it.\n for more information, see CHANGELOG.md",
-	"contributors": [ "ShaharMS" ],
-	"main": "Main.hx"
+	"releasenote": "Added more patterns for detecting markdown's markup",
+	"contributors": [ "ShaharMS" ]
 }
