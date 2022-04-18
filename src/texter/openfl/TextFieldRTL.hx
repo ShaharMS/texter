@@ -21,7 +21,6 @@ import openfl.text.TextFormat;
 import openfl.text.TextLineMetrics;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-import openfl.utils.ByteArray;
 import openfl.utils.Timer;
 import texter.general.CharTools;
 import texter.general.TextTools.TextDirection;

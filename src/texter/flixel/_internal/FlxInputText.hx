@@ -672,7 +672,7 @@ class FlxInputText extends FlxText
 	{
 		caretIndex = newCaretIndex;
 
-		// If caret is too far to the right something is wrong
+		// If caret is too far to the right, reset it to the end of the text
 		if (caretIndex > (text.length + 1)) caretIndex = text.length;
 		if (caretIndex < 0) caretIndex = 0;
 		// Caret is OK, proceed to position
