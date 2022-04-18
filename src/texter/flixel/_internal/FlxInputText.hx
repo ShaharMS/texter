@@ -126,7 +126,7 @@ class FlxInputText extends FlxText
 	/**
 	 * Change the amount of lines that are allowed.
 	 */
-	public var lines(default, set):Int;
+	public var lines(default, set):Int = 1;
 
 	/**
 	 * Defines what text to filter. It can be NO_FILTER, ONLY_ALPHA, ONLY_NUMERIC, ONLY_ALPHA_NUMERIC or CUSTOM_FILTER
@@ -169,41 +169,28 @@ class FlxInputText extends FlxText
 	 * @param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK,
-			BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, EmbeddedFont);
 		backgroundColor = BackgroundColor;
 
-		if (BackgroundColor != FlxColor.TRANSPARENT)
-		{
-			background = true;
-		}
+		if (BackgroundColor != FlxColor.TRANSPARENT) background = true;
 
-		color = TextColor;
-		caretColor = TextColor;
+		caretColor = color = TextColor;
 
 		caret = new FlxSprite();
 		caret.makeGraphic(caretWidth, Std.int(size + 2));
 		_caretTimer = new FlxTimer();
 
 		caretIndex = 0;
-		hasFocus = false;
 		if (background)
 		{
 			fieldBorderSprite = new FlxSprite(X, Y);
 			backgroundSprite = new FlxSprite(X, Y);
 		}
-
-		lines = 1;
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
-		if (Text == null)
-		{
-			Text = "";
-		}
-
-		text = Text; // ensure set_text is called to avoid bugs (like not preparing _charBoundaries on sys target, making it impossible to click)
+		text = text != null ? text : "";
 
 		calcFrame();
 	}
@@ -218,18 +205,6 @@ class FlxInputText extends FlxText
 		backgroundSprite = FlxDestroyUtil.destroy(backgroundSprite);
 		fieldBorderSprite = FlxDestroyUtil.destroy(fieldBorderSprite);
 		callback = null;
-
-		#if sys
-		if (_charBoundaries != null)
-		{
-			while (_charBoundaries.length > 0)
-			{
-				_charBoundaries.pop();
-			}
-			_charBoundaries = null;
-		}
-		#end
-
 		super.destroy();
 	}
 
@@ -244,11 +219,7 @@ class FlxInputText extends FlxText
 		super.draw();
 
 		// In case caretColor was changed
-		if (caretColor != caret.color || caret.height != size + 2)
-		{
-			caret.color = caretColor;
-		}
-
+		caret.color = caretColor;
 		drawSprite(caret);
 	}
 
@@ -309,57 +280,52 @@ class FlxInputText extends FlxText
 	 */
 	private function onKeyDown(e:KeyboardEvent):Void
 	{
+		if (!hasFocus) return;
 		var key:Int = e.keyCode;
-
-		if (hasFocus)
+		// Do nothing for Shift, Ctrl, Esc, and flixel console hotkey
+		if (key == 16 || key == 17 || key == 220 || key == 27) return;
+		// Left arrow
+		else if (key == 37 && caretIndex > 0) caretIndex--;
+		// Right arrow
+		else if (key == 39 && caretIndex < text.length) caretIndex++;
+		// End key
+		else if (key == 35) caretIndex = text.length;
+		// Home key
+		else if (key == 36) caretIndex = 0;
+		// Backspace
+		else if (key == 8 && caretIndex > 0)
 		{
-			// Do nothing for Shift, Ctrl, Esc, and flixel console hotkey
-			if (key == 16 || key == 17 || key == 220 || key == 27) return;
-			// Left arrow
-			else if (key == 37 && caretIndex > 0) caretIndex--;
-			// Right arrow
-			else if (key == 39 && caretIndex < text.length) caretIndex++;
-			// End key
-			else if (key == 35) caretIndex = text.length;
-			// Home key
-			else if (key == 36) caretIndex = 0;
-			// Backspace
-			else if (key == 8 && caretIndex > 0)
-			{
-				caretIndex--;
-				text = text.substr(0, caretIndex) + text.substr(caretIndex + 1);
-				onChange(BACKSPACE_ACTION);
-			}
-			// Delete
-			else if (key == 46 && (text.length > 0 && caretIndex < text.length))
-			{
-				text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
-				onChange(DELETE_ACTION);
-			}
-			// Enter
-			else if (key == 13) onChange(ENTER_ACTION);
-			// Actually add some text
-			else
-			{
-				if (e.charCode == 0) return; // non-printable characters crash String.fromCharCode
-				var newText:String = filter(String.fromCharCode(e.charCode));
+			caretIndex--;
+			text = text.substr(0, caretIndex) + text.substr(caretIndex + 1);
+			onChange(BACKSPACE_ACTION);
+		}
+		// Delete
+		else if (key == 46 && (text.length > 0 && caretIndex < text.length))
+		{
+			text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
+			onChange(DELETE_ACTION);
+		}
+		// Enter
+		else if (key == 13) onChange(ENTER_ACTION);
+		// Actually add some text
+		else
+		{
+			if (e.charCode == 0) return; // non-printable characters crash String.fromCharCode
+			var newText:String = filter(String.fromCharCode(e.charCode));
 
-				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
-				{
-					text = insertSubstring(text, newText, caretIndex);
-					caretIndex++;
-					onChange(INPUT_ACTION);
-				}
+			if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
+			{
+				text = insertSubstring(text, newText, caretIndex);
+				caretIndex++;
+				onChange(INPUT_ACTION);
 			}
 		}
+		
 	}
 
 	private function onChange(action:String):Void
 	{
-		if (callback != null)
-		{
-			callback(text, action);
-		}
+		if (callback != null) callback(text, action);
 	}
 
 	/**
