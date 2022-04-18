@@ -7,7 +7,7 @@ package texter.general;
  * 
  *      using texter.general.TextTools;
  * 
- * and enjoy not having to write more text manipulation functions!
+ * and enjoy not having to write more text manipulation functions ever again :D
  */
 class TextTools
 {
@@ -40,11 +40,22 @@ class TextTools
 	}
 
 	/**
+	 * Splits a text into paragraphs, determined by HTML/Markdown markup (double newline or <p></p>)
+	 * @param text the text to split
+	 * @return an array containing the paragraphs
+	 */
+	public static inline function splitOnParagraph(text:String):Array<String> {
+		return ~/<p>|<\/p>|\n\n|\r\n\r\n/g.split(text);
+	}
+
+	/**
 	 * filters a string according to the contents of `filter`:
 	 * 
 	 * - if `filter` is a string, it can be use as one of 2 things
-	 * 	- if the string contains a regex filter it will re-call the function with the string passed as an EReg
-	 * 	- if the string does not contain the filter it can be one of 3 3 things:
+	 * 
+	 * 	 - if the string contains a regex filter it will re-call the function with the string passed as an EReg
+	 * 	 - if the string does not contain the filter it can be one of 3 3 things:
+	 * 
 	 * 		- if the string is empty, nothing will be filtered
 	 * 		- if the string is "alpha", it will filter out all non-alphabetic characters
 	 * 		- if the string is "numeric", it will filter out all non-numeric characters
@@ -80,36 +91,6 @@ class TextTools
 				return filter(text, new EReg("[^0-9]", "g"));
 		}
 		return text;
-	}
-
-	/**
-	 * Multiplies `string` by `times`.
-	 * 
-	 * When multiplied by a number equal/less than 0, it returns an empty string.
-	 * 
-	 * example:
-	 * ```haxe
-	 * var foo = "foo";
-	 * var bar = TextTools.multiply(foo, 3);
-	 * trace(bar); // foofoofoo
-	 * bar = foo.multiply(0);
-	 * trace(bar); // ""
-	 * ```
-	 * 
-	 * @param string the string to multiply
-	 * @param by the number of times to multiply
-	 * @return the multiplied string
-	 */
-	public static function multiply(string:String, times:Int):String
-	{
-		var stringcopy = string;
-		if (times <= 0)
-			return "";
-		while (--times > 0)
-		{
-			string += stringcopy;
-		}
-		return string;
 	}
 
 	/**
@@ -177,6 +158,79 @@ class TextTools
 		return indexArray;
 		
 	}
+
+	/**
+	 * Multiplies `string` by `times`.
+	 * 
+	 * When multiplied by a number equal/less than 0, it returns an empty string.
+	 * 
+	 * example:
+	 * ```haxe
+	 * var foo = "foo";
+	 * var bar = TextTools.multiply(foo, 3);
+	 * trace(bar); // foofoofoo
+	 * bar = foo.multiply(0);
+	 * trace(bar); // ""
+	 * ```
+	 * 
+	 * @param string the string to multiply
+	 * @param by the number of times to multiply
+	 * @return the multiplied string
+	 */
+	public static function multiply(string:String, times:Int):String
+	{
+		var stringcopy = string;
+		if (times <= 0)
+			return "";
+		while (--times > 0)
+		{
+			string += stringcopy;
+		}
+		return string;
+	}
+
+	/**
+	 * Subtracts a part of a string from another string.  
+	 * Itll try to find the last occurence of `by` in `string`, and remove it.
+	 * 
+	 * @param string the string to subtract from
+	 * @param by the string to subtract
+	 */
+	public static inline function subtract(string:String, by:String) {
+		return replaceLast(string, by, "");
+	}
+
+	/**
+	 * Creates a lorem ipsum text the following modifiers.
+	 * 
+	 * @param linesPerParagraph the amount of lines per paragraph
+	 * @param paragraphs the amount of paragraphs
+	 * @param length **Optional** - the total length of the text.
+	 */
+	public static inline function loremIpsum(?paragraphs:Int = 1, ?length:Int) {
+		var loremArray = splitOnParagraph(StringTools.replace(loremIpsumText, "\t", ""));
+		var loremText = loremArray.join("\n\n");
+		if (paragraphs > loremArray.length)
+		{
+			var multiplier = Math.ceil(paragraphs / loremArray.length);
+			loremText = multiply(loremIpsumText, multiplier);
+			loremArray = splitOnParagraph(loremText);
+		}
+		while (loremArray.length > paragraphs) loremArray.pop();
+		return loremArray.join("\n\n");
+	}
+
+	public static var loremIpsumText:String = "
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum magna, eget porttitor libero aliquam non. Praesent commodo, augue nec hendrerit tincidunt, urna felis lobortis mi, non cursus libero tellus quis tellus. Vivamus ornare convallis tristique. Integer nec ornare libero. Phasellus feugiat facilisis faucibus. Vivamus porta id neque id placerat. Proin convallis vel felis et pharetra. Quisque magna justo, ullamcorper quis scelerisque eu, tincidunt vitae lectus. Nunc sed turpis justo. Aliquam porttitor, purus sit amet faucibus bibendum, ligula elit molestie purus, eu volutpat turpis sapien ac tellus. Fusce mauris arcu, volutpat ut aliquam ut, ultrices id ante. Morbi quis consectetur turpis. Integer semper lacinia urna id laoreet.
+
+		Ut mollis eget eros eu tempor. Phasellus nulla velit, sollicitudin eget massa a, tristique rutrum turpis. Vestibulum in dolor at elit pellentesque finibus. Nulla pharetra felis a varius molestie. Nam magna lectus, eleifend ac sagittis id, ornare id nibh. Praesent congue est non iaculis consectetur. Nullam dictum augue sit amet dignissim fringilla. Aenean semper justo velit. Sed nec lectus facilisis, sodales diam eget, imperdiet nunc. Quisque elementum nulla non orci interdum pharetra id quis arcu. Phasellus eu nunc lectus. Nam tellus tortor, pellentesque eget faucibus eu, laoreet quis odio. Pellentesque posuere in enim a blandit.
+
+		Duis dignissim neque et ex iaculis, ac consequat diam gravida. In mi ex, blandit eget velit non, euismod feugiat arcu. Nulla nec fermentum neque, eget elementum mauris. Vivamus urna ligula, faucibus at facilisis sed, commodo sit amet urna. Sed porttitor feugiat purus ac tincidunt. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam sollicitudin lacinia turpis quis placerat. Donec eget velit nibh. Duis vehicula orci lectus, eget rutrum arcu tincidunt et. Vestibulum ut pharetra lectus. Quisque lacinia nunc rhoncus neque venenatis consequat. Nulla rutrum ultricies sapien, sed semper lectus accumsan nec. Phasellus commodo faucibus lacinia. Donec auctor condimentum ligula. Sed quis viverra mauris.
+
+		Quisque maximus justo dui, eget pretium lorem accumsan ac. Praesent eleifend faucibus orci et varius. Ut et molestie turpis, eu porta neque. Quisque vehicula, libero in tincidunt facilisis, purus eros pulvinar leo, sit amet eleifend justo ligula tempor lectus. Donec ac tortor sed ipsum tincidunt pulvinar id nec eros. In luctus purus cursus est dictum, ac sollicitudin turpis maximus. Maecenas a nisl velit. Nulla gravida lectus vel ultricies gravida. Proin vel bibendum magna. Donec aliquam ultricies quam, quis tempor nunc pharetra ut.
+
+		Pellentesque sit amet dui est. Aliquam erat volutpat. Integer vitae ullamcorper est, ut eleifend augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque congue velit felis, vitae elementum nulla faucibus id. Donec lectus nibh, commodo eget nunc id, feugiat sagittis massa. In hac habitasse platea dictumst. Pellentesque volutpat molestie ultrices.
+	";
 }
 
 
@@ -186,4 +240,3 @@ enum TextDirection
 	LTR;
 	UNDETERMINED;
 }
-
