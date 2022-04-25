@@ -225,7 +225,7 @@ class TextTools
 	 * @param array an array of strings to be sorted
 	 * @return the sorted array
 	 */
-	public function sortByLength(array:Array<String>):Array<String> {
+	public static function sortByLength(array:Array<String>):Array<String> {
 		array.sort(function(a:String, b:String):Int {
 			return a.length - b.length;
 		});
@@ -237,7 +237,7 @@ class TextTools
 	 * @param array an array of floats to be sorted
 	 * @return the sorted array
 	 */
-	public function sortByValue(array:Array<Float>):Array<Float> {
+	public static function sortByValue(array:Array<Float>):Array<Float> {
 		array.sort(function(a:Float, b:Float):Float {
 			return a - b;
 		});
@@ -249,7 +249,7 @@ class TextTools
 	 * @param array an array of ints to be sorted
 	 * @return the sorted array
 	 */
-	 public function sortByIntValue(array:Array<Int>):Array<Int> {
+	public static function sortByIntValue(array:Array<Int>):Array<Int> {
 		array.sort(function(a:Int, b:Int):Int {
 			return a - b;
 		});
