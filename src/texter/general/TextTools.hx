@@ -220,6 +220,42 @@ class TextTools
 		return loremArray.join("\n\n");
 	}
 
+	/**
+	 * Sorts an array of strings by the string's length, whith the shortest strings first.
+	 * @param array an array of strings to be sorted
+	 * @return the sorted array
+	 */
+	public function sortByLength(array:Array<String>):Array<String> {
+		array.sort(function(a:String, b:String):Int {
+			return a.length - b.length;
+		});
+		return array;
+	}
+
+	/**
+	 * Sorts an array of floats by the float's value, whith the lowest values first.
+	 * @param array an array of floats to be sorted
+	 * @return the sorted array
+	 */
+	public function sortByValue(array:Array<Float>):Array<Float> {
+		array.sort(function(a:Float, b:Float):Float {
+			return a - b;
+		});
+		return array;
+	}
+
+	/**
+	 * Sorts an array of ints by the float's value, whith the lowest values first.
+	 * @param array an array of ints to be sorted
+	 * @return the sorted array
+	 */
+	 public function sortByIntValue(array:Array<Int>):Array<Int> {
+		array.sort(function(a:Int, b:Int):Int {
+			return a - b;
+		});
+		return array;
+	}
+
 	public static var loremIpsumText(default, never):String = "
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum magna, eget porttitor libero aliquam non. Praesent commodo, augue nec hendrerit tincidunt, urna felis lobortis mi, non cursus libero tellus quis tellus. Vivamus ornare convallis tristique. Integer nec ornare libero. Phasellus feugiat facilisis faucibus. Vivamus porta id neque id placerat. Proin convallis vel felis et pharetra. Quisque magna justo, ullamcorper quis scelerisque eu, tincidunt vitae lectus. Nunc sed turpis justo. Aliquam porttitor, purus sit amet faucibus bibendum, ligula elit molestie purus, eu volutpat turpis sapien ac tellus. Fusce mauris arcu, volutpat ut aliquam ut, ultrices id ante. Morbi quis consectetur turpis. Integer semper lacinia urna id laoreet.
 

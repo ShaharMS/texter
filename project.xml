@@ -51,6 +51,8 @@
 	<haxedef name="flixelUI" if="flixel-ui"/>
 
 	<haxedef name="openfl_development" value="1"/>
+	<haxedef name="doc-gen" />
+	<haxeflag name="-xml" value="docs/doc.xml" />
 
 	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
 	<haxedef name="FLX_NO_MOUSE" if="mobile" />
