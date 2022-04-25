@@ -238,8 +238,8 @@ class TextTools
 	 * @return the sorted array
 	 */
 	public static function sortByValue(array:Array<Float>):Array<Float> {
-		array.sort(function(a:Float, b:Float):Float {
-			return a - b;
+		array.sort(function(a:Float, b:Float):Int {
+			return Std.int(a - b);
 		});
 		return array;
 	}
