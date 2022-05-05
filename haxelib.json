@@ -2,10 +2,10 @@
 	"name": "texter",
 	"url" : "https://github.com/ShaharMS/texter",
 	"license": "MIT",
-	"tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown", "textfield", "FlxInputTextRTL", "TextFieldRTL"],
+	"tags": ["text", "input", "rtl", "ltr", "char", "textinput", "flixel","openfl", "bidi", "hebrew", "arabic", "markdown", "textfield", "FlxInputTextRTL", "TextFieldRTL", "string"],
     "description": "Advanced text tools for Haxe game engines & frameworks.",
-	"version": "2.0.2",
+	"version": "2.1.0",
 	"classPath": "src/",
-	"releasenote": "Added more patterns for detecting markdown's markup",
+	"releasenote": "Enriched TextTools, some fixes to the markdown interpreter",
 	"contributors": [ "ShaharMS" ]
 }

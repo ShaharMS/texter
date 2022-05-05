@@ -1,4 +1,4 @@
-package texter.general;
+package;
 
 /**
  * `TextTools` is a class containing static methods for manipulating text.
@@ -44,7 +44,8 @@ class TextTools
 	 * @param text the text to split
 	 * @return an array containing the paragraphs
 	 */
-	public static inline function splitOnParagraph(text:String):Array<String> {
+	public static inline function splitOnParagraph(text:String):Array<String>
+	{
 		return ~/<p>|<\/p>|\n\n|\r\n\r\n/g.split(text);
 	}
 
@@ -114,7 +115,6 @@ class TextTools
 		return indexArray;
 	}
 
-
 	/**
 	 * repoort all occurences of the elements inside `sub` in `string`
 	 * @param string the string to search in
@@ -147,16 +147,17 @@ class TextTools
 	 * @param ereg the EReg to use as the searching engine
 	 * @return an array of all positions of the substrings, from startIndex, up to but not including endIndex
 	 */
-	public static function indexesFromEReg(string:String, ereg:EReg):Array<{startIndex:Int, endIndex:Int}> {
+	public static function indexesFromEReg(string:String, ereg:EReg):Array<{startIndex:Int, endIndex:Int}>
+	{
 		var indexArray:Array<{startIndex:Int, endIndex:Int}> = [];
-		while (ereg.match(string)) {
+		while (ereg.match(string))
+		{
 			var info = ereg.matchedPos();
 			string = ereg.replace(string, multiply("⨔", info.len));
 			indexArray.push({startIndex: info.pos, endIndex: info.pos + info.len});
 		}
-		
+
 		return indexArray;
-		
 	}
 
 	/**
@@ -196,7 +197,8 @@ class TextTools
 	 * @param string the string to subtract from
 	 * @param by the string to subtract
 	 */
-	public static inline function subtract(string:String, by:String) {
+	public static inline function subtract(string:String, by:String)
+	{
 		return replaceLast(string, by, "");
 	}
 
@@ -206,7 +208,8 @@ class TextTools
 	 * @param paragraphs the amount of paragraphs to generate
 	 * @param length **Optional** - the total length of the text.
 	 */
-	public static inline function loremIpsum(?paragraphs:Int = 1, ?length:Int) {
+	public static inline function loremIpsum(?paragraphs:Int = 1, ?length:Int)
+	{
 		var loremArray = splitOnParagraph(StringTools.replace(loremIpsumText, "\t", ""));
 		var loremText = loremArray.join("\n\n");
 		if (paragraphs > loremArray.length)
@@ -215,7 +218,8 @@ class TextTools
 			loremText = multiply(loremIpsumText, multiplier);
 			loremArray = splitOnParagraph(loremText);
 		}
-		while (loremArray.length > paragraphs) loremArray.pop();
+		while (loremArray.length > paragraphs)
+			loremArray.pop();
 		return loremArray.join("\n\n");
 	}
 
@@ -224,8 +228,10 @@ class TextTools
 	 * @param array an array of strings to be sorted
 	 * @return the sorted array
 	 */
-	public static function sortByLength(array:Array<String>):Array<String> {
-		array.sort(function(a:String, b:String):Int {
+	public static function sortByLength(array:Array<String>):Array<String>
+	{
+		array.sort(function(a:String, b:String):Int
+		{
 			return a.length - b.length;
 		});
 		return array;
@@ -236,8 +242,10 @@ class TextTools
 	 * @param array an array of floats to be sorted
 	 * @return the sorted array
 	 */
-	public static function sortByValue(array:Array<Float>):Array<Float> {
-		array.sort(function(a:Float, b:Float):Int {
+	public static function sortByValue(array:Array<Float>):Array<Float>
+	{
+		array.sort(function(a:Float, b:Float):Int
+		{
 			return Std.int(a - b);
 		});
 		return array;
@@ -248,8 +256,10 @@ class TextTools
 	 * @param array an array of ints to be sorted
 	 * @return the sorted array
 	 */
-	public static function sortByIntValue(array:Array<Int>):Array<Int> {
-		array.sort(function(a:Int, b:Int):Int {
+	public static function sortByIntValue(array:Array<Int>):Array<Int>
+	{
+		array.sort(function(a:Int, b:Int):Int
+		{
 			return a - b;
 		});
 		return array;
@@ -261,11 +271,14 @@ class TextTools
 	 * @param index The character's position within the string
 	 * @return The 0-based line index of the char in position `index`
 	 */
-	public static function getLineIndexOfChar(string:String, index:Int):Int {
+	public static function getLineIndexOfChar(string:String, index:Int):Int
+	{
 		var lines = string.split("\n");
 		var lineIndex = 0;
-		for (i in 0...lines.length) {
-			if (index < lines[i].length) {
+		for (i in 0...lines.length)
+		{
+			if (index < lines[i].length)
+			{
 				lineIndex = i;
 				break;
 			}
@@ -273,6 +286,27 @@ class TextTools
 		}
 		return lineIndex;
 	}
+
+    /**
+     * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
+     * @param string the string to search in
+     * @param sub the substring to search for
+     * @return The amount of times `sub` was found in `string`
+     */
+	public static function countOccurrencesOf(string:String, sub:String):Int
+    {
+        var count = 0;
+        while (contains(string, sub))
+        {
+            count++;
+            string = replacefirst(string, sub, "");
+        }
+        return count;
+    }
+    public static function contains(string:String, contains:String):Bool
+    {
+        return string.indexOf(contains) != -1;
+    }
 
 	public static var loremIpsumText(default, never):String = "
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum magna, eget porttitor libero aliquam non. Praesent commodo, augue nec hendrerit tincidunt, urna felis lobortis mi, non cursus libero tellus quis tellus. Vivamus ornare convallis tristique. Integer nec ornare libero. Phasellus feugiat facilisis faucibus. Vivamus porta id neque id placerat. Proin convallis vel felis et pharetra. Quisque magna justo, ullamcorper quis scelerisque eu, tincidunt vitae lectus. Nunc sed turpis justo. Aliquam porttitor, purus sit amet faucibus bibendum, ligula elit molestie purus, eu volutpat turpis sapien ac tellus. Fusce mauris arcu, volutpat ut aliquam ut, ultrices id ante. Morbi quis consectetur turpis. Integer semper lacinia urna id laoreet.
@@ -286,7 +320,6 @@ class TextTools
 		Pellentesque sit amet dui est. Aliquam erat volutpat. Integer vitae ullamcorper est, ut eleifend augue. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque congue velit felis, vitae elementum nulla faucibus id. Donec lectus nibh, commodo eget nunc id, feugiat sagittis massa. In hac habitasse platea dictumst. Pellentesque volutpat molestie ultrices.
 	";
 }
-
 
 enum TextDirection
 {
