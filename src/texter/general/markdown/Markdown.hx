@@ -50,6 +50,7 @@ class Markdown
 	static var markdownRules(default, null):Array<EReg> = [
 		patterns.doubleSpaceNewlineEReg, //Done.
 		patterns.backslashNewlineEReg, //Done.
+		patterns.alignmentEReg, // Done.
 		patterns.indentEReg, // Done.
 		patterns.hRuledTitleEReg, // Done.
 		patterns.titleEReg, // Done.
@@ -67,8 +68,7 @@ class Markdown
 		patterns.linkEReg, // Done.
 		patterns.listItemEReg, // Done.
 		patterns.hRuleEReg, // Done.
-		patterns.parSepEReg, // Done.
-		patterns.alignmentEReg // Done.
+		patterns.parSepEReg // Done.
 	];
 
 	/**
