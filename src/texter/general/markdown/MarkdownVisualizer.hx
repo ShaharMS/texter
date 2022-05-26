@@ -197,9 +197,11 @@ class MarkdownVisualizer
 		field.overlay.graphics.clear();
 		field.underlay.graphics.clear();
 		field.background = false;
-		field.underlay.graphics.beginFill(field.backgroundColor);
-		field.underlay.graphics.drawRect(0, 0, field.width, field.height + field.textHeight);
-		field.underlay.graphics.endFill();
+		if (visualConfig.background) {
+			field.underlay.graphics.beginFill(field.backgroundColor);
+			field.underlay.graphics.drawRect(0, 0, field.width, field.height + field.textHeight);
+			field.underlay.graphics.endFill();
+		}
 		Markdown.interpret(field.text, (markdownText, effects) ->
 		{
 			field.text = markdownText;
