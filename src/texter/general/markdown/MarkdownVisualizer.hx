@@ -333,6 +333,7 @@ private class VisualConfig
 	public var background:Bool = false;
 	public var backgroundColor:Int = 0xEEEEEE;
 	public var codeblockBackgroundColor:Int = 0xCCCCCC;
+	public var darkMode(default, set):Bool = false;
 
 	/**
 	 * Set all the properties of the default visual configuration at once.
@@ -376,4 +377,11 @@ private class VisualConfig
 		this.codeblockBackgroundColor = codeblockBackgroundColor != null ? codeblockBackgroundColor : this.codeblockBackgroundColor;
 		return this;
 	}
+
+	function set_darkMode(mode:Bool) {
+		backgroundColor = mode ? 0x222222 : 0xEEEEEE;
+		color = mode ? 0xEEFFFFFF : 0x000000;
+		return mode;
+	}
 }
+

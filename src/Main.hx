@@ -119,7 +119,8 @@ class S extends FlxState{
 	//override create
 	override public function create() {
 
-		var t = new FlxInputTextRTL(0, 0, 400, "", 40);
+		var t = new texter.flixel._internal.FlxInputText(0, 0, 400, "", 40);
+		t.wordWrap = true;
 		add(t);
 	}
 }
