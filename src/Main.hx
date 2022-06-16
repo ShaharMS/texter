@@ -1,5 +1,6 @@
 package;
 
+#if false
 import openfl.display.Shape;
 import texter.openfl.TextFieldRTL;
 import flixel.FlxSprite;
@@ -122,5 +123,12 @@ class S extends FlxState{
 		var t = new texter.flixel._internal.FlxInputText(0, 0, 400, "", 40);
 		t.wordWrap = true;
 		add(t);
+	}
+}
+#end
+
+class Main {
+	static function main() {
+		
 	}
 }

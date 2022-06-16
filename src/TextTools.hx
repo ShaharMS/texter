@@ -5,7 +5,7 @@ package;
  * 
  * you can use it by doing
  * 
- *      using texter.general.TextTools;
+ *      using TextTools;
  * 
  * and enjoy not having to write more text manipulation functions ever again :D
  */
@@ -38,6 +38,36 @@ class TextTools
 		var result = string.substring(0, place) + by + string.substring(place + replace.length);
 		return result;
 	}
+
+	/**
+	 * splits `string` on the first occurrence of `delimiter` and returns the array of the two parts
+	 * @param string the string to split
+	 * @param delimiter the string to split on
+	 * @return the array of the two parts
+	 */
+	public static function splitOnFirst(string:String, delimiter:String):Array<String>
+	{
+		var place = string.indexOf(delimiter);
+		var result = new Array<String>();
+		result.push(string.substring(0, place));
+		result.push(string.substring(place + delimiter.length));
+		return result;
+	}
+
+	/**
+	 * splits `string` on the last occurrence of `delimiter` and returns the array of the two parts
+	 * @param string the string to split
+	 * @param delimiter the string to split on
+	 * @return the array of the two parts
+	 */
+	 public static function splitOnLast(string:String, delimiter:String):Array<String>
+		{
+			var place = string.lastIndexOf(delimiter);
+			var result = new Array<String>();
+			result.push(string.substring(0, place));
+			result.push(string.substring(place + delimiter.length));
+			return result;
+		}
 
 	/**
 	 * Splits a text into paragraphs, determined by HTML/Markdown markup (double newline or <p></p>)
@@ -242,7 +272,7 @@ class TextTools
 	 * @param array an array of floats to be sorted
 	 * @return the sorted array
 	 */
-	public static function sortByValue(array:Array<Float>):Array<Float>
+	@:deprecated public static function sortByValue(array:Array<Float>):Array<Float>
 	{
 		array.sort(function(a:Float, b:Float):Int
 		{
@@ -252,11 +282,12 @@ class TextTools
 	}
 
 	/**
+	 * 
 	 * Sorts an array of ints by the float's value, whith the lowest values first.
 	 * @param array an array of ints to be sorted
 	 * @return the sorted array
 	 */
-	public static function sortByIntValue(array:Array<Int>):Array<Int>
+	@:deprecated public static function sortByIntValue(array:Array<Int>):Array<Int>
 	{
 		array.sort(function(a:Int, b:Int):Int
 		{
