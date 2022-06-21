@@ -1,3 +1,5 @@
 --class-path src
 --main Main
 --js interp.js
+--library lime
+--library openfl

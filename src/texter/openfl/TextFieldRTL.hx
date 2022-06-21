@@ -45,6 +45,7 @@ import texter.general.markdown.Markdown;
  * 
  * And more.
  */
+@:deprecated("Deprecated - Will get removed in later version due to buggy behavior") 
 class TextFieldRTL extends Sprite
 {
 	public var textField:TextField;
@@ -55,10 +56,9 @@ class TextFieldRTL extends Sprite
 		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`.
 		 - if the character is from any other language - `alignment` will be set to `LEFT`.
 		 - if the character is not from any specific language - `alignment` will be set to `UNDETERMINED`.
-
-
-
-		**`autoAlign` does not default to a certine direction when set to `false`**. it will
+		
+		
+		 **`autoAlign` does not default to a certine direction when set to `false`**. it will
 		use the last direction it remembers when this `TextFieldRTL` was created/when `autoAlign` was still true;
 	**/
 	public var autoAlign(default, set):Bool = true;
@@ -408,7 +408,7 @@ class TextFieldRTL extends Sprite
 	var maskRect:Shape = new Shape();
 	var surface:Sprite = new Sprite();
 
-	public function new()
+	@:deprecated("Deprecated - Will get removed in later version due to buggy behavior") public function new()
 	{
 		super();
 
