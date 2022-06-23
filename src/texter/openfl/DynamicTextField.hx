@@ -1,6 +1,6 @@
 package texter.openfl;
-import openfl.geom.Point;
 #if openfl
+import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.text.TextField;
 import lime.ui.MouseCursor;
