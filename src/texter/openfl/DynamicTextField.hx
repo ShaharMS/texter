@@ -23,8 +23,8 @@ import openfl.display.Sprite;
 class DynamicTextField extends Sprite {
     
 	//privates
-	var oldX:Float = 0;
-	var oldY:Float = 0;
+	var offsetX:Float = 0;
+	var offsetY:Float = 0;
 
 
     public var textField:TextField;
@@ -70,6 +70,14 @@ class DynamicTextField extends Sprite {
 	public var draggable(default, set):Bool = true;
 
     /**
+     * This flag is flipped when the user starts dragging the text field.
+	 * 
+	 * the dragging operation starts when the textfield starts moving.
+
+     */
+	public var currentlyDragging:Bool = false;
+
+    /**
      * Controls which sides are allowed to be dynamically resized by the user.
      */
     public var resizableSides(default, set) = {
@@ -100,7 +108,7 @@ class DynamicTextField extends Sprite {
         };
 
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
-            b.graphics.lineStyle(1, 0xff0000);
+            b.graphics.lineStyle(1, borderColor);
         }
 
         borders.top.graphics.moveTo(0,0);
@@ -127,6 +135,7 @@ class DynamicTextField extends Sprite {
         addChild(borders.right);
 
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.addEventListener(MouseEvent.MOUSE_OVER, mouseOverBorder);
             b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
         }
 
@@ -136,21 +145,28 @@ class DynamicTextField extends Sprite {
     }
 
 	function registerDrag(e:MouseEvent) {
-		if (draggable && oldX == 0) {
-			trace("registerDrag");
-			oldX = globalToLocal(new Point(e.stageX, e.stageY)).x;
-			oldY = globalToLocal(new Point(e.stageX, e.stageY)).y;
+		if (draggable && offsetX == 0) {
+			offsetX = parent.mouseX - x;
+			offsetY = parent.mouseY - y;
+			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+				b.removeEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
+			}
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, drag);
 		}
 	}
 
 	function drag(e:MouseEvent) {
 		if (draggable && e.buttonDown) {
-			x = oldX + globalToLocal(new Point(e.stageX, e.stageY)).x;
-			y = oldY + globalToLocal(new Point(e.stageX, e.stageY)).y;
+			currentlyDragging = true;
+			x = parent.globalToLocal(new Point(e.stageX, e.stageY)).x - offsetX;
+			y = parent.globalToLocal(new Point(e.stageX, e.stageY)).y - offsetY;
 		} else {
-			oldX = oldY = 0;
+			offsetX = offsetY = 0;
+			currentlyDragging = false;
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, drag);
+			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+				b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
+			}
 		}
 	}
 
@@ -162,11 +178,11 @@ class DynamicTextField extends Sprite {
     }
 
     function mouseOverTextField(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.TEXT;
+        Mouse.cursor = !currentlyDragging ? MouseCursor.TEXT : MouseCursor.MOVE;
     }
 
     function mouseOut(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.DEFAULT;
+        Mouse.cursor = !currentlyDragging ? MouseCursor.DEFAULT : MouseCursor.MOVE;
     }
 
     //--------------------------------------------------------------------------
@@ -291,7 +307,7 @@ class DynamicTextField extends Sprite {
 
 		@default false
 	**/
-	public var border(get, set):Bool;
+	public var border(default, set):Bool;
 
 	/**
 		The color of the text field border. The default value is
@@ -299,7 +315,7 @@ class DynamicTextField extends Sprite {
 		if there currently is no border, but the color is visible only if the text
 		field has the `border` property set to `true`.
 	**/
-	public var borderColor(get, set):Int;
+	public var borderColor(default, set):Int;
 
 	/**
 		An integer(1-based index) that indicates the bottommost line that is
@@ -732,14 +748,11 @@ class DynamicTextField extends Sprite {
     function set_backgroundColor(value:Int):Int {
         return textField.backgroundColor = value;
     }
-    function get_border():Bool {
-        return textField.border;
-    }
     function set_border(value:Bool):Bool {
-        return textField.border = value;
-    }
-    function get_borderColor():Int {
-        return textField.borderColor;
+        for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.visible = value;
+		}
+		return value;
     }
     function set_borderColor(value:Int):Int {
         return textField.borderColor = value;
