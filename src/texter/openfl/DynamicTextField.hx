@@ -1,5 +1,9 @@
 package texter.openfl;
-import openfl.ui.MouseCursor;
+import openfl.geom.Point;
+#if openfl
+import openfl.display.BitmapData;
+import openfl.text.TextField;
+import lime.ui.MouseCursor;
 import openfl.ui.Mouse;
 import openfl.events.MouseEvent;
 import openfl.text.TextFieldType;
@@ -10,18 +14,19 @@ import lime.text.UTF8String;
 import openfl.text.TextFormat;
 import openfl.text.GridFitType;
 import openfl.display.Sprite;
-#if openfl
-import openfl.display.BitmapData;
-import openfl.text.TextField;
 
 /**
  * A normal `TextField` that offers many positional and visual controls.
  * 
  * Those controls can be dynamically managed by the user.
  */
-@:access(openfl.ui.MouseCursor)
 class DynamicTextField extends Sprite {
     
+	//privates
+	var oldX:Float = 0;
+	var oldY:Float = 0;
+
+
     public var textField:TextField;
 
     public var borders:{
@@ -57,6 +62,13 @@ class DynamicTextField extends Sprite {
      */
     public var rotatable(default, set):Bool = true;
 
+
+	/*
+	 * Whether or not the text field can be dragged around
+	 * by the user when pressing the borders.
+	 */
+	public var draggable(default, set):Bool = true;
+
     /**
      * Controls which sides are allowed to be dynamically resized by the user.
      */
@@ -78,6 +90,7 @@ class DynamicTextField extends Sprite {
         super();
         textField = new TextField();
         addChild(textField);
+		startDrag();
 
         borders = {
             left: new Sprite(),
@@ -114,7 +127,7 @@ class DynamicTextField extends Sprite {
         addChild(borders.right);
 
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
-            b.addEventListener(MouseEvent.MOUSE_OVER, mouseOverBorder);
+            b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
         }
 
         textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
@@ -122,20 +135,38 @@ class DynamicTextField extends Sprite {
 
     }
 
+	function registerDrag(e:MouseEvent) {
+		if (draggable && oldX == 0) {
+			trace("registerDrag");
+			oldX = globalToLocal(new Point(e.stageX, e.stageY)).x;
+			oldY = globalToLocal(new Point(e.stageX, e.stageY)).y;
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, drag);
+		}
+	}
+
+	function drag(e:MouseEvent) {
+		if (draggable && e.buttonDown) {
+			x = oldX + globalToLocal(new Point(e.stageX, e.stageY)).x;
+			y = oldY + globalToLocal(new Point(e.stageX, e.stageY)).y;
+		} else {
+			oldX = oldY = 0;
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, drag);
+		}
+	}
+
+	//--------------------------------------------------------------------------
+	//CURSOR FUNCTIONS
+	//--------------------------------------------------------------------------
     function mouseOverBorder(e:MouseEvent) {
-        if (borders.left.hitTestPoint(stage.mouseX, stage.mouseY) || borders.right.hitTestPoint(stage.mouseX, stage.mouseY)) {
-            Mouse.cursor = MouseCursor.__RESIZE_WE;
-        } else {
-            Mouse.cursor = MouseCursor.__RESIZE_NS;
-        }
+        Mouse.cursor = MouseCursor.MOVE;
     }
 
     function mouseOverTextField(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.AUTO;
+        Mouse.cursor = MouseCursor.TEXT;
     }
 
     function mouseOut(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.AUTO;
+        Mouse.cursor = MouseCursor.DEFAULT;
     }
 
     //--------------------------------------------------------------------------
@@ -155,6 +186,10 @@ class DynamicTextField extends Sprite {
 	}
 
 	function set_rotatable(value:Bool):Bool {
+		throw new haxe.exceptions.NotImplementedException();
+	}
+
+	function set_draggable(value:Bool):Bool {
 		throw new haxe.exceptions.NotImplementedException();
 	}
 
