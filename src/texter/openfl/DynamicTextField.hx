@@ -29,6 +29,9 @@ class DynamicTextField extends Sprite {
 
     public var textField:TextField;
 
+    /**
+     * A container for all border sprites
+     */
     public var borders:{
         left:Sprite,
         right:Sprite,
@@ -36,7 +39,10 @@ class DynamicTextField extends Sprite {
         bottom:Sprite
     };
 
-    public var handles:{
+	/**
+	 * A container for all joint sprites
+	 */
+    public var joints:{
         middleleft:Sprite,
         middleright:Sprite,
         middletop:Sprite,
@@ -87,12 +93,59 @@ class DynamicTextField extends Sprite {
         bottom: true
     };
 
+	/**
+	 * Whether or not the text field should automatically
+	 * resize when the text changes, to match the dimensions 
+	 * of the text.
+	 *
+	 * When set, the text field will automatically resize to
+	 * match the current dimensions of the text.
+	 *
+	 * Notice - You can control the max/min dimensions
+	 * of the text field by setting 
+	 * `maxWidth`, `minWidth`, `maxHeight` and `minHeight`.
+	 */
+	public var matchTextSize(default, set):Bool = false;
+
+	/**
+	 * When set, maxes out the text field's
+	 * width at the value of this variable.
+	 * 
+	 * Set to `0` to disable.
+	 */
+	public var maxWidth(default, set):Float = 0;
+
+	/**
+	 * When set, sets a minimum for the text field's
+	 * width at the value of this variable.
+	 * 
+	 * Set to `0` to disable.
+	 */
+	public var minWidth(default, set):Float = 0;
+
+	/**
+	 * When set, maxes out the text field's
+	 * height at the value of this variable.
+	 * 
+	 * Set to `0` to disable.
+	 */
+	public var maxHeight(default, set):Float = 0;
+
+	/**
+	 * When set, sets a minimum for the text field's
+	 * height at the value of this variable.
+	 * 
+	 * Set to `0` to disable.
+	 */
+	public var minHeight(default, set):Float = 0;
+
     /**
      * An array of the `BitmapData` objects used to draw the text field's corners & middles.
      * 
-     * - If the array contains only one element, the text field will use that element for all corners & middles.
+     * - If the array contains only one element, the text field will use that element f
+	 * or all corners & middles.
      */
-    public var resizeHandlesBitmapData(default, set):Array<BitmapData>;
+    public var jointGraphics(default, set):JointGraphic;
     
     public function new() {
         super();
@@ -197,7 +250,7 @@ class DynamicTextField extends Sprite {
 		throw new haxe.exceptions.NotImplementedException();
 	}
 
-	function set_resizeHandlesBitmapData(value:Array<BitmapData>):Array<BitmapData> {
+	function set_jointGraphics(value:JointGraphic):JointGraphic {
 		throw new haxe.exceptions.NotImplementedException();
 	}
 
@@ -206,20 +259,129 @@ class DynamicTextField extends Sprite {
 	}
 
 	function set_draggable(value:Bool):Bool {
-		throw new haxe.exceptions.NotImplementedException();
+		if (currentlyDragging) currentlyDragging = false;
+
+		return value;
 	}
 
     //override setters for width and height
     override function set_width(value:Float) {
         textField.width = value;
+		for (b in [borders.top, borders.bottom]) {
+			b.graphics.clear();
+			b.graphics.lineStyle(1, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(value, 0);
+		}
+		borders.right.x = value;
         return value;
     }
 
     override function set_height(value:Float) {
-        super.height = value;
         textField.height = value;
+		for (b in [borders.left, borders.right]) {
+			b.graphics.clear();
+			b.graphics.lineStyle(1, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(0, value);
+		}
+		borders.bottom.y = value;
         return value;
     }
+
+	function set_matchTextSize(value:Bool):Bool {
+		if (value) {
+			final h = (textField.textHeight + 4) > maxWidth ? maxWidth : textField.textHeight + 4 < minWidth ? minWidth : textField.textHeight + 4;
+			final w = (textField.textWidth + 4) > maxHeight ? maxHeight : textField.textWidth + 4 < minHeight ? minHeight : textField.textWidth + 4;
+			width = w;
+			height = h;
+		}
+
+		return value;
+	}
+
+	function set_maxWidth(value:Float):Float {
+		final w = (textField.textWidth + 4) > value ? value : textField.textWidth + 4;
+		width = w;
+		return value;
+	}
+
+	function set_minWidth(value:Float):Float {
+		final w = (textField.textWidth + 4) < value ? value : textField.textWidth + 4;
+		width = w;
+		return value;
+	}
+
+	function set_maxHeight(value:Float):Float {
+		final h = (textField.textHeight + 4) > value ? value : textField.textHeight + 4;
+		height = h;
+		return value;
+	}
+
+	function set_minHeight(value:Float):Float {
+		final h = (textField.textHeight + 4) < value ? value : textField.textHeight + 4;
+		height = h;
+		return value;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //--------------------------------------------------------------------------
     //TEXTFIELD COMPATIBILITY
