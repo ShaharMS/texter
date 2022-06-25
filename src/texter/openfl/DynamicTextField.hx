@@ -81,7 +81,7 @@ class DynamicTextField extends Sprite {
 	 * the dragging operation starts when the textfield starts moving.
 
      */
-	public var currentlyDragging:Bool = false;
+	public var currentlyDragging(default, null):Bool = false;
 
     /**
      * Controls which sides are allowed to be dynamically resized by the user.
@@ -194,7 +194,6 @@ class DynamicTextField extends Sprite {
 
         textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
         this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
-
     }
 
 	function registerDrag(e:MouseEvent) {
@@ -229,6 +228,10 @@ class DynamicTextField extends Sprite {
     function mouseOverBorder(e:MouseEvent) {
         Mouse.cursor = MouseCursor.MOVE;
     }
+
+	function mouseOverJoint(e:MouseEvent) {
+		Mouse.cursor = MouseCursor.RESIZE_NS;
+	}
 
     function mouseOverTextField(e:MouseEvent) {
         Mouse.cursor = !currentlyDragging ? MouseCursor.TEXT : MouseCursor.MOVE;

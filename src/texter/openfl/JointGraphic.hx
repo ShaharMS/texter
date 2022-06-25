@@ -1,5 +1,5 @@
 package texter.openfl;
-
+#if openfl
 import openfl.display.BitmapData;
 
 class JointGraphic {
@@ -10,7 +10,7 @@ class JointGraphic {
      * This joint will be used when no other joint is available.
      * This can be used as a fallback graphic, or as a default for all joints.
      */
-    public var defaultGraphic:BitmapData;
+    public var defaultGraphic:BitmapData = new DefaultJoint();
 
     /**
      * This joint will be used when no other corner joint is available.
@@ -73,3 +73,36 @@ class JointGraphic {
     public var bottom:BitmapData;
     
 }
+
+private class DefaultJoint extends BitmapData {
+    
+    public function new() {
+        super(5, 5, true, 0x00000000);
+        lock();
+        //up
+        setPixel(1, 0, 0x000000);
+        setPixel(2, 0, 0x000000);
+        setPixel(3, 0, 0x000000);
+
+        //down
+        setPixel(1, 4, 0x000000);
+        setPixel(2, 4, 0x000000);
+        setPixel(3, 4, 0x000000);
+
+        //left
+        setPixel(0, 1, 0x000000);
+        setPixel(0, 2, 0x000000);
+        setPixel(0, 3, 0x000000);
+
+        //right
+        setPixel(4, 1, 0x000000);
+        setPixel(4, 2, 0x000000);
+        setPixel(4, 3, 0x000000);
+
+        floodFill(3,3, 0xFFFFFF);
+        unlock();
+        
+
+    }
+}
+#end
