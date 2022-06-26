@@ -1,6 +1,6 @@
 package texter.openfl;
-import openfl.display.Bitmap;
 #if openfl
+import openfl.display.Bitmap;
 import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.text.TextField;
