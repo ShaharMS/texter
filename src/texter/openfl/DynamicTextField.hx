@@ -1,4 +1,5 @@
 package texter.openfl;
+import openfl.display.Bitmap;
 #if openfl
 import openfl.geom.Point;
 import openfl.display.BitmapData;
@@ -43,10 +44,10 @@ class DynamicTextField extends Sprite {
 	 * A container for all joint sprites
 	 */
     public var joints:{
-        middleleft:Sprite,
-        middleright:Sprite,
-        middletop:Sprite,
-        middlebottom:Sprite,
+        middleLeft:Sprite,
+        middleRight:Sprite,
+        middleTop:Sprite,
+        middleBottom:Sprite,
         topLeft:Sprite,
         topRight:Sprite,
         bottomLeft:Sprite,
@@ -145,7 +146,7 @@ class DynamicTextField extends Sprite {
      * - If the array contains only one element, the text field will use that element f
 	 * or all corners & middles.
      */
-    public var jointGraphics(default, set):JointGraphic;
+    public var jointGraphics(default, set):JointGraphic = new JointGraphic();
     
     public function new() {
         super();
@@ -191,6 +192,47 @@ class DynamicTextField extends Sprite {
 			b.addEventListener(MouseEvent.MOUSE_OVER, mouseOverBorder);
             b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
         }
+
+		joints = {
+			middleLeft: new Sprite(),
+			middleRight: new Sprite(),
+			middleTop: new Sprite(),
+			middleBottom: new Sprite(),
+			topLeft: new Sprite(),
+			topRight: new Sprite(),
+			bottomLeft: new Sprite(),
+			bottomRight: new Sprite()
+		};
+
+		for (j in [joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight]) {
+			j.addChild(new Bitmap(jointGraphics.defaultGraphic));
+			j.addEventListener(MouseEvent.MOUSE_OVER, mouseOverJoint);
+		}
+
+		joints.topLeft.x = joints.topLeft.y = 0 - 3;
+		joints.topRight.x = width - 3;
+		joints.topRight.y = 0 - 3;
+		joints.bottomLeft.x = 0 - 3;
+		joints.bottomLeft.y = height - 3;
+		joints.bottomRight.x = width - 3;
+		joints.bottomRight.y = height - 3;
+		addChild(joints.topLeft);
+		addChild(joints.topRight);
+		addChild(joints.bottomLeft);
+		addChild(joints.bottomRight);
+
+		joints.middleLeft.x = 0 - 3;
+		joints.middleLeft.y = height / 2 - 3;
+		joints.middleRight.x = width - 3;
+		joints.middleRight.y = height / 2 - 3;
+		joints.middleTop.x = width / 2 - 3;
+		joints.middleTop.y = 0 - 3;
+		joints.middleBottom.x = width / 2 - 3;
+		joints.middleBottom.y = height - 3;
+		addChild(joints.middleLeft);
+		addChild(joints.middleRight);
+		addChild(joints.middleTop);
+		addChild(joints.middleBottom);
 
         textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
         this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
