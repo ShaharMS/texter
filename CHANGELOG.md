@@ -1,3 +1,10 @@
+2.0.4 (April 18, 2022)
+===
+
+ - fixed inability to compile to c++
+ - renovated FlxInputText, should now uniformly support multilne text across platforms 
+ - fixed visual glitches when visualizing markdown alignment
+
 2.0.2 & 2.0.3 (April 13, 2022)
 ===
 
