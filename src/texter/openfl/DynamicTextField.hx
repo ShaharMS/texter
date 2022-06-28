@@ -26,6 +26,7 @@ class DynamicTextField extends Sprite {
 	//privates
 	var offsetX:Float = 0;
 	var offsetY:Float = 0;
+	var rm:JointResizeManager;
 
 
     public var textField:TextField;
@@ -161,6 +162,8 @@ class DynamicTextField extends Sprite {
             bottom: new Sprite()
         };
 
+		rm = new JointResizeManager(this);
+
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
             b.graphics.lineStyle(1, borderColor);
         }
@@ -209,34 +212,52 @@ class DynamicTextField extends Sprite {
 			j.addEventListener(MouseEvent.MOUSE_OVER, mouseOverJoint);
 		}
 
-		joints.topLeft.x = joints.topLeft.y = 0 - 3;
-		joints.topRight.x = width - 3;
-		joints.topRight.y = 0 - 3;
-		joints.bottomLeft.x = 0 - 3;
-		joints.bottomLeft.y = height - 3;
-		joints.bottomRight.x = width - 3;
-		joints.bottomRight.y = height - 3;
 		addChild(joints.topLeft);
 		addChild(joints.topRight);
 		addChild(joints.bottomLeft);
 		addChild(joints.bottomRight);
 
-		joints.middleLeft.x = 0 - 3;
-		joints.middleLeft.y = height / 2 - 3;
-		joints.middleRight.x = width - 3;
-		joints.middleRight.y = height / 2 - 3;
-		joints.middleTop.x = width / 2 - 3;
-		joints.middleTop.y = 0 - 3;
-		joints.middleBottom.x = width / 2 - 3;
-		joints.middleBottom.y = height - 3;
 		addChild(joints.middleLeft);
 		addChild(joints.middleRight);
 		addChild(joints.middleTop);
 		addChild(joints.middleBottom);
 
+		joints.topLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopLeft);
+		joints.topRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopRight);
+		joints.bottomLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomLeft);
+		joints.bottomRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomRight);
+		joints.middleLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeLeft);
+		joints.middleRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeRight);
+		joints.middleTop.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
+		joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
+
         textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
         this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+
+		calculateFrame();
     }
+
+	/**
+		Called every time the positional configuration of the text field changes.
+	**/
+	function calculateFrame() {
+		joints.topLeft.x = joints.topLeft.y = 0 - 3;
+		joints.topRight.x = textField.width - 3;
+		joints.topRight.y = 0 - 3;
+		joints.bottomLeft.x = 0 - 3;
+		joints.bottomLeft.y = textField.height - 3;
+		joints.bottomRight.x = textField.width - 3;
+		joints.bottomRight.y = textField.height - 3;
+
+		joints.middleLeft.x = 0 - 3;
+		joints.middleLeft.y = textField.height / 2 - 3;
+		joints.middleRight.x = textField.width - 3;
+		joints.middleRight.y = textField.height / 2 - 3;
+		joints.middleTop.x = textField.width / 2 - 3;
+		joints.middleTop.y = 0 - 3;
+		joints.middleBottom.x = textField.width / 2 - 3;
+		joints.middleBottom.y = textField.height - 3;
+	}
 
 	function registerDrag(e:MouseEvent) {
 		if (draggable && offsetX == 0) {
@@ -264,6 +285,10 @@ class DynamicTextField extends Sprite {
 		}
 	}
 
+	function registerResize(joint:Sprite) {
+		
+	}
+
 	//--------------------------------------------------------------------------
 	//CURSOR FUNCTIONS
 	//--------------------------------------------------------------------------
@@ -272,7 +297,28 @@ class DynamicTextField extends Sprite {
     }
 
 	function mouseOverJoint(e:MouseEvent) {
-		Mouse.cursor = MouseCursor.RESIZE_NS;
+		if (currentlyDragging) {
+			Mouse.cursor = MouseCursor.MOVE;
+			return;
+		}
+		// i hate this too
+		if (e.target == joints.topLeft) {
+			Mouse.cursor = MouseCursor.RESIZE_NWSE;
+		} else if (e.target == joints.topRight) {
+			Mouse.cursor = MouseCursor.RESIZE_NESW;
+		} else if (e.target == joints.bottomLeft) {
+			Mouse.cursor = MouseCursor.RESIZE_NESW;
+		} else if (e.target == joints.bottomRight) {
+			Mouse.cursor = MouseCursor.RESIZE_NWSE;
+		} else if (e.target == joints.middleLeft) {
+			Mouse.cursor = MouseCursor.RESIZE_WE;
+		} else if (e.target == joints.middleRight) {
+			Mouse.cursor = MouseCursor.RESIZE_WE;
+		} else if (e.target == joints.middleTop) {
+			Mouse.cursor = MouseCursor.RESIZE_NS;
+		} else if (e.target == joints.middleBottom) {
+			Mouse.cursor = MouseCursor.RESIZE_NS;
+		}
 	}
 
     function mouseOverTextField(e:MouseEvent) {

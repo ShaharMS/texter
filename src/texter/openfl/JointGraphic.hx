@@ -77,7 +77,8 @@ class JointGraphic {
 private class DefaultJoint extends BitmapData {
     
     public function new() {
-        super(5, 5, true, 0x00000000);
+        super(5, 5, true, 0xFFFF0000);
+        /*
         lock();
         //up
         setPixel(1, 0, 0x000000);
@@ -101,6 +102,7 @@ private class DefaultJoint extends BitmapData {
 
         floodFill(3,3, 0xFFFFFF);
         unlock();
+        */
         
 
     }
