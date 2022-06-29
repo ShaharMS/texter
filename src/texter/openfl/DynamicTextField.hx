@@ -26,7 +26,7 @@ class DynamicTextField extends Sprite {
 	//privates
 	var offsetX:Float = 0;
 	var offsetY:Float = 0;
-	var rm:JointResizeManager;
+	var rm:JointManager;
 
 
     public var textField:TextField;
@@ -52,7 +52,8 @@ class DynamicTextField extends Sprite {
         topLeft:Sprite,
         topRight:Sprite,
         bottomLeft:Sprite,
-        bottomRight:Sprite
+        bottomRight:Sprite,
+		rotation:Sprite
     };
 
     /**
@@ -162,7 +163,7 @@ class DynamicTextField extends Sprite {
             bottom: new Sprite()
         };
 
-		rm = new JointResizeManager(this);
+		rm = new JointManager(this);
 
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
             b.graphics.lineStyle(1, borderColor);
@@ -204,7 +205,8 @@ class DynamicTextField extends Sprite {
 			topLeft: new Sprite(),
 			topRight: new Sprite(),
 			bottomLeft: new Sprite(),
-			bottomRight: new Sprite()
+			bottomRight: new Sprite(),
+			rotation: new Sprite()
 		};
 
 		for (j in [joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight]) {
@@ -231,7 +233,15 @@ class DynamicTextField extends Sprite {
 		joints.middleTop.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
 		joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
 
-        textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
+        joints.rotation.addChild(new Bitmap(jointGraphics.rotationHandle));
+		
+		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
+		joints.rotation.y = - 20;
+		joints.rotation.addEventListener(MouseEvent.MOUSE_DOWN, rm.startRotation);
+		
+		addChild(joints.rotation);
+
+		textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
         this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 
 		calculateFrame();
@@ -253,9 +263,9 @@ class DynamicTextField extends Sprite {
 		joints.middleLeft.y = textField.height / 2 - 3;
 		joints.middleRight.x = textField.width - 3;
 		joints.middleRight.y = textField.height / 2 - 3;
-		joints.middleTop.x = textField.width / 2 - 3;
+		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
 		joints.middleTop.y = 0 - 3;
-		joints.middleBottom.x = textField.width / 2 - 3;
+		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
 		joints.middleBottom.y = textField.height - 3;
 	}
 

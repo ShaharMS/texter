@@ -1,10 +1,12 @@
 package texter.openfl;
 #if openfl
+import openfl.geom.Rectangle;
+import openfl.geom.Matrix;
 import texter.openfl.DynamicTextField;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
 using Math;
-class JointResizeManager {
+class JointManager {
     
 
     public var tf:DynamicTextField;
@@ -18,8 +20,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -54,8 +56,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -88,8 +90,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -121,8 +123,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -153,8 +155,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -180,8 +182,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -206,8 +208,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -233,8 +235,8 @@ class JointResizeManager {
         var p = {
             x: e.stageX,
             y: e.stageY,
-            w: tf.width - 4, //gutter
-            h: tf.height - 4 //gutter
+            w: tf.width - 5, //gutter
+            h: tf.height - 22 //gutter
         };
 
         function res(e:MouseEvent) {
@@ -252,6 +254,46 @@ class JointResizeManager {
         }
 
         tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
+    }
+
+    public function startRotation(e:MouseEvent) {
+        final centerPoint = {
+            x: tf.x + tf.width / 2 - 2.5,
+            y: tf.y + tf.height / 2 - 11
+        };
+        function rot(e:MouseEvent) {
+            if (!e.buttonDown) {
+                tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, rot);
+                return;
+            }
+            rotateAroundCenter(tf, angleFromPointToPoint(tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x, tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y, centerPoint));
+        }
+        tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, rot);
+    }
+
+    //create a function that calculates the angle between a point and the center of the object
+
+    function angleFromPointToPoint(x:Float, y:Float, p:{x:Float, y:Float}) {
+        final angle = Math.atan2(y - p.y , x - p.x) * 180 / Math.PI;
+        trace(angle);
+        return angle;
+    }
+
+    public function rotateAroundCenter(object:DynamicTextField, angleDegrees:Float) {
+        if (object.rotation == angleDegrees) {
+            return;
+        }
+            
+        var matrix:Matrix = object.transform.matrix;
+        var rect:Rectangle = object.getBounds(object.parent);
+        var centerX = rect.left + (rect.width / 2);
+        var centerY = rect.top + (rect.height / 2);
+        matrix.translate(-centerX, -centerY);
+        matrix.rotate((angleDegrees / 180) * Math.PI);
+        matrix.translate(centerX, centerY);
+        object.transform.matrix = matrix;
+        
+        object.rotation = object.rotation;
     }
 
 }

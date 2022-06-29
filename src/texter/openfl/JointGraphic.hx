@@ -28,7 +28,12 @@ class JointGraphic {
      */
     public var defaultEdgeGraphic:BitmapData;
 
-    // topLeft, topRight, bottomLeft, bottomRight
+    /**
+        This joint will be used for the rotation joint.
+
+        When unset, will use the default graphic.
+    **/
+    public var rotationHandle:BitmapData = new DefaultJoint();
 
     /**
      * When set, will be used for the top left corner joint.
