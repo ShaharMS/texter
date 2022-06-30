@@ -8,7 +8,6 @@ import openfl.geom.Point;
 import openfl.events.MouseEvent;
 
 using Math;
-
 class JointManager
 {
 	public var tf:DynamicTextField;
