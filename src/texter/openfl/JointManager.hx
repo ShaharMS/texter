@@ -289,7 +289,7 @@ class JointManager {
         var centerX = rect.left + (rect.width / 2);
         var centerY = rect.top + (rect.height / 2);
         matrix.translate(-centerX, -centerY);
-        matrix.rotate((angleDegrees / 180) * Math.PI);
+        matrix.rotate(((angleDegrees - object.rotation) / 180 + 0.5) * Math.PI);
         matrix.translate(centerX, centerY);
         object.transform.matrix = matrix;
         
