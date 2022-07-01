@@ -49,7 +49,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -71,12 +70,20 @@ class JointManager
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
 				return;
 			}
-			tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
+			
 			final width = p.w - (p.x - e.stageX);
 			final height = p.h + (p.y - e.stageY);
-			tf.width = width;
-			tf.height = height;
-			if (width < 0)
+            trace("width: " + width + " height: " + height);
+            //mins
+            if (tf.minWidth > 0) tf.width = width > tf.minWidth ? width : tf.minWidth;
+			if (tf.minHeight > 0) tf.height = height > tf.minHeight ? height : tf.minHeight;
+            //maxs
+            if (tf.maxWidth > 0) tf.width = Math.abs(tf.width) < tf.maxWidth ? tf.width : tf.maxWidth;        
+            if (tf.maxHeight > 0) tf.height = Math.abs(tf.height) < tf.maxHeight ? tf.height : tf.maxHeight;
+            
+            tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
+			
+            if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				trace(width);
@@ -87,7 +94,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -124,7 +130,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -160,7 +165,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -190,7 +194,6 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
 				tf.width = -width;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -219,7 +222,6 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				tf.width = -width;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -249,7 +251,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -278,7 +279,6 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 				tf.height = -height;
 			}
-			@:privateAccess tf.calculateFrame();
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);

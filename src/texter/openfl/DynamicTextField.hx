@@ -234,9 +234,7 @@ class DynamicTextField extends Sprite {
 		joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
 
         joints.rotation.addChild(new Bitmap(jointGraphics.rotationHandle));
-		
-		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
-		joints.rotation.y = - 20;
+		joints.rotation.addEventListener(MouseEvent.MOUSE_OVER, mouseOverJoint);
 		joints.rotation.addEventListener(MouseEvent.MOUSE_DOWN, rm.startRotation);
 		
 		addChild(joints.rotation);
@@ -244,31 +242,15 @@ class DynamicTextField extends Sprite {
 		textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
         this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 
-		calculateFrame();
+		//call setters for positioning things correctly
+		set_width(width);
+		set_height(height);
     }
 
 	/**
 		Called every time the positional configuration of the text field changes.
 	**/
-	function calculateFrame() {
-		joints.topLeft.x = joints.topLeft.y = 0 - 3;
-		joints.topRight.x = textField.width - 3;
-		joints.topRight.y = 0 - 3;
-		joints.bottomLeft.x = 0 - 3;
-		joints.bottomLeft.y = textField.height - 3;
-		joints.bottomRight.x = textField.width - 3;
-		joints.bottomRight.y = textField.height - 3;
-
-		joints.middleLeft.x = 0 - 3;
-		joints.middleLeft.y = textField.height / 2 - 3;
-		joints.middleRight.x = textField.width - 3;
-		joints.middleRight.y = textField.height / 2 - 3;
-		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
-		joints.middleTop.y = 0 - 3;
-		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
-		joints.middleBottom.y = textField.height - 3;
-	}
-
+	
 	function registerDrag(e:MouseEvent) {
 		if (draggable && offsetX == 0) {
 			offsetX = parent.mouseX - x;
@@ -311,6 +293,7 @@ class DynamicTextField extends Sprite {
 			Mouse.cursor = MouseCursor.MOVE;
 			return;
 		}
+		Mouse.show();
 		// i hate this too
 		if (e.target == joints.topLeft) {
 			Mouse.cursor = MouseCursor.RESIZE_NWSE;
@@ -328,7 +311,7 @@ class DynamicTextField extends Sprite {
 			Mouse.cursor = MouseCursor.RESIZE_NS;
 		} else if (e.target == joints.middleBottom) {
 			Mouse.cursor = MouseCursor.RESIZE_NS;
-		}
+		} 
 	}
 
     function mouseOverTextField(e:MouseEvent) {
@@ -375,6 +358,19 @@ class DynamicTextField extends Sprite {
 			b.graphics.lineTo(value, 0);
 		}
 		borders.right.x = value;
+
+		joints.topLeft.x = - 3;
+		joints.topRight.x = textField.width - 3;
+		joints.bottomLeft.x = 0 - 3;
+		joints.bottomRight.x = textField.width - 3;
+
+		joints.middleLeft.x = 0 - 3;
+		joints.middleRight.x = textField.width - 3;
+		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
+		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
+
+		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
+		
         return value;
     }
 
@@ -387,6 +383,19 @@ class DynamicTextField extends Sprite {
 			b.graphics.lineTo(0, value);
 		}
 		borders.bottom.y = value;
+
+		joints.topLeft.y = 0 - 3;
+		joints.topRight.y = 0 - 3;
+		joints.bottomLeft.y = textField.height - 3;
+		joints.bottomRight.y = textField.height - 3;
+
+		joints.middleLeft.y = textField.height / 2 - 3;
+		joints.middleRight.y = textField.height / 2 - 3;
+		joints.middleTop.y = 0 - 3;
+		joints.middleBottom.y = textField.height - 3;
+
+		joints.rotation.y = - 20;
+
         return value;
     }
 
@@ -402,25 +411,25 @@ class DynamicTextField extends Sprite {
 	}
 
 	function set_maxWidth(value:Float):Float {
-		final w = (textField.textWidth + 4) > value ? value : textField.textWidth + 4;
+		final w = width > value ? value : width;
 		width = w;
 		return value;
 	}
 
 	function set_minWidth(value:Float):Float {
-		final w = (textField.textWidth + 4) < value ? value : textField.textWidth + 4;
+		final w = width < value ? value : width;
 		width = w;
 		return value;
 	}
 
 	function set_maxHeight(value:Float):Float {
-		final h = (textField.textHeight + 4) > value ? value : textField.textHeight + 4;
+		final h = height > value ? value : height;
 		height = h;
 		return value;
 	}
 
 	function set_minHeight(value:Float):Float {
-		final h = (textField.textHeight + 4) < value ? value : textField.textHeight + 4;
+		final h = height < value ? value : height;
 		height = h;
 		return value;
 	}

@@ -96,6 +96,7 @@ class Markdown
 	 * data (things like list numbers, indentation...)
 	 * 
 	 * ### Things to notice:
+
 	 *  - The markdown text contains zero-width spaces (\u200B) in the text in order to keep track of effect positions.
 	 *  - The effect's range is from startIndex up to, but not including endIndex.
 	 *  - certine effects will already be rendered by the interpreter, so no need to mess with those.
@@ -106,14 +107,15 @@ class Markdown
 	 * 	  - **Inline Code**: ``
 	 * 	  - **Italics**: _, *
 	 * 	  - **Bolds**: **, __
-	 * 	  - **StrikeThrough**: ~~~~
+	 * 	  - **Strikethrough**: ~~~~
 	 * 	  - **Links**: `[]()`
 	 * 	  - **Math**: $$
 	 * 	  - **Emojis**: :emojiNameHere:
 	 * 	  - **HRules**: ---, ***, ___, ===, +++
-	 * 	  - **HRuledHeadings**: H1 - title\n===,+++,***, H2 - title\n---,___
+	 * 	  - **HRuled Headings**: H1 - title\n===,+++,***, H2 - title\n---,___
 	 * 	  - **Paragraph Gaps** (two or more newlines)
 	 *    - **NewLines** \ or double-whitespace at the end of the line
+	 *	  - **Cancel Symbol**: \\{SYMBOL HERE}
 	 * 
 	 * 	  There are also some extra additions:
 	 * 
@@ -127,8 +129,10 @@ class Markdown
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
-		// fixes interpreter faults & matches the markdown rules.
 		var effects:Array<MarkdownEffect> = [];
+
+		//now, we should handle \SYMBOL
+
 		for (rule in markdownRules)
 		{
 			while (rule.match(lineTexts))
