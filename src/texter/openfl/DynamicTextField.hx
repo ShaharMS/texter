@@ -148,13 +148,12 @@ class DynamicTextField extends Sprite {
      * - If the array contains only one element, the text field will use that element f
 	 * or all corners & middles.
      */
-    public var jointGraphics(default, set):JointGraphic = new JointGraphic();
+    public var jointGraphics(default, set):JointGraphic;
     
     public function new() {
         super();
         textField = new TextField();
         addChild(textField);
-		startDrag();
 
         borders = {
             left: new Sprite(),
@@ -163,6 +162,7 @@ class DynamicTextField extends Sprite {
             bottom: new Sprite()
         };
 
+		jointGraphics = new JointGraphic(this);
 		rm = new JointManager(this);
 
         for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
