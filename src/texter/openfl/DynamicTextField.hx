@@ -59,15 +59,16 @@ class DynamicTextField extends Sprite {
     /**
      * Whether or not the text field is dynamically resizable by the user:
      * 
-     * When enabled, the user can drag the text field when pressing the borders,
-     * and extend the text field's size when pressing the corners/middles.
+     * When enabled, the user can extend the text field's size when pressing the corners/middles.
      */
     public var resizable(default, set):Bool = true;
 
     /**
-     * Whether or not the text field has a rotation button:
+     * Whether or not the text field has an interactive rotation button:
      * 
-     * When enabled, the user can rotate the textfield by pressing the rotate button.
+     * When enabled, the user can rotate the textfield by pressing the rotation button.
+	 * 
+	 * When disabled, the rotation button is hidden.
      */
     public var rotatable(default, set):Bool = true;
 
