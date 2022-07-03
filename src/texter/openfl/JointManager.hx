@@ -7,6 +7,8 @@ import texter.openfl.DynamicTextField;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
 
+import texter.openfl.JointGraphic.*;
+
 using Math;
 class JointManager
 {
@@ -22,8 +24,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER// gutter
 		};
 
 		function res(e:MouseEvent)
@@ -59,8 +61,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -74,13 +76,10 @@ class JointManager
 			final width = p.w - (p.x - e.stageX);
 			final height = p.h + (p.y - e.stageY);
             trace("width: " + width + " height: " + height);
-            //mins
-            if (tf.minWidth > 0) tf.width = width > tf.minWidth ? width : tf.minWidth;
-			if (tf.minHeight > 0) tf.height = height > tf.minHeight ? height : tf.minHeight;
-            //maxs
-            if (tf.maxWidth > 0) tf.width = Math.abs(tf.width) < tf.maxWidth ? tf.width : tf.maxWidth;        
-            if (tf.maxHeight > 0) tf.height = Math.abs(tf.height) < tf.maxHeight ? tf.height : tf.maxHeight;
             
+			tf.width = width;
+			tf.height = height;
+
             tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 			
             if (width < 0)
@@ -104,8 +103,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -140,8 +139,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -175,8 +174,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -204,8 +203,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -232,8 +231,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -261,8 +260,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - 5, // gutter
-			h: tf.height - 22 // gutter
+			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
+			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
 		};
 
 		function res(e:MouseEvent)

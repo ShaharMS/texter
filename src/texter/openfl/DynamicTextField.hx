@@ -16,6 +16,8 @@ import openfl.text.TextFormat;
 import openfl.text.GridFitType;
 import openfl.display.Sprite;
 
+import texter.openfl.JointGraphic.*;
+
 /**
  * A normal `TextField` that offers many positional and visual controls.
  * 
@@ -111,45 +113,13 @@ class DynamicTextField extends Sprite {
 	 */
 	public var matchTextSize(default, set):Bool = false;
 
-	/**
-	 * When set, maxes out the text field's
-	 * width at the value of this variable.
-	 * 
-	 * Set to `0` to disable.
-	 */
-	public var maxWidth(default, set):Float = 0;
-
-	/**
-	 * When set, sets a minimum for the text field's
-	 * width at the value of this variable.
-	 * 
-	 * Set to `0` to disable.
-	 */
-	public var minWidth(default, set):Float = 0;
-
-	/**
-	 * When set, maxes out the text field's
-	 * height at the value of this variable.
-	 * 
-	 * Set to `0` to disable.
-	 */
-	public var maxHeight(default, set):Float = 0;
-
-	/**
-	 * When set, sets a minimum for the text field's
-	 * height at the value of this variable.
-	 * 
-	 * Set to `0` to disable.
-	 */
-	public var minHeight(default, set):Float = 0;
-
     /**
      * An array of the `BitmapData` objects used to draw the text field's corners & middles.
      * 
      * - If the array contains only one element, the text field will use that element f
 	 * or all corners & middles.
      */
-    public var jointGraphics(default, set):JointGraphic;
+    public var jointGraphics(default, null):JointGraphic;
     
     public function new() {
         super();
@@ -335,12 +305,14 @@ class DynamicTextField extends Sprite {
 		throw new haxe.exceptions.NotImplementedException();
 	}
 
-	function set_jointGraphics(value:JointGraphic):JointGraphic {
-		throw new haxe.exceptions.NotImplementedException();
-	}
-
 	function set_rotatable(value:Bool):Bool {
-		throw new haxe.exceptions.NotImplementedException();
+		if (value) {
+			joints.rotation.visible = true;
+		}
+		else {
+			joints.rotation.visible = false;
+		}
+		return value;
 	}
 
 	function set_draggable(value:Bool):Bool {
@@ -360,13 +332,13 @@ class DynamicTextField extends Sprite {
 		}
 		borders.right.x = value;
 
-		joints.topLeft.x = - 3;
-		joints.topRight.x = textField.width - 3;
-		joints.bottomLeft.x = 0 - 3;
-		joints.bottomRight.x = textField.width - 3;
+		joints.topLeft.x = -JOINT_GUTTER;
+		joints.topRight.x = textField.width -JOINT_GUTTER;
+		joints.bottomLeft.x = 0 -JOINT_GUTTER;
+		joints.bottomRight.x = textField.width -JOINT_GUTTER;
 
-		joints.middleLeft.x = 0 - 3;
-		joints.middleRight.x = textField.width - 3;
+		joints.middleLeft.x = 0 -JOINT_GUTTER;
+		joints.middleRight.x = textField.width -JOINT_GUTTER;
 		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
 		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
 
@@ -385,53 +357,27 @@ class DynamicTextField extends Sprite {
 		}
 		borders.bottom.y = value;
 
-		joints.topLeft.y = 0 - 3;
-		joints.topRight.y = 0 - 3;
-		joints.bottomLeft.y = textField.height - 3;
-		joints.bottomRight.y = textField.height - 3;
+		joints.topLeft.y = 0 -JOINT_GUTTER;
+		joints.topRight.y = 0 -JOINT_GUTTER;
+		joints.bottomLeft.y = textField.height -JOINT_GUTTER;
+		joints.bottomRight.y = textField.height -JOINT_GUTTER;
 
-		joints.middleLeft.y = textField.height / 2 - 3;
-		joints.middleRight.y = textField.height / 2 - 3;
-		joints.middleTop.y = 0 - 3;
-		joints.middleBottom.y = textField.height - 3;
+		joints.middleLeft.y = textField.height / 2 -JOINT_GUTTER;
+		joints.middleRight.y = textField.height / 2 -JOINT_GUTTER;
+		joints.middleTop.y = 0 -JOINT_GUTTER;
+		joints.middleBottom.y = textField.height -JOINT_GUTTER;
 
-		joints.rotation.y = - 20;
+		joints.rotation.y = -ROTATION_JOINT_GUTTER;
 
         return value;
     }
 
 	function set_matchTextSize(value:Bool):Bool {
 		if (value) {
-			final h = (textField.textHeight + 4) > maxWidth ? maxWidth : textField.textHeight + 4 < minWidth ? minWidth : textField.textHeight + 4;
-			final w = (textField.textWidth + 4) > maxHeight ? maxHeight : textField.textWidth + 4 < minHeight ? minHeight : textField.textWidth + 4;
-			width = w;
-			height = h;
+			width = textField.textWidth + 4;
+			height = textField.textHeight + 4;
 		}
 
-		return value;
-	}
-
-	function set_maxWidth(value:Float):Float {
-		final w = width > value ? value : width;
-		width = w;
-		return value;
-	}
-
-	function set_minWidth(value:Float):Float {
-		final w = width < value ? value : width;
-		width = w;
-		return value;
-	}
-
-	function set_maxHeight(value:Float):Float {
-		final h = height > value ? value : height;
-		height = h;
-		return value;
-	}
-
-	function set_minHeight(value:Float):Float {
-		final h = height < value ? value : height;
-		height = h;
 		return value;
 	}
 
@@ -588,7 +534,7 @@ class DynamicTextField extends Sprite {
 		if there currently is no border, but the color is visible only if the text
 		field has the `border` property set to `true`.
 	**/
-	public var borderColor(default, set):Int;
+	public var borderColor(default, set):Int = 0x7A7A7A;
 
 	/**
 		An integer(1-based index) that indicates the bottommost line that is

@@ -19,7 +19,7 @@ class JointGraphic {
     function set_defaultGraphic(g:BitmapData):BitmapData {
         if (g == null) return g;
 
-        var ref:Sprite;
+        var ref = new Sprite();
         for (i in [top, left, right, bottom]) {
             if (defaultEdgeGraphic != null) break;
             if (i != null) continue;
@@ -57,7 +57,7 @@ class JointGraphic {
 
     function set_defaultCornerGraphic(g:BitmapData):BitmapData {
         if (g == null) return g;
-        var ref:Sprite;
+        var ref = new Sprite();
         for (i in [topRight, topLeft, bottomRight, bottomLeft]) {
             if (i != null) continue;
             if (i == topRight) ref = d.joints.topRight;
@@ -83,7 +83,7 @@ class JointGraphic {
 
     function set_defaultEdgeGraphic(g:BitmapData):BitmapData {
         if (g == null) return g;
-        var ref:Sprite;
+        var ref = new Sprite();
         for (i in [top, left, right, bottom]) {
             if (i != null) continue;
             if (i == top) ref = d.joints.middleTop;
@@ -112,7 +112,7 @@ class JointGraphic {
         d.joints.rotation.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
         d.joints.rotation.x = d.textField.width / 2 - d.joints.rotation.width / 2;
-        d.joints.rotation.y = -20;
+        d.joints.rotation.y = -ROTATION_JOINT_GUTTER;
 
         return g;
     }
@@ -127,8 +127,8 @@ class JointGraphic {
         d.joints.topLeft.removeChildren();
         d.joints.topLeft.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.topLeft.x = -3;
-        d.joints.topLeft.y = -3;
+        d.joints.topLeft.x = -JOINT_GUTTER;
+        d.joints.topLeft.y = -JOINT_GUTTER;
         return g;
     }
 
@@ -142,8 +142,8 @@ class JointGraphic {
         d.joints.topRight.removeChildren();
         d.joints.topRight.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.topRight.x = d.textField.width - 3;
-        d.joints.topRight.y = -3;
+        d.joints.topRight.x = d.textField.width -JOINT_GUTTER;
+        d.joints.topRight.y = -JOINT_GUTTER;
         return g;
     }
 
@@ -157,8 +157,8 @@ class JointGraphic {
         d.joints.bottomLeft.removeChildren();
         d.joints.bottomLeft.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.bottomLeft.x = -3;
-        d.joints.bottomLeft.y = d.textField.height - 3;
+        d.joints.bottomLeft.x = -JOINT_GUTTER;
+        d.joints.bottomLeft.y = d.textField.height -JOINT_GUTTER;
         return g;
     }
 
@@ -172,8 +172,8 @@ class JointGraphic {
         d.joints.bottomRight.removeChildren();
         d.joints.bottomRight.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.bottomRight.x = d.textField.width - 3;
-        d.joints.bottomRight.y = d.textField.height - 3;
+        d.joints.bottomRight.x = d.textField.width -JOINT_GUTTER;
+        d.joints.bottomRight.y = d.textField.height -JOINT_GUTTER;
         return g;
     }
 
@@ -187,7 +187,7 @@ class JointGraphic {
         d.joints.middleLeft.removeChildren();
         d.joints.middleLeft.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.middleLeft.x = -3;
+        d.joints.middleLeft.x = -JOINT_GUTTER;
         d.joints.middleLeft.y = d.textField.height / 2 - d.joints.middleLeft.height / 2;
         return g;
     }
@@ -202,7 +202,7 @@ class JointGraphic {
         d.joints.middleRight.removeChildren();
         d.joints.middleRight.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
-        d.joints.middleRight.x = d.textField.width - 3;
+        d.joints.middleRight.x = d.textField.width -JOINT_GUTTER;
         d.joints.middleRight.y = d.textField.height / 2 - d.joints.middleRight.height / 2;
         return g;
     }
@@ -218,7 +218,7 @@ class JointGraphic {
         d.joints.middleTop.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
         d.joints.middleTop.x = d.textField.width / 2 - d.joints.middleTop.width / 2;
-        d.joints.middleTop.y = -3;
+        d.joints.middleTop.y = -JOINT_GUTTER;
         return g;
     }
 
@@ -233,43 +233,27 @@ class JointGraphic {
         d.joints.middleBottom.addChild(new Bitmap(g));
         //update positions - the supplied graphic may be larger than the previous one
         d.joints.middleBottom.x = d.textField.width / 2 - d.joints.middleBottom.width / 2;
-        d.joints.middleBottom.y = d.textField.height - 3;
+        d.joints.middleBottom.y = d.textField.height -JOINT_GUTTER;
         return g;
     }
     
+    public static final JOINT_GUTTER = 7;
+    public static final ROTATION_JOINT_GUTTER = 40;
 }
 
 private class DefaultJoint extends BitmapData {
     
     public function new() {
-        super(5, 5, true, 0xFFFF0000);
-        /*
-        lock();
-        //up
-        setPixel(1, 0, 0x000000);
-        setPixel(2, 0, 0x000000);
-        setPixel(3, 0, 0x000000);
-
-        //down
-        setPixel(1, 4, 0x000000);
-        setPixel(2, 4, 0x000000);
-        setPixel(3, 4, 0x000000);
-
-        //left
-        setPixel(0, 1, 0x000000);
-        setPixel(0, 2, 0x000000);
-        setPixel(0, 3, 0x000000);
-
-        //right
-        setPixel(4, 1, 0x000000);
-        setPixel(4, 2, 0x000000);
-        setPixel(4, 3, 0x000000);
-
-        floodFill(3,3, 0xFFFFFF);
-        unlock();
-        */
-        
-
+        super(15, 15, true, 0x00000000);
+        #if (js || flash)
+        BitmapData.loadFromFile("texter/DynamicTextField/DefaultJoint.png").onComplete(
+            b -> {
+                this.draw(b);
+            }
+        );
+        #else
+        this.draw(BitmapData.fromFile("texter/DynamicTextField/DefaultJoint.png"));
+        #end
     }
 }
 #end
