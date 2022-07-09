@@ -21,6 +21,7 @@ class JointManager
 
 	public function startResizeTopLeft(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -58,6 +59,7 @@ class JointManager
 
 	public function startResizeTopRight(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -100,6 +102,7 @@ class JointManager
 
 	public function startResizeBottomLeft(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -136,6 +139,7 @@ class JointManager
 
 	public function startResizeBottomRight(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -171,6 +175,7 @@ class JointManager
 
 	public function startResizeLeft(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -200,6 +205,7 @@ class JointManager
 
 	public function startResizeRight(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -228,6 +234,7 @@ class JointManager
 
 	public function startResizeTop(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -257,6 +264,7 @@ class JointManager
 
 	public function startResizeBottom(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -285,6 +293,7 @@ class JointManager
 
 	public function startRotation(e:MouseEvent)
 	{
+		if (tf.hideControlsWhenUnfocused) tf.showControls();
 		var rect:Rectangle = tf.getBounds(tf.parent);
 		var centerX = rect.left + (rect.width / 2);
 		var centerY = rect.top + (rect.height / 2);

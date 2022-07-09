@@ -1,5 +1,7 @@
 package texter.openfl;
 #if openfl
+import openfl.events.Event;
+import openfl.events.FocusEvent;
 import openfl.display.Bitmap;
 import openfl.geom.Point;
 import openfl.display.BitmapData;
@@ -120,6 +122,23 @@ class DynamicTextField extends Sprite {
 	 * or all corners & middles.
      */
     public var jointGraphics(default, null):JointGraphic;
+
+	/**
+	 * When the text field isnt selected (or, out of focus), 
+	 * enabling this flag will hide the text field's handles.
+	 */
+	public var hideControlsWhenUnfocused(default, set):Bool = false;
+
+	/**
+	 * A shortcut for setting the focus to the text field:
+	 *
+	 * 		stage.focus = this;
+	 *
+	 * And checking if the text field is focused:
+	 *
+	 * 		stage.focus == this;
+	 */
+	public var hasFocus(get, set):Bool;
     
     public function new() {
         super();
@@ -216,13 +235,19 @@ class DynamicTextField extends Sprite {
 		//call setters for positioning things correctly
 		set_width(width);
 		set_height(height);
+
+		this.addEventListener(Event.ADDED_TO_STAGE, (e) -> {
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, checkFocus);
+		});
     }
 
 	/**
 		Called every time the positional configuration of the text field changes.
 	**/
-	
 	function registerDrag(e:MouseEvent) {
+		if (hideControlsWhenUnfocused) {
+			showControls();
+		}
 		if (draggable && offsetX == 0) {
 			offsetX = parent.mouseX - x;
 			offsetY = parent.mouseY - y;
@@ -248,8 +273,30 @@ class DynamicTextField extends Sprite {
 		}
 	}
 
-	function registerResize(joint:Sprite) {
-		
+	//--------------------------------------------------------------------------
+	//FOCUS FUNCTIONS
+	//--------------------------------------------------------------------------
+	
+	function checkFocus(e:MouseEvent) {
+		if (this.hitTestPoint(e.stageX, e.stageY)) {
+			if (hideControlsWhenUnfocused) {
+				showControls();
+			}
+		}
+		else {
+			if (hideControlsWhenUnfocused) {
+				hideControls();
+			}
+		}
+	}
+	
+	function onFocusIn(e:FocusEvent) {
+		trace("focus in");
+		if (hideControlsWhenUnfocused) showControls();
+	}
+	function onFocusOut(e:FocusEvent) {
+		trace("focus out");
+		if (hideControlsWhenUnfocused) hideControls();
 	}
 
 	//--------------------------------------------------------------------------
@@ -292,6 +339,36 @@ class DynamicTextField extends Sprite {
     function mouseOut(e:MouseEvent) {
         Mouse.cursor = !currentlyDragging ? MouseCursor.DEFAULT : MouseCursor.MOVE;
     }
+
+	/**
+		Hides everything, but the text field.
+
+		Called when the user shifts the focus from the text field,
+		and `hideControlsWhenUnfocused` is true.
+	**/
+	public function hideControls() {
+		//hide everything but the text field
+		for (j in [joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight, joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.rotation]) {
+			j.visible = false;
+		}
+
+		//hide the borders
+		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.visible = false;
+		}
+	}
+
+	/**
+		Shows All of the joints and the borders.
+	**/
+	public function showControls() {
+		for (j in [joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight, joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.rotation]) {
+			j.visible = true;
+		}
+		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.visible = true;
+		}
+	}
 
     //--------------------------------------------------------------------------
     //GETTERS & SETTERS
@@ -381,7 +458,25 @@ class DynamicTextField extends Sprite {
 		return value;
 	}
 
+	function set_hideControlsWhenUnfocused(value:Bool) {
+		
+		if (!hasFocus) hideControls();
 
+		return value;
+	}
+
+	function get_hasFocus():Bool {
+		return stage.focus == this;
+	}
+
+	function set_hasFocus(value:Bool):Bool {
+		if (value) {
+			stage.focus = this;
+			return value;
+		}
+		stage.focus = null;
+		return value;
+	}
 
 
 
