@@ -246,13 +246,13 @@ private class DefaultJoint extends BitmapData {
     public function new() {
         super(15, 15, true, 0x00000000);
         #if (js || flash)
-        BitmapData.loadFromFile("texter/DynamicTextField/DefaultJoint.png").onComplete(
+        BitmapData.loadFromFile("assets/texter/DynamicTextField/DefaultJoint.png").onComplete(
             b -> {
                 this.draw(b);
             }
         );
         #else
-        this.draw(BitmapData.fromFile("texter/DynamicTextField/DefaultJoint.png"));
+        this.draw(BitmapData.fromFile("assets/texter/DynamicTextField/DefaultJoint.png"));
         #end
     }
 }
