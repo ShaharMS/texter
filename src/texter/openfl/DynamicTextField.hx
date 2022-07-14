@@ -466,10 +466,12 @@ class DynamicTextField extends Sprite {
 	}
 
 	function get_hasFocus():Bool {
+		if (stage == null) return false;
 		return stage.focus == this;
 	}
 
 	function set_hasFocus(value:Bool):Bool {
+		if (stage == null) return value;
 		if (value) {
 			stage.focus = this;
 			return value;
