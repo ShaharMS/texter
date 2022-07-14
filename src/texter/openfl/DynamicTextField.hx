@@ -236,8 +236,8 @@ class DynamicTextField extends Sprite {
 		set_width(width);
 		set_height(height);
 		
-		addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-		addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+		textField.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+		textField.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 		
 
 		
@@ -278,27 +278,14 @@ class DynamicTextField extends Sprite {
 	//--------------------------------------------------------------------------
 	//FOCUS FUNCTIONS
 	//--------------------------------------------------------------------------
-	
-	function checkFocus(e:MouseEvent) {
-		if (this.hitTestPoint(e.stageX, e.stageY)) {
-			if (hideControlsWhenUnfocused) {
-				showControls();
-			}
-		}
-		else {
-			if (hideControlsWhenUnfocused) {
-				hideControls();
-			}
-		}
-	}
-	
+
 	function onFocusIn(e:FocusEvent) {
 		trace("focus in");
-		if (hideControlsWhenUnfocused) showControls();
+		showControls();
 	}
 	function onFocusOut(e:FocusEvent) {
 		trace("focus out");
-		if (hideControlsWhenUnfocused) hideControls();
+		hideControls();
 	}
 
 	//--------------------------------------------------------------------------
