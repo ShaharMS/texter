@@ -235,10 +235,12 @@ class DynamicTextField extends Sprite {
 		//call setters for positioning things correctly
 		set_width(width);
 		set_height(height);
+		
+		addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+		addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+		
 
-		this.addEventListener(Event.ADDED_TO_STAGE, (e) -> {
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, checkFocus);
-		});
+		
     }
 
 	/**
