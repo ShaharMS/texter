@@ -1,4 +1,5 @@
 package texter.openfl;
+import openfl.events.TextEvent;
 #if openfl
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -143,6 +144,7 @@ class DynamicTextField extends Sprite {
     public function new() {
         super();
         textField = new TextField();
+		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, null, JOINT_GUTTER * 2, JOINT_GUTTER * 2, null, null);
         addChild(textField);
 
         borders = {
@@ -238,6 +240,7 @@ class DynamicTextField extends Sprite {
 		
 		textField.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
 		textField.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+		textField.addEventListener(Event.CHANGE, onTextChange);
 		
 
 		
@@ -281,11 +284,21 @@ class DynamicTextField extends Sprite {
 
 	function onFocusIn(e:FocusEvent) {
 		trace("focus in");
-		showControls();
+		if (hideControlsWhenUnfocused) showControls();
 	}
 	function onFocusOut(e:FocusEvent) {
 		trace("focus out");
-		hideControls();
+		if (hideControlsWhenUnfocused) hideControls();
+	}
+
+	//--------------------------------------------------------------------------
+	//TEXT FUNCTIONS
+	//--------------------------------------------------------------------------
+
+	function onTextChange(e:Event) {
+		if (matchTextSize) {
+			set_height(textField.textHeight + 4);
+		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -440,18 +453,19 @@ class DynamicTextField extends Sprite {
 
 	function set_matchTextSize(value:Bool):Bool {
 		if (value) {
-			width = textField.textWidth + 4;
-			height = textField.textHeight + 4;
+			textField.width = textField.textWidth + 4;
+			textField.height = textField.textHeight + 4;
 		}
 
-		return value;
+		return matchTextSize = value;
 	}
 
 	function set_hideControlsWhenUnfocused(value:Bool) {
 		
 		if (!hasFocus) hideControls();
+		else showControls();
 
-		return value;
+		return hideControlsWhenUnfocused = value;
 	}
 
 	function get_hasFocus():Bool {
