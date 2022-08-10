@@ -25,8 +25,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER// gutter
+			w: tf.width, // gutter
+			h: tf.height// gutter
 		};
 
 		function res(e:MouseEvent)
@@ -63,8 +63,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -106,8 +106,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -143,8 +143,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -179,8 +179,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -209,8 +209,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -238,8 +238,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -268,8 +268,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width - JOINT_GUTTER * 2 - 1, // gutter
-			h: tf.height - JOINT_GUTTER - 1 - ROTATION_JOINT_GUTTER // gutter
+			w: tf.width, // gutter
+			h: tf.height // gutter
 		};
 
 		function res(e:MouseEvent)

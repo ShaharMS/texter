@@ -402,14 +402,14 @@ class DynamicTextField extends Sprite {
 
     //override setters for width and height
     override function set_width(value:Float) {
-        textField.width = value;
+        textField.width = value - JOINT_GUTTER * 2 - 1;
 		for (b in [borders.top, borders.bottom]) {
 			b.graphics.clear();
 			b.graphics.lineStyle(1, borderColor);
 			b.graphics.moveTo(0,0);
-			b.graphics.lineTo(value, 0);
+			b.graphics.lineTo(textField.width, 0);
 		}
-		borders.right.x = value;
+		borders.right.x = textField.width;
 
 		joints.topLeft.x = -JOINT_GUTTER;
 		joints.topRight.x = textField.width -JOINT_GUTTER;
@@ -423,18 +423,19 @@ class DynamicTextField extends Sprite {
 
 		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
 		
+		updateHeight();
         return value;
     }
 
     override function set_height(value:Float) {
-        textField.height = value;
+        textField.height = value - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
 		for (b in [borders.left, borders.right]) {
 			b.graphics.clear();
 			b.graphics.lineStyle(1, borderColor);
 			b.graphics.moveTo(0,0);
-			b.graphics.lineTo(0, value);
+			b.graphics.lineTo(0, textField.height);
 		}
-		borders.bottom.y = value;
+		borders.bottom.y = textField.height;
 
 		joints.topLeft.y = 0 -JOINT_GUTTER;
 		joints.topRight.y = 0 -JOINT_GUTTER;
@@ -448,8 +449,53 @@ class DynamicTextField extends Sprite {
 
 		joints.rotation.y = -ROTATION_JOINT_GUTTER;
 
+		updateWidth();
         return value;
     }
+
+	function updateWidth() {
+		textField.width = width - JOINT_GUTTER * 2 - 1;
+		for (b in [borders.top, borders.bottom]) {
+			b.graphics.clear();
+			b.graphics.lineStyle(1, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(textField.width, 0);
+		}
+		borders.right.x = textField.width;
+
+		joints.topLeft.x = -JOINT_GUTTER;
+		joints.topRight.x = textField.width -JOINT_GUTTER;
+		joints.bottomLeft.x = 0 -JOINT_GUTTER;
+		joints.bottomRight.x = textField.width -JOINT_GUTTER;
+
+		joints.middleLeft.x = 0 -JOINT_GUTTER;
+		joints.middleRight.x = textField.width -JOINT_GUTTER;
+		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
+		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
+		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
+	}
+
+	function updateHeight() {
+		textField.height = height - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
+		for (b in [borders.left, borders.right]) {
+			b.graphics.clear();
+			b.graphics.lineStyle(1, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(0, textField.height);
+		}
+		borders.bottom.y = textField.height;
+
+		joints.topLeft.y = 0 -JOINT_GUTTER;
+		joints.topRight.y = 0 -JOINT_GUTTER;
+		joints.bottomLeft.y = textField.height -JOINT_GUTTER;
+		joints.bottomRight.y = textField.height -JOINT_GUTTER;
+
+		joints.middleLeft.y = textField.height / 2 -JOINT_GUTTER;
+		joints.middleRight.y = textField.height / 2 -JOINT_GUTTER;
+		joints.middleTop.y = 0 -JOINT_GUTTER;
+		joints.middleBottom.y = textField.height -JOINT_GUTTER;
+		joints.rotation.y = -ROTATION_JOINT_GUTTER;
+	}
 
 	function set_matchTextSize(value:Bool):Bool {
 		if (value) {
