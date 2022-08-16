@@ -1,4 +1,6 @@
 package texter.openfl;
+import openfl.text.TextLineMetrics;
+import openfl.geom.Rectangle;
 import openfl.events.TextEvent;
 #if openfl
 import openfl.events.Event;
@@ -91,16 +93,6 @@ class DynamicTextField extends Sprite {
 
      */
 	public var currentlyDragging(default, null):Bool = false;
-
-    /**
-     * Controls which sides are allowed to be dynamically resized by the user.
-     */
-    public var resizableSides(default, set) = {
-        left: true,
-        right: true,
-        top: true,
-        bottom: true
-    };
 
 	/**
 	 * Whether or not the text field should automatically
@@ -1300,6 +1292,86 @@ class DynamicTextField extends Sprite {
 
 	function set_styleSheet(value:StyleSheet):StyleSheet {
 		return textField.styleSheet = value;
+	}
+
+	// functions to replicate TextField methods
+	// template to use:
+	
+		// /**
+		// 	* Documentation present in the original TextField class.
+		// 	*
+		// 	* @param arg1 Documentation present in the original TextField class.
+		// 	* @param arg2 Documentation present in the original TextField class.
+		// 	* @return Documentation present in the original TextField class. 
+		// **/
+		//public function textFieldMethod(arg1:X, arg2:Y) {
+		//	textField.textFieldMethod(arg1, arg2);
+		//}
+	
+	// end template
+
+	public function appendText(text:String):Void {
+		textField.appendText(text);
+	}
+
+	public function getCharBoundaries(charIndex:Int):Rectangle {
+		return textField.getCharBoundaries(charIndex);
+	}
+
+	public function getCharIndexAtPoint(x:Float, y:Float):Int {
+		return textField.getCharIndexAtPoint(x, y);
+	}
+
+	public function getFirstCharInParagraph(charIndex:Int):Int {
+		return textField.getFirstCharInParagraph(charIndex);
+	}
+
+	public function getLineIndexAtPoint(x:Float, y:Float):Int {
+		return textField.getLineIndexAtPoint(x, y);
+	}
+
+	public function getLineIndexOfChar(charIndex:Int):Int {
+		return textField.getLineIndexOfChar(charIndex);
+	}
+
+	public function getLineLength(lineIndex:Int):Int {
+		return textField.getLineLength(lineIndex);
+	}
+
+	public function getLineMetrics(lineIndex:Int):TextLineMetrics {
+		return textField.getLineMetrics(lineIndex);
+	}
+
+	public function getLineOffset(lineIndex:Int):Int {
+		return textField.getLineOffset(lineIndex);
+	}
+
+	public function getLineText(lineIndex:Int):String {
+		return textField.getLineText(lineIndex);
+	}
+
+	public function getParagraphLength(charIndex:Int):Int {
+		return textField.getParagraphLength(charIndex);
+	}
+
+	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat {
+		return textField.getTextFormat(beginIndex, endIndex);
+	}
+
+	public function replaceSelectedText(value:String):Void {
+		textField.replaceSelectedText(value);
+	}
+
+	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void {
+		textField.replaceText(beginIndex, endIndex, newText);
+	}
+
+	public function setSelection(beginIndex:Int, endIndex:Int):Void {
+		textField.setSelection(beginIndex, endIndex);
+	}
+
+	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int):Void {
+		textField.setTextFormat(format, beginIndex, endIndex);
 	}
 }
 #end
