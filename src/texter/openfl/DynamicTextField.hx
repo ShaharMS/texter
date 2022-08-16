@@ -1,7 +1,5 @@
 package texter.openfl;
-import openfl.text.TextLineMetrics;
-import openfl.geom.Rectangle;
-import openfl.events.TextEvent;
+
 #if openfl
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -20,6 +18,9 @@ import lime.text.UTF8String;
 import openfl.text.TextFormat;
 import openfl.text.GridFitType;
 import openfl.display.Sprite;
+import openfl.text.TextLineMetrics;
+import openfl.geom.Rectangle;
+import openfl.events.TextEvent;
 
 import texter.openfl.JointGraphic.*;
 

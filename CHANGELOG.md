@@ -1,3 +1,47 @@
+2.2.0 (August 16, 2022)
+===
+
+**DynamicTextField - new class!**
+
+DynamicTextField is a new class that allows you to create a text field that can dynamically resize, move, and rotate. This class is kind of a superset of the TextField class.
+
+properties:
+
+ - `resizable`
+ - `draggable`
+ - `rotatable`
+ - `currentlyDragging`
+ - `matchTextSize`
+ - `jointGraphics`
+ - `hasFocus`
+ - `textFieldWidth`
+ - `textFieldHeight`
+ - `textField`
+ - `hideControlsWhenUnfocused`
+ - (other `TextField` properties and functions)
+
+**MarkdownVisualizer**
+
+ - added `darkMode` property to `VisualConfig`
+
+
+2.1.0 (May 5, 2022)
+===
+
+**TextTools:**
+
+ - added `splitOnParagraph()` 
+ - added `multiply()` to repeat a string a number of times
+ - added `subtract()` to remove the last occurence of a string from a string
+ - added `sortByLength()` to sort a list of strings by their length
+ - added `sortByValue()` to sort a list of floats by their value
+ - added `sortByIntValue()` to sort a list of integers by their value
+ - added `getLineIndexOfChar()` to get the line index of a substring in a string
+ - added `contains()` to check if a string contains a substring
+ - added `countOccurencesOf()` to count the number of occurences of a substring in a string
+ - added `loremIpsumText` property to `TextTools`
+ - moved `src.texter.general.TextTools` to `src.TextTools`
+
 2.0.4 (April 18, 2022)
 ===
 
