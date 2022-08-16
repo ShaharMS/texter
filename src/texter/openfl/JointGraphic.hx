@@ -2,6 +2,7 @@ package texter.openfl;
 #if openfl
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
+import openfl.display.Shape;
 import openfl.display.BitmapData;
 
 class JointGraphic {
@@ -237,23 +238,20 @@ class JointGraphic {
         return g;
     }
     
-    public static final JOINT_GUTTER = 7;
-    public static final ROTATION_JOINT_GUTTER = 40;
+    public static final JOINT_GUTTER = new DefaultJoint().width / 2 - 0.5;
+    public static final ROTATION_JOINT_GUTTER = 33 + JOINT_GUTTER;
 }
 
 private class DefaultJoint extends BitmapData {
     
     public function new() {
-        super(15, 15, true, 0x00000000);
-        #if (js || flash)
-        BitmapData.loadFromFile("assets/texter/DynamicTextField/DefaultJoint.png").onComplete(
-            b -> {
-                this.draw(b);
-            }
-        );
-        #else
-        this.draw(BitmapData.fromFile("assets/texter/DynamicTextField/DefaultJoint.png"));
-        #end
+        super(11, 11, true, 0x00000000);
+        var s = new Shape();
+        s.graphics.beginFill(0xffffff);
+        s.graphics.lineStyle(1, 0x000000);
+        s.graphics.drawCircle(5.5, 5.5, 4.5);
+        s.graphics.endFill();
+        draw(s);
     }
 }
 #end

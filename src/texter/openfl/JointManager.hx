@@ -25,8 +25,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height// gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight// gutter
 		};
 
 		function res(e:MouseEvent)
@@ -40,17 +40,17 @@ class JointManager
 			tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 			final width = p.w + (p.x - e.stageX);
 			final height = p.h + (p.y - e.stageY);
-			tf.width = width;
-			tf.height = height;
+			tf.textFieldWidth = width;
+			tf.textFieldHeight = height;
 			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 
@@ -63,8 +63,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -79,8 +79,8 @@ class JointManager
 			final height = p.h + (p.y - e.stageY);
             trace("width: " + width + " height: " + height);
             
-			tf.width = width;
-			tf.height = height;
+			tf.textFieldWidth = width;
+			tf.textFieldHeight = height;
 
             tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 			
@@ -88,12 +88,12 @@ class JointManager
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				trace(width);
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 
@@ -106,8 +106,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -120,17 +120,17 @@ class JointManager
 			tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 			final width = p.w + (p.x - e.stageX);
 			final height = p.h - (p.y - e.stageY);
-			tf.width = width;
-			tf.height = height;
+			tf.textFieldWidth = width;
+			tf.textFieldHeight = height;
 			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 
@@ -143,8 +143,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -156,17 +156,17 @@ class JointManager
 			}
 			final width = p.w - (p.x - e.stageX);
 			final height = p.h - (p.y - e.stageY);
-			tf.width = width;
-			tf.height = height;
+			tf.textFieldWidth = width;
+			tf.textFieldHeight = height;
 			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 
@@ -179,8 +179,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -192,12 +192,13 @@ class JointManager
 			}
 			tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 			final width = p.w + (p.x - e.stageX);
-			tf.width = width;
+			tf.textFieldWidth = width;
 			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
+			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -209,8 +210,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -221,12 +222,13 @@ class JointManager
 				return;
 			}
 			final width = p.w - (p.x - e.stageX);
-			tf.width = width;
+			tf.textFieldWidth = width;
 			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
-				tf.width = -width;
+				tf.textFieldWidth = -width;
 			}
+			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -238,8 +240,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -251,11 +253,11 @@ class JointManager
 			}
 			tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 			final height = p.h + (p.y - e.stageY);
-			tf.height = height;
+			tf.textFieldHeight = height;
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 
@@ -268,8 +270,8 @@ class JointManager
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
-			w: tf.width, // gutter
-			h: tf.height // gutter
+			w: tf.textFieldWidth, // gutter
+			h: tf.textFieldHeight // gutter
 		};
 
 		function res(e:MouseEvent)
@@ -280,11 +282,11 @@ class JointManager
 				return;
 			}
 			final height = p.h - (p.y - e.stageY);
-			tf.height = height;
+			tf.textFieldHeight = height;
 			if (height < 0)
 			{
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
-				tf.height = -height;
+				tf.textFieldHeight = -height;
 			}
 		}
 

@@ -159,7 +159,7 @@ class DynamicTextField extends Sprite {
     public function new() {
         super();
         textField = new TextField();
-		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, null, JOINT_GUTTER * 2, JOINT_GUTTER * 2, null, null);
+		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, null, Std.int(JOINT_GUTTER * 2), Std.int(JOINT_GUTTER * 2), null, null);
         addChild(textField);
 
         borders = {
@@ -312,7 +312,7 @@ class DynamicTextField extends Sprite {
 
 	function onTextChange(e:Event) {
 		if (matchTextSize) {
-			set_height(textField.textHeight + 4);
+			set_textFieldHeight(textField.textHeight + 4);
 		}
 	}
 
