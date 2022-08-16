@@ -43,6 +43,12 @@ class CharTools
 		'}', '~', '^'
 	];
 
+	public static var softChars(default, null):Array<String> = [
+		'!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|',
+		'}', '~', '^', ' ', '\t'
+	];
+	
+
 	/**
 	 * The `newline` char used to add an enter to a string of text
 	 */
