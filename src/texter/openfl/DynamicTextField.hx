@@ -140,6 +140,21 @@ class DynamicTextField extends Sprite {
 	 * 		stage.focus == this;
 	 */
 	public var hasFocus(get, set):Bool;
+
+	/**
+		You might have noticed, when setting `width` the text field will automatically resize itself to match the width,
+		and thus be a bit smaller than the width you set. This is because the text field's border is drawn on the outside of the text field.
+
+		this field sets the width of the text field, without the border. (the object itself is a little bigger than the text field, because of the border)
+	**/
+	public var textFieldWidth(get, set):Float;
+
+	/**
+		You might have noticed, when setting `height` the text field will automatically resize itself to match the height,
+		and thus be WAY smaller than the height you set. This is because the text field's border is drawn on the outside of the text field, and it contains the rotation button, whivh is about 40 pixels high.
+		this field sets the height of the text field, without the border. (the object itself taller than the text field, because of the border and rotation button)
+	**/
+	public var textFieldHeight(get, set):Float;
     
     public function new() {
         super();
@@ -526,6 +541,24 @@ class DynamicTextField extends Sprite {
 			return value;
 		}
 		stage.focus = null;
+		return value;
+	}
+
+	function get_textFieldWidth():Float {
+		return textField.width;
+	}
+
+	function set_textFieldWidth(value:Float):Float {
+		width = value + JOINT_GUTTER * 2 + 1;
+		return value;
+	}
+
+	function get_textFieldHeight():Float {
+		return textField.height;
+	}
+
+	function set_textFieldHeight(value:Float):Float {
+		height = value + ROTATION_JOINT_GUTTER + JOINT_GUTTER + 1;
 		return value;
 	}
 
