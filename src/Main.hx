@@ -14,7 +14,10 @@ my name is שחר and היום אני בן 16
 my name is שחר and היום אני בן 16
 - hello world");
 		trace(processed);
-		var a = Bidi.process(processed);
+		var a = Bidi.process(Bidi.process("
+- שלום עולם
+my name is שחר and היום אני בן 16
+- hello world"));
 		trace(a);
 		trace("
 - שלום עולם
