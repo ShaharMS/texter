@@ -3,3 +3,4 @@
 --interp
 --library lime
 --library openfl
+--define reordered_attributes=1

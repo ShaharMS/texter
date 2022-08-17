@@ -48,6 +48,9 @@ class CharTools
 		'}', '~', '^', ' ', '\t'
 	];
 	
+	public static var numbers(default, null):Array<String> = [
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+	];
 
 	/**
 	 * The `newline` char used to add an enter to a string of text

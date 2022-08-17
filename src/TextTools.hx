@@ -334,10 +334,27 @@ class TextTools
         }
         return count;
     }
+
     public static function contains(string:String, contains:String):Bool
     {
         return string.indexOf(contains) != -1;
     }
+
+	public static function remove(string:String, remove:String):String
+	{
+		return StringTools.replace(string, remove, "");
+	}
+
+	public static function replace(string:String, replace:String, with:String):String
+	{
+		return StringTools.replace(string, replace, with);
+	}
+
+	public static function reverse(string:String) {
+		var arr = string.split("");
+		arr.reverse();
+		return arr.join("");
+	}
 
 	public static var loremIpsumText(default, never):String = "
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum magna, eget porttitor libero aliquam non. Praesent commodo, augue nec hendrerit tincidunt, urna felis lobortis mi, non cursus libero tellus quis tellus. Vivamus ornare convallis tristique. Integer nec ornare libero. Phasellus feugiat facilisis faucibus. Vivamus porta id neque id placerat. Proin convallis vel felis et pharetra. Quisque magna justo, ullamcorper quis scelerisque eu, tincidunt vitae lectus. Nunc sed turpis justo. Aliquam porttitor, purus sit amet faucibus bibendum, ligula elit molestie purus, eu volutpat turpis sapien ac tellus. Fusce mauris arcu, volutpat ut aliquam ut, ultrices id ante. Morbi quis consectetur turpis. Integer semper lacinia urna id laoreet.

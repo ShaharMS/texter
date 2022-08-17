@@ -7,6 +7,6 @@ enum TextAttribute {
     LineDirection(letterType:TextDirection);
     Rtl(string:String);
     Ltr(string:String);
-    SoftChar(string:String, generalDirections:TextDirection);
+    SoftChar(string:String, generalDirection:TextDirection);
     LineEnd();
 }
