@@ -148,6 +148,37 @@ class DynamicTextField extends Sprite {
 		this field sets the height of the text field, without the border. (the object itself taller than the text field, because of the border and rotation button)
 	**/
 	public var textFieldHeight(get, set):Float;
+
+	/**
+		A callback function that triggers when the text field has been dragged.
+		
+		@param x The **current** x position of the text field.
+		@param y The **current** y position of the text field.
+		@param previousX The previous x position of the text field, before the dragging started.
+		@param previousY The previous y position of the text field, before the dragging started.
+	**/
+	public var onDragged:(Float, Float, Float, Float) -> Void = (x, y, previousX, previousY) -> {};
+
+	/**
+		A callback function that triggers when the text field has been resized.
+
+		@param x The **current** x position of the text field.
+		@param y The **current** y position of the text field.
+		@param textFieldWidth The **current** width of the text field. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
+		@param textFieldHeight The **current** height of the text field. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
+		@param previousX The previous x position of the text field, before the resizing started.
+		@param previousY The previous y position of the text field, before the resizing started.
+		@param previousTextFieldWidth The previous width of the text field, before the resizing started. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
+		@param previousTextFieldHeight The previous height of the text field, before the resizing started. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
+	**/
+	public var onResized:(Float, Float, Float, Float, Float, Float, Float, Float) -> Void = (x, y, width, height, previousX, previousY, previousWidth, previousHeight) -> {};
+
+	/**
+		A callback function that triggers when the text field has been rotated.
+		@param rotation The **current** rotation of the text field, in degrees.
+		@param previousRotation The previous rotation of the text field, before the rotation started, in degrees.
+	**/
+	public var onRotated:(Float, Float) -> Void = (rotation, previousRotation) -> {};
     
     public function new() {
         super();
@@ -254,9 +285,36 @@ class DynamicTextField extends Sprite {
 		
     }
 
-	/**
-		Called every time the positional configuration of the text field changes.
-	**/
+	//--------------------------------------------------------------------------
+	// PUBLIC METHODS
+	//--------------------------------------------------------------------------
+
+	public function textFieldWidthToObjectWidth(?width:Float):Float {
+		if (width == null) width = textFieldWidth;
+		return width + (JOINT_GUTTER * 2) + 1;
+	}
+
+	public function textFieldHeightToObjectHeight(?height:Float):Float {
+		if (height == null) height = textFieldHeight;
+		return height + ROTATION_JOINT_GUTTER + JOINT_GUTTER + 1;
+	}
+
+	public function objectWidthToTextFieldWidth(?width:Float):Float {
+		if (width == null) width = this.width;
+		return width - (JOINT_GUTTER * 2) - 1;
+	}
+
+	public function objectHeightToTextFieldHeight(?height:Float):Float {
+		if (height == null) height = this.height;
+		return height - ROTATION_JOINT_GUTTER - JOINT_GUTTER - 1;
+	}
+
+
+	//--------------------------------------------------------------------------
+	// Dragging
+	//--------------------------------------------------------------------------
+	var prevX:Float;
+	var prevY:Float;
 	function registerDrag(e:MouseEvent) {
 		if (hideControlsWhenUnfocused) {
 			showControls();
@@ -264,6 +322,8 @@ class DynamicTextField extends Sprite {
 		if (draggable && offsetX == 0) {
 			offsetX = parent.mouseX - x;
 			offsetY = parent.mouseY - y;
+			prevX = x;
+			prevY = y;
 			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
 				b.removeEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
 			}
@@ -283,6 +343,7 @@ class DynamicTextField extends Sprite {
 			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
 				b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
 			}
+			onDragged(x, y, prevX, prevY);
 		}
 	}
 
@@ -1070,7 +1131,7 @@ class DynamicTextField extends Sprite {
 		To get the text in HTML form, use the `htmlText`
 		property.
 	**/
-	public var text(get, set):UTF8String;
+	public var text(get, set):String;
 
 	/**
 		The color of the text in a text field, in hexadecimal format. The

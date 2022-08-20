@@ -19,6 +19,19 @@ class JointManager
 		this.tf = tf;
 	}
 
+
+	var tX:Float;
+	var tY:Float;
+	var tWidth:Float;
+	var tHeight:Float;
+
+	function setPrevStats() {
+		tX = tf.x;
+		tY = tf.y;
+		tWidth = tf.textFieldWidth;
+		tHeight = tf.textFieldHeight;
+	}
+
 	public function startResizeTopLeft(e:MouseEvent)
 	{
 		if (tf.hideControlsWhenUnfocused) tf.showControls();
@@ -28,12 +41,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight// gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
@@ -66,12 +82,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			
@@ -109,12 +128,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+				
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
@@ -146,12 +168,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			final width = p.w - (p.x - e.stageX);
@@ -182,12 +207,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
@@ -213,12 +241,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			final width = p.w - (p.x - e.stageX);
@@ -243,12 +274,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
@@ -273,12 +307,15 @@ class JointManager
 			w: tf.textFieldWidth, // gutter
 			h: tf.textFieldHeight // gutter
 		};
+		setPrevStats();
 
 		function res(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
+
+				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
 			final height = p.h - (p.y - e.stageY);
@@ -304,12 +341,15 @@ class JointManager
 			x: centerX - 2.5,
 			y: centerY - 11
 		};
+		var prevRotation = tf.rotation;
 
 		function rot(e:MouseEvent)
 		{
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, rot);
+
+				tf.onRotated(tf.rotation, prevRotation);
 				return;
 			}
 			rotateAroundCenter(tf,
