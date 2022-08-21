@@ -7,6 +7,12 @@ package texter.general;
 class CharTools
 {
 	/**
+		RTL characters in all rtl languages - arabic, aramatic, azeri, hebrew, persian, urdu.
+
+		Every letter appears only once.
+	**/
+	public static var allRtlChars:String = "ابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمنںوہھءیے یهونملگکقفغعظطضصشسژزرذدخحچجثتپباءހށނރބޅކއވމފދތލގޏސޑޒޓޔޕޖޗޘޙޚޛޜޝޞޟޠޡޢޣޤޥ ަ  ާ ި  ީ ު  ޫ ެ  ޭ  ޮ  ޯ ްޱآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهويىًٌٍَُِّْـאבגדהוזחטיךכלםמןנסעףפץצקרשתװױײ׳״𐡀𐡁𐡂𐡃𐡄𐡅𐡆𐡇𐡈𐡉𐡊𐡋𐡌𐡍𐡎𐡏𐡐𐡑𐡒𐡓𐡔𐡕𐡗𐡘𐡙𐡚𐡛𐡜𐡝𐡞𐡟یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء";
+	/**
 		An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
 		contains 1 or more chars from a RTL (right-to-left) language.
 
@@ -16,7 +22,7 @@ class CharTools
 		```
 	**/
 	public static var rtlLetters(default,
-		null):EReg = ~/ش|س|ز|ر|ذ|د|خ|ح|ج|ث|ت|ب|ا|ء|ي|و|ه|ن|م|ل|ك|ق|ف|غ|ع|ظ|ط|ض|ص|ى|ئ|ؤ|ة|إ|أ|ٱ|آ|ז|ס|ב|ה|נ|מ|צ|ת|ץ|ש|ד|ג|כ|ע|י|ח|ל|ך|ף|ק|ר|א|ט|ו|ן|ם|פ/gi;
+		null):EReg = new EReg(allRtlChars, "gi");
 
 	/**
 		An `EReg` of all numbers (0-9).
@@ -51,7 +57,7 @@ class CharTools
 	public static var numbers(default, null):Array<String> = [
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
 	];
-
+	
 	/**
 	 * The `newline` char used to add an enter to a string of text
 	 */
@@ -200,6 +206,10 @@ class CharTools
 	public static function fromCharArray(charArray:Array<Char>):String
 	{
 		return charArray.join("");
+	}
+
+	public static function isRTL() {
+		
 	}
 
 	public static var charToValue:Map<Char, Int> = [

@@ -1,5 +1,7 @@
 package;
 
+import flash.events.TextEvent;
+import openfl.text.TextField;
 import texter.general.CharTools;
 import texter.general.bidi.Bidi;
 using TextTools;
@@ -33,5 +35,16 @@ class BidiTools {
     public static function bidifyString(text:String) {
         return Bidi.process(text);
     }
+
+    #if openfl
+    public static overload extern inline function attachBidifier(textfield:TextField) {
+        textfield.addEventListener(TextEvent.TEXT_INPUT, (event) -> {
+            var letterAtCaretIndex = textfield.text.charAt(textfield.caretIndex - 1 > 0 ? textfield.caretIndex - 1 : 0);
+            if (CharTools.isRTL(letterAtCaretIndex)) {
+                textfield.text = Bidi.process(textfield.text);
+            }
+        });
+    }
+    #end
 
 }
