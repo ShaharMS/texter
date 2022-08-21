@@ -41,7 +41,18 @@ class BidiTools {
         textfield.addEventListener(TextEvent.TEXT_INPUT, (event) -> {
             var letterAtCaretIndex = textfield.text.charAt(textfield.caretIndex - 1 > 0 ? textfield.caretIndex - 1 : 0);
             if (CharTools.isRTL(letterAtCaretIndex)) {
-                textfield.text = Bidi.process(textfield.text);
+                textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
+            } else if (CharTools.isSoft(letterAtCaretIndex)) {
+                //traverse backwards until we find a letter, if its RTL, we move the caret backwards
+                var caretIndex = textfield.caretIndex - 1;
+                while (caretIndex > 0 && CharTools.isSoft(textfield.text.charAt(caretIndex))) {
+                    caretIndex--;
+                }
+                var charAtCaretIndex = textfield.text.charAt(caretIndex);
+                if (CharTools.isRTL(charAtCaretIndex)) {
+                    textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
+                }
+
             }
         });
     }

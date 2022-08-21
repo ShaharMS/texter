@@ -212,6 +212,10 @@ class CharTools
 		return char == RLM || char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
 	}
 
+	public static function isSoft(char:String) {
+		return char == ZEROWIDTHSPACE || char == PDF || char == PDI || softChars.indexOf(char) != -1;
+	}
+
 	public static var charToValue:Map<Char, Int> = [
 		 "" => 0,
 		"" => 1,
