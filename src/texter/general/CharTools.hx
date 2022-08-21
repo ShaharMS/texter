@@ -18,7 +18,7 @@ class CharTools
 
 		usage:
 		```haxe
-			CharTools.rtlLetters.match(yourRtlLetterOrString)
+			CharTools.isRTL(yourRtlLetterOrString)
 		```
 	**/
 	public static var rtlLetters(default,
@@ -208,8 +208,8 @@ class CharTools
 		return charArray.join("");
 	}
 
-	public static function isRTL() {
-		
+	public static function isRTL(char:String):Bool {
+		return char == RLM || char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
 	}
 
 	public static var charToValue:Map<Char, Int> = [

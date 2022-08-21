@@ -741,7 +741,7 @@ class TextFieldRTL extends Sprite
 			if (caretIndex > 0)
 			{
 				#if !js
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (CharTools.isRTL(text.charAt(caretIndex + 1)) || CharTools.isRTL(text.charAt(caretIndex)))
 				{
 					insertSubstring("bsp", caretIndex);
 				}
@@ -762,7 +762,7 @@ class TextFieldRTL extends Sprite
 			#if !js
 			if (text.length > 0 && caretIndex < text.length)
 			{
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (CharTools.isRTL(text.charAt(caretIndex + 1)) || CharTools.isRTL(text.charAt(caretIndex)))
 				{
 					insertSubstring("sel", caretIndex - 1);
 					caretIndex--;
@@ -790,7 +790,7 @@ class TextFieldRTL extends Sprite
 				insertionIndex = caretIndex;
 				// starts a search for the last RTL char and places the "\n" there
 				// if the string ends and theres still no last RTl char, "\n" will be insterted at length.
-				while (CharTools.rtlLetters.match(text.charAt(insertionIndex))
+				while (CharTools.isRTL(text.charAt(insertionIndex))
 					|| text.charAt(insertionIndex) == " "
 					&& insertionIndex != text.length)
 					insertionIndex++;
@@ -827,7 +827,7 @@ class TextFieldRTL extends Sprite
 		if (letter != null)
 		{
 			// logic for general RTL letters, spacebar, punctuation mark
-			if (CharTools.rtlLetters.match(letter)
+			if (CharTools.isRTL(letter)
 				|| (currentlyRTL && letter == " ")
 				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
@@ -858,7 +858,7 @@ class TextFieldRTL extends Sprite
 				}
 				caretIndex++;
 
-				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
+				while (CharTools.isRTL(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
 					caretIndex++;
 			}
 			// logic for everything else - LTR letters, special chars...
@@ -1048,7 +1048,7 @@ class TextFieldRTL extends Sprite
 
 		var bounds = getCharBoundaries(index - 1 != 0 ? index - 1 : 0);
 		caret.height = bounds.height;
-		caret.x = if (CharTools.rtlLetters.match(text.charAt(index))) bounds.x else bounds.x + bounds.width;
+		caret.x = if (CharTools.isRTL(text.charAt(index))) bounds.x else bounds.x + bounds.width;
 		caret.y = bounds.y;
 		trace("caretY " + caret.y + " textFieldHeight " + textField.height);
 
@@ -1140,7 +1140,7 @@ class TextFieldRTL extends Sprite
 	{
 		if (!value)
 			return value;
-		if (!CharTools.rtlLetters.match(text.charAt(0)))
+		if (!CharTools.isRTL(text.charAt(0)))
 		{
 			alignment = LEFT;
 		}

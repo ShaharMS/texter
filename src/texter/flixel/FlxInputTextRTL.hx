@@ -172,7 +172,7 @@ class FlxInputTextRTL extends FlxInputText
 			if (caretIndex > 0)
 			{
 				#if !js
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (CharTools.isRTL(text.charAt(caretIndex + 1)) || CharTools.isRTL(text.charAt(caretIndex)))
 				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 				}
@@ -194,7 +194,7 @@ class FlxInputTextRTL extends FlxInputText
 			#if !js
 			if (text.length > 0 && caretIndex < text.length)
 			{
-				if (CharTools.rtlLetters.match(text.charAt(caretIndex + 1)) || CharTools.rtlLetters.match(text.charAt(caretIndex)))
+				if (CharTools.isRTL(text.charAt(caretIndex + 1)) || CharTools.isRTL(text.charAt(caretIndex)))
 				{
 					text = text.substring(0, caretIndex - 1) + text.substring(caretIndex);
 					caretIndex--;
@@ -222,7 +222,7 @@ class FlxInputTextRTL extends FlxInputText
 				insertionIndex = caretIndex;
 				// starts a search for the last RTL char and places the "\n" there
 				// if the string ends and theres still no last RTl char, "\n" will be insterted at length.
-				while (CharTools.rtlLetters.match(text.charAt(insertionIndex))
+				while (CharTools.isRTL(text.charAt(insertionIndex))
 					|| text.charAt(insertionIndex) == " "
 					&& insertionIndex != text.length)
 					insertionIndex++;
@@ -259,7 +259,7 @@ class FlxInputTextRTL extends FlxInputText
 		if (letter != null)
 		{
 			// logic for general RTL letters, spacebar, punctuation mark
-			if (CharTools.rtlLetters.match(letter)
+			if (CharTools.isRTL(letter)
 				|| (currentlyRTL && letter == " ")
 				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
@@ -289,7 +289,7 @@ class FlxInputTextRTL extends FlxInputText
 				}
 				caretIndex++;
 
-				while (CharTools.rtlLetters.match(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
+				while (CharTools.isRTL(text.charAt(caretIndex)) || text.charAt(caretIndex) == " " && caretIndex != text.length)
 					caretIndex++;
 			}
 			// logic for everything else - LTR letters, special chars...
@@ -325,7 +325,7 @@ class FlxInputTextRTL extends FlxInputText
 	{
 		if (!value)
 			return value;
-		if (!CharTools.rtlLetters.match(text.charAt(0)))
+		if (!CharTools.isRTL(text.charAt(0)))
 		{
 			alignment = LEFT;
 		}

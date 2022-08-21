@@ -79,7 +79,7 @@ class Bidi {
                             ltrString += char;
                         }
                     } 
-                    else if (CharTools.rtlLetters.match(nextChar)) {
+                    else if (CharTools.isRTL(nextChar)) {
                         //if the direction is RTL, spacebars should be added to the RTL string
                         if (currentLineDir == RTL) {
                             if (ltrString.length > 0) {
@@ -165,7 +165,7 @@ class Bidi {
                 }
             }
 
-            if (CharTools.rtlLetters.match(char)) {
+            if (CharTools.isRTL(char)) {
                 if (processedNewLine) {
                     attributes.push(LineDirection(RTL));
                     currentLineDir = RTL;
