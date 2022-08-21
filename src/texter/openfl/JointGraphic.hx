@@ -4,6 +4,8 @@ import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.display.Shape;
 import openfl.display.BitmapData;
+import openfl.geom.Point;
+
 
 class JointGraphic {
     
@@ -105,7 +107,7 @@ class JointGraphic {
 
         When unset, will use the default graphic.
     **/
-    public var rotationHandle(default, set):BitmapData = new DefaultJoint();
+    public var rotationHandle(default, set):BitmapData = new DefaultJoint(true);
 
     function set_rotationHandle(g:BitmapData):BitmapData {
         if (g == null) return g;
@@ -244,8 +246,17 @@ class JointGraphic {
 
 private class DefaultJoint extends BitmapData {
     
-    public function new() {
+    public function new(?rotation = false) {
         super(11, 11, true, 0x00000000);
+
+        if (rotation) {
+            BitmapData.loadFromFile("assets/texter/DynamicTextField/RotationJoint.png").onComplete(function(bmp:BitmapData) {
+                copyPixels(bmp, bmp.rect, new Point(0, 0));
+            }).onError(function(e) {
+                trace(e);
+            });
+            return;
+        }
         var s = new Shape();
         s.graphics.beginFill(0xffffff);
         s.graphics.lineStyle(1, 0x000000);
