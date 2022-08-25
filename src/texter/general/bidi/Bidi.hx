@@ -219,10 +219,9 @@ class Bidi {
 
         var currentLineDirection = UNDETERMINED;
         for (a in attributes) {
-            
             switch a {
                 case Bidified: result += CharTools.RLM;
-                case LineDirection(letterType): continue;
+                case LineDirection(letterType): currentLineDirection = letterType;
                 case Rtl(string): {
                     //we want to find all number groups in the string, reverse them, and then reverse the whole string
                     var numberEreg = ~/\d+/;
@@ -233,10 +232,28 @@ class Bidi {
                         var reversed = groupStr.reverse();
                         string = string.replace(groupStr, reversed);
                     }
-                    result += string.reverse();
+                    switch currentLineDirection {
+                        case RTL: {
+                            //find the previous line break
+                            var index = result.length - 1;
+                            while (result.charAt(index) != "\n" && index > 0) index--;
+                            result = result.substring(0, index + 1) + string.reverse() + result.substring(index + 1);
+                        }
+                        case LTR | UNDETERMINED: result += string.reverse();
+                    }
 
                 }
-                case Ltr(string): result += string;
+                case Ltr(string): {
+                    switch currentLineDirection {
+                        case RTL: {
+                            //find the previous line break
+                            var index = result.length - 1;
+                            while (result.charAt(index) != "\n" && index > 0) index--;
+                            result = result.substring(0, index + 1) + string + result.substring(index + 1);
+                        }
+                        case LTR | UNDETERMINED: result += string;
+                    }
+                }
                 case SoftChar(string, generalDirection): result += string;
                 case LineEnd: result += "\n";
             }
