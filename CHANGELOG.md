@@ -1,9 +1,74 @@
+2.3.0
+===
+
+**Bidi - new class!**
+
+The `Bidi` class provides methods that help getting directional information from a string:
+
+ - `process(text:String)` - runs the Bidi algorithm on `text`. if the resulting string will be re-processed by the algorithm, the text should still remain correct.
+ - `unbidify(text:String)` - runs the Bidi algoithms with some changes, "reversing" the effect on the initial Bidi processing.
+ - `getTextAttributes(text:String)` - more of an internal function, but can be used to get an "AST" of the text's directional components.
+ - `processTextAttributes(attributes:Array<TextAttribute>)` - takes an array of attributes (the AST) itself, and gets the correctly bidified text out of it.
+
+
+**TextAttribute**
+
+In addition to the `Bidi` class, this enum was added:
+
+ - `Bidified`
+ - `LineDirection(letterType:TextDirection);`
+ - `Rtl(string:String)`
+ - `Ltr(string:String)`
+ - `SoftChar(string:String, generalDirection:TextDirection)`
+ - `LineEnd()`
+
+`Bidified` serves no purpose, but to tell the bidi processor which text has been processed and which isnt.
+
+
+**BidiTools - new class!**
+
+BidiTools is a class containing cross framework tools to work with Bidi texts. currently, only openfl is supported, but more frameworks will be added in the future
+if requested/PRed. it currently has 2 methods:
+
+ - `bidifyString()` - similar to `Bidi.process()`
+ - `attachBidifier()` ` + 2 overloads` - attaches an engine, which eases working with Bidi texts in text fields. currently supports text fields of type:
+    - `openfl.text.TextField`
+    - `texter.openfl.DynamicTextField`
+    - `texter.openfl.DynamicTextField`
+
+
+**CharTools**
+
+ - added `allRtlLetters` - an array of all letters written RTL. this also contains more "obscure" languages, like aramaic.
+ - added `softChars`
+ - added `isRTL()`
+ - added `isSoft()` - checks if a char is whithout a specific direction
+
+
+**TextTools**
+
+ - added `remove()`
+ - added `replace()`
+ - added `reverse()`
+
+**DynamicTextField**
+
+ - added `onDragged` - a callback, triggered whenever the textfield stopped dragging. contains previous, and current position.
+ - added `onResized` - a callback, triggered whenever the textfield has been resized. contains previous, and current dimensions & position.
+ - added `onRotated` - a callback, triggered whenever the textfield has been rotated. contains previous and current rotation, in degress. Notice - this accounts for rotation around center.
+ - added conversion methods from textField sizes to object sizes:
+    - `textFieldWidthToObjectWidth()`
+    - `textFieldHeightToObjectWidth()`
+    - `objectWidthToTextFieldWidth()`
+    - `objectHeightToOTextFieldWidth()`
+ - rotation joint now has a better graphic. if not rendered, copy it from `assets/DynamicTextField` into you project, at `assets/texter/DynamicTextField`
+
 2.2.0 (August 16, 2022)
 ===
 
 **DynamicTextField - new class!**
 
-DynamicTextField is a new class that allows you to create a text field that can dynamically resize, move, and rotate. This class is kind of a superset of the TextField class.
+`DynamicTextField` is a new class that allows you to create a text field that can dynamically resize, move, and rotate. This class is kind of a superset of the TextField class.
 
 properties:
 

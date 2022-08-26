@@ -1,8 +1,6 @@
 package texter.general.bidi;
 
-import openfl.display.Preloader.DefaultPreloader;
 import texter.general.CharTools;
-import texter.general.Char;
 using TextTools;
 
 class Bidi {
@@ -211,10 +209,10 @@ class Bidi {
 
     public static function process(text:String, ?convCheck:Bool = true):String {
         var attributes:Array<TextAttribute> = getTextAttributes(text, convCheck);
-        return processAttributes(attributes);
+        return processTextAttributes(attributes);
     }
 
-    public static function processAttributes(attributes:Array<TextAttribute>):String {
+    public static function processTextAttributes(attributes:Array<TextAttribute>):String {
         var result = "";
 
         var currentLineDirection = UNDETERMINED;

@@ -5,7 +5,7 @@ import texter.general.bidi.Bidi;
 using TextTools;
 class Main {
 	static function main() {
-		#if interp
+		#if false
 		var timer = haxe.Timer.stamp();
 		var processed = Bidi.process("
 - שלום עולם
