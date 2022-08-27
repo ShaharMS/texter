@@ -44,25 +44,43 @@ class BidiTools {
     #if openfl
     public static function __attachOpenFL(textfield:TextField):Void {
 
+        function getBidified(text:String):String {
+            var processed = text;
+            //var offset = 0;
+            //for (i in 1...text.length) {
+            //    var previousCharPos = textfield.getCharBoundaries(i + offset - 1);
+            //    var charPos = textfield.getCharBoundaries(i + offset);
+            //    if (charPos.y > previousCharPos.y && text.charAt(i + offset - 1) != "\n") {
+            //        processed.insert("\n", i + offset);
+            //        offset++;
+            //    }
+            //}
+            return Bidi.process(processed);
+        }
+
         var unbidified:String = textfield.text;
         var nText = new TextField();
         function displayChanges(e:Event) {
             nText.defaultTextFormat = textfield.defaultTextFormat;
             nText.width = textfield.width;
             nText.x = textfield.x;
-            nText.text = bidifyString(textfield.text);
             nText.y = textfield.y + textfield.height;
-            nText.height = textfield.textHeight + 4;
+            nText.height = textfield.height;
+            nText.text = getBidified(textfield.text);
         }
 
         function displayBidifiedBelow(e) {
+            var tf = textfield.defaultTextFormat;
+            tf.align = if (CharTools.isRTL(textfield.text.charAt(0)) && tf.align != "center") "right" else tf.align;
             textfield.text = unbidified;
             nText.defaultTextFormat = textfield.defaultTextFormat;
             nText.width = textfield.width;
             nText.x = textfield.x;
-            nText.text = bidifyString(textfield.text);
             nText.y = textfield.y + textfield.height;
-            nText.height = textfield.textHeight + 4;
+            nText.height = textfield.height;
+            nText.multiline = textfield.multiline;
+            nText.wordWrap = textfield.wordWrap;
+            nText.text = getBidified(textfield.text);
             textfield.parent.addChild(nText);
             textfield.addEventListener(Event.CHANGE, displayChanges);
         }
