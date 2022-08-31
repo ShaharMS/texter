@@ -183,7 +183,7 @@ class DynamicTextField extends Sprite {
     public function new() {
         super();
         textField = new TextField();
-		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, null, Std.int(JOINT_GUTTER * 2), Std.int(JOINT_GUTTER * 2), null, null);
+		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, "left", Std.int(JOINT_GUTTER * 2), Std.int(JOINT_GUTTER * 2), null, null);
         addChild(textField);
 
         borders = {
