@@ -85,14 +85,42 @@ class BidiTools {
         } else {
             invoke(false, null);
         }
+    }
 
-
-
+    public static function __attachLiveOpenFL(textfield:TextField):Void {
         
+        var unbidified:String = textfield.text;
+        var outsideStage = new TextField();
+        function displayChanges(e:Event) {
+            outsideStage.text = textfield.text.contains(CharTools.RLM) ? Bidi.unbidify(textfield.text) : textfield.text;
+            var prevc = textfield.caretIndex;
+            textfield.text = bidifyString(outsideStage.text);
+            var relCaretIndex = prevc + textfield.text.substring(0, prevc).countOccurrencesOf(CharTools.RLM);
+            while (textfield.text.charAt(relCaretIndex - 1) == " ") relCaretIndex--;
+            trace(textfield.text.charAt(relCaretIndex));
+            textfield.setSelection(relCaretIndex, relCaretIndex);
+            trace(textfield.text.indexesOf(CharTools.RLM));
+            trace(textfield.text.countOccurrencesOf("\n"));
+        } 
+
+        function invoke(fromEvent = false, e:Event) {
+            if (fromEvent) textfield.removeEventListener(Event.ADDED_TO_STAGE, invoke.bind(true));
+            outsideStage = new TextField();
+            outsideStage.x = outsideStage.y = -200;
+            outsideStage.width = outsideStage.height = 100;
+            textfield.stage.addChild(outsideStage);
+            textfield.addEventListener(Event.CHANGE, displayChanges);
+        }
+        
+        if (textfield.stage == null) {
+            textfield.addEventListener(Event.ADDED_TO_STAGE, invoke.bind(true));
+        } else {
+            invoke(false, null);
+        }
     }
 
     public static overload extern inline function attachBidifier(textfield:TextField):Void {
-        __attachOpenFL(textfield);
+        __attachLiveOpenFL(textfield);
     }
 
     public static overload extern inline function attachBidifier(textfield:DynamicTextField):Void {

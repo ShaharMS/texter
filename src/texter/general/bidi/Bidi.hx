@@ -23,7 +23,7 @@ class Bidi {
             //combine with unbifiy
             text = rlmPreText + unbidify(rlmText) + rlmPostText;
         }
-
+        text = text.replace(CharTools.RLM, "");
         var rtlString = "";
         var ltrString = "";
         var processedNewLine = true;
@@ -255,6 +255,7 @@ class Bidi {
                 case SoftChar(string, generalDirection): result += string;
                 case LineEnd: result += "\n";
             }
+            if (result.charAt(result.length - 1) == "\n") result = result.replaceLast("\n", "");
         }
         return result;
     }
