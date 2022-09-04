@@ -24,7 +24,7 @@ this class provides the ability to display mathematical forms of strings. no spe
 The `Bidi` class provides methods that help getting directional information from a string:
 
  - `process(text:String)` - runs the Bidi algorithm on `text`. if the resulting string will be re-processed by the algorithm, the text should still remain correct.
- - `unbidify(text:String)` - runs the Bidi algoithms with some changes, "reversing" the effect on the initial Bidi processing.
+ - `unbidify(text:String)` - runs the Bidi algorithms with some changes, "reversing" the effect on the initial Bidi processing.
  - `getTextAttributes(text:String)` - more of an internal function, but can be used to get an "AST" of the text's directional components.
  - `processTextAttributes(attributes:Array<TextAttribute>)` - takes an array of attributes (the AST) itself, and gets the correctly bidified text out of it.
 
@@ -40,12 +40,12 @@ In addition to the `Bidi` class, this enum was added:
  - `SoftChar(string:String, generalDirection:TextDirection)`
  - `LineEnd()`
 
-`Bidified` serves no purpose, but to tell the bidi processor which text has been processed and which isnt.
+`Bidified` serves no purpose, but to tell the bidi processor which text has been processed and which text has'nt.
 
 
 **BidiTools - new class!**
 
-BidiTools is a class containing cross framework tools to work with Bidi texts. currently, only openfl is supported, but more frameworks will be added in the future
+BidiTools is a class containing cross framework tools to work with Bidi texts. currently, only OpenFL is supported, but more frameworks will be added in the future
 if requested/PRed. it currently has 2 methods:
 
  - `bidifyString()` - similar to `Bidi.process()`

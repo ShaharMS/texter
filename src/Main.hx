@@ -1,5 +1,6 @@
 package;
 
+import texter.general.math.MathLexer;
 import haxe.Timer;
 import texter.general.bidi.Bidi;
 using TextTools;
@@ -16,7 +17,9 @@ my name is שחר and היום אני בן 16
 		trace(Bidi.unbidify(processed));
 		trace('Processing Time: ${Timer.stamp() - timer}');
 		#else
-
+		var eq = "f(x) = 5x + (444x)/(305423) + 61x";
+		trace(MathLexer.condenseAttributes(MathLexer.getMathAttributes(eq)));
+		trace(MathLexer.getAttributeText(MathLexer.condenseAttributes(MathLexer.getMathAttributes(eq))));
 		#end
 	}
 }
