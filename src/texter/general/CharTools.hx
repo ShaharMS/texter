@@ -212,6 +212,10 @@ class CharTools
 		return char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
 	}
 
+	public static function isLTR(char:String):Bool {
+		return !isRTL(char) && !isSoft(char) && char != RLM;
+	}
+
 	public static function isSoft(char:String) {
 		return char == ZEROWIDTHSPACE || char == PDF || char == PDI || softChars.indexOf(char) != -1;
 	}
