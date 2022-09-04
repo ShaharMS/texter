@@ -209,7 +209,7 @@ class CharTools
 	}
 
 	public static function isRTL(char:String):Bool {
-		return char == RLM || char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
+		return char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
 	}
 
 	public static function isSoft(char:String) {
