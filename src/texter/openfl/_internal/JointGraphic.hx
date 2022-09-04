@@ -1,4 +1,4 @@
-package texter.openfl;
+package texter.openfl._internal;
 #if openfl
 import openfl.display.Bitmap;
 import openfl.display.Sprite;

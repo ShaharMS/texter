@@ -1,7 +1,20 @@
-2.3.1
+2.4.0
 ===
 
+**TextTools:**
 
+ - added `insert()`
+
+
+**MathTextField - new Class!**
+
+this class provides the ability to display mathematical forms of strings. no special syntax is required (e.g. this: `f(x) = 2x + 5` is valid)
+
+
+2.3.1 (September 4th, 2022)
+===
+
+ - fix for FlxInputTextRTL and TextFieldRTL typing letters incorrectly
 
 2.3.0 (August 26th, 2022)
 ===

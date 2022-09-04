@@ -1,4 +1,4 @@
-package texter.openfl;
+package texter.openfl._internal;
 
 #if openfl
 import openfl.geom.Rectangle;
@@ -7,7 +7,7 @@ import texter.openfl.DynamicTextField;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
 
-import texter.openfl.JointGraphic.*;
+import texter.openfl._internal.JointGraphic.*;
 
 using Math;
 class JointManager
