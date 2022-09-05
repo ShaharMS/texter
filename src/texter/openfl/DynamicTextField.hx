@@ -23,6 +23,7 @@ import openfl.geom.Rectangle;
 import openfl.events.TextEvent;
 
 import texter.openfl._internal.JointGraphic.*;
+import texter.openfl._internal.JointManager;
 
 /**
  * A normal `TextField` that offers many positional and visual controls.
