@@ -1,25 +1,37 @@
 package texter.general.math;
 
+import flash.utils.QName;
 using TextTools;
+using StringTools;
 using texter.general.CharTools;
 class MathLexer {
     
+    /**
+     * Returns a simplified array of mathematical attributes. to further
+     * process this array, you can use the rest of the functions in this class.
+     * @param text the text to be lexed and "trransformed" into an attribute array
+     * @return Array<MathAttribute>
+     */
     public static function getMathAttributes(text:String):Array<MathAttribute> {
         var attributes:Array<MathAttribute> = [];
-        text.remove(" ");
+        text = text.trim().remove(" ").replace("sqrt", "√");
 
         for (i in 0...text.length) {
             var char = text.charAt(i);
 
-            if (CharTools.generalMarks.contains(char)) {
-                attributes.push(Sign(i, char));
-            }
-
-            if (CharTools.numbers.contains(char)) {
+            if ("0123456789".contains(char)) {
                 attributes.push(Number(i, char));
             }
-
-            if (char.isRTL() || char.isLTR()) {
+            else if ("{[(".contains(char)) {
+                attributes.push(StartClosure(i, char));
+            }
+            else if ("}])".contains(char)) {
+                attributes.push(EndClosure(i, char));
+            }
+            else if ('${CharTools.generalMarks.join("")}√'.contains(char)) {
+                attributes.push(Sign(i, char));
+            }
+            else if (char.isRTL() || char.isLTR()) {
                 attributes.push(Variable(i, char));
             }
 
@@ -28,171 +40,124 @@ class MathLexer {
         return attributes;
     }
 
+    /**
+     * Fixes the order of elements in the array to match the one in the string representation.
+     * @param attributes an array of maybe incorreectly ordered attributes
+     * @return Array<MathAttribute>
+     */
     public static function reorderAttributes(attributes:Array<MathAttribute>):Array<MathAttribute> {
         var at = attributes.copy();
 
         for (item in attributes) {
             switch item {
-                case Sign(index, _) | Variable(index, _) | Number(index, _): at[index] = item;
+                case Sign(index, _) | Variable(index, _) | Number(index, _) | StartClosure(index, _) | EndClosure(index, _) | Null(index) | FunctionDefinition(index, _): at[index] = item;
                 default:
             }
         }
         return at;
     }
 
-    public static function condenseAttributes(attributes:Array<MathAttribute>):Array<MathAttribute> {
+    /**
+     * Removes completely duplicate elements (elements with the same arguments & type). The first element of the similar
+     * ones will be the only one "saved"
+     * @param attributes the array that mioght contain duplicates
+     * @return Array<MathAttribute>
+     */
+    public static function removeDuplicates(attributes:Array<MathAttribute>):Array<MathAttribute> {
+        var copy = [];
+        for (a in attributes) if (!copy.contains(a)) copy.push(a);
+
+        return copy;
+    }
+
+    /**
+     * Removes whitespaces from a geven array of mathematical attributes. Whitespaces shouldnt appear in the first place.
+     * if you need to call this, you might have done something wrong, but this function can still save you from yourself :)
+     * @param attributes the attributes that may ot may not contain whitespace ones
+     * @return an array empties of whitespace elements
+     */
+    public static function condenseWhitespaces(attributes:Array<MathAttribute>):Array<MathAttribute> {
         var whitespaced:Array<MathAttribute> = reorderAttributes(attributes);
 
         //first, remove all whitespaces
         for (a in whitespaced) {
+            if (a == null) continue;
             switch a {
-                case Variable(index, " "): whitespaced[index] = null;
-                case Number(index, " "): whitespaced[index] = null;
-                case Sign(index, " "): whitespaced[index] = null;
-                default: a;
-            }
-        }
-
-        var condensed = whitespaced.filter(a -> a != null);
-
-        //go over the reordered attributes, and check if the pattern of `Letter + ( + Content + )` exists. if so, type it as a FunctionLetter.
-        for (i in 0...condensed.length - 2) {
-            var item = condensed[i];
-            var _item = condensed[i + 1];
-            switch [item, _item] {
-                default:
-                case [Variable(index, letter), Sign(_, "(")]: {
-                    for (f in index + 2...condensed.length) {
-                        if (Type.enumEq(condensed[f], Sign(f, ")"))) {
-                            condensed[i] = FunctionDefinition(i, letter);
-                        }
-                    }
-                }
-            }
-        }
-
-        //iterate again, but now try to group divisions. This is the hardest part, and the array will be rewritten.
-        for (i in 1...condensed.length - 1) {
-            var item = condensed[i - 1];
-            var _item = condensed[i];
-            var __item = condensed[i + 1];
-            if (_item == null) continue;
-            switch _item {
-                case Sign(i, "/") | Sign(i, "\\") | Sign(i, "÷"): {
-                    switch [item, __item] {
-                        case [Sign(inb, ")"), Sign(ina, "(")]: {
-                            //search from the first index, backwards for an opening (
-                            var ind = inb;
-                            var attributesOnUpperHandSide = [];
-                            while (!Type.enumEq(condensed[ind], Sign(ind, "(")) && ind > 0) {
-                                ind--;
-                                attributesOnUpperHandSide.push(condensed[ind]);
-                            }
-
-                            //search from the first index, backwards for an opening (
-                            var ind2 = ina;
-                            var attributesOnLowerHandSide = [];
-                            while (!Type.enumEq(condensed[ind2], Sign(ind2, ")")) && ind2 < condensed.length - 1) {
-                                ind2++;
-                                attributesOnLowerHandSide.push(condensed[ind2]);
-                            }
-
-                            var indexSetter = attributesOnUpperHandSide.copy();
-                            trace(indexSetter);
-                            for (a in indexSetter) {
-                                switch a {
-                                    case FunctionDefinition(index, letter): condensed[index] = null;
-                                    case Variable(index, letter): condensed[index] = null;
-                                    case Number(index, letter): condensed[index] = null;
-                                    case Sign(index, letter): condensed[index] = null;
-                                    default:
-                                }
-                            }
-
-                            var offset = i + attributesOnLowerHandSide.length;
-
-                            condensed[i - 1] = condensed[i + 1] = null;
-                            condensed[i] = Division(i, attributesOnUpperHandSide, attributesOnLowerHandSide);
-                            for (a in i + 1...offset + 1) {condensed[a] = null;}
-                            condensed[i + 2] = condensed[i + 3] = condensed[i + 4] = null;
-                        }
-                        case [Sign(ina, ")"), Variable(index, letter)] | [Sign(ina, ")"), Number(index, letter)]: {
-                            //search from the first index, backwards for an opening (
-                            var ind2 = ina;
-                            var attributesOnLowerHandSide = [];
-                            while (!Type.enumEq(condensed[ind2], Sign(ind2, ")")) && ind2 < condensed.length - 1) {
-                                ind2++;
-                                attributesOnLowerHandSide.push(condensed[ind2]);
-                            }
-
-                            var indexSetter = attributesOnLowerHandSide.copy();
-                            indexSetter.push(Variable(index, letter)); //it doesnt matter the type, its used just for indexing.
-                            for (a in indexSetter) {
-                                switch a {
-                                    case FunctionDefinition(index, letter): condensed[index] = null;
-                                    case Variable(index, letter): condensed[index] = null;
-                                    case Number(index, letter): condensed[index] = null;
-                                    case Sign(index, letter): condensed[index] = null;
-                                    default:
-                                }
-                            }
-                            condensed[i] = Division(i, if (CharTools.numbers.contains(letter)) [Number(index, letter)] else [Variable(index, letter)], attributesOnLowerHandSide);
-                        }
-                        case [Variable(index, letter), Sign(inb, "(")] | [Number(index, letter), Sign(inb, "(")]: {
-                            //search from the first index, backwards for an opening (
-                            var ind = inb;
-                            var attributesOnUpperHandSide = [];
-                            while (!Type.enumEq(condensed[ind], Sign(ind, "(")) && ind > 0) {
-                                ind--;
-                                attributesOnUpperHandSide.push(condensed[ind]);
-                            }
-
-                            var indexSetter = attributesOnUpperHandSide.copy();
-                            indexSetter.push(Variable(index, letter)); //it doesnt matter the type, its used just for indexing.
-                            for (a in indexSetter) {
-                                switch a {
-                                    case FunctionDefinition(index, letter): condensed[index] = null;
-                                    case Variable(index, letter): condensed[index] = null;
-                                    case Number(index, letter): condensed[index] = null;
-                                    case Sign(index, letter): condensed[index] = null;
-                                    default:
-                                }
-                            }
-                            condensed[i] = Division(i, attributesOnUpperHandSide, if (CharTools.numbers.contains(letter)) [Number(index, letter)] else [Variable(index, letter)]);
-                        }
-                        case 
-                        [Variable(index, _), Variable(inde, _)] | 
-                        [Number(index, _), Variable(inde, _)] | 
-                        [Variable(index, _), Number(inde, _)] | 
-                        [Number(index, _), Number(inde, _)]: 
-                        {
-                            condensed[i] = Division(index, [item], [__item]);
-                            condensed[i - 1] = null;
-                            condensed[i + 1] = null;
-                        }
-                        default: trace([item, __item]);
-                    }
-                }
+                case Variable(index, " "): whitespaced[index] = Null(index);
+                case Number(index, " "): whitespaced[index] = Null(index);
+                case Sign(index, " "): whitespaced[index] = Null(index);
                 default:
             }
         }
-
-        return condensed.filter((a) -> a != null);
+        trace(whitespaced);
+        return whitespaced;
     }
 
-    public static function getAttributeText(attributes:Array<MathAttribute>):String {
+    /**
+     * Gets an array of `MathAttribute`s and returns their text representation. `Null` elements will be ignored, correctly.
+     * @param attributes the mathematical attributes
+     * @return The attributes' text representation
+     */
+    public static function extractTextFromAttributes(attributes:Array<MathAttribute>):String {
         var a = [];
         for (item in attributes) {
             switch item {
                 case FunctionDefinition(index, letter): a[index] = letter;
                 case Division(index, upperHandSide, lowerHandSide): {
-                    a[index] = '${getAttributeText(upperHandSide)})/(${getAttributeText(lowerHandSide)}';
+                    a[index] = '${extractTextFromAttributes([upperHandSide])}/${extractTextFromAttributes([lowerHandSide])}';
                 }
                 case Variable(index, letter): a[index] = letter;
                 case Number(index, letter): a[index] = letter;
                 case Sign(index, letter): a[index] = letter;
+                case Closure(index, letter, content): {
+                    final start = if (letter.contains("{") || letter.contains("}")) "{" else if (letter.contains("[") || letter.contains("]")) "[" else "(";
+                    final end = switch start {case "{": "}"; case "[": "]"; default: ")";};
+                    a[index] = '${start}${extractTextFromAttributes(content)}${end}';
+                }
+                case StartClosure(index, letter): a[index] = letter;
+                case EndClosure(index, letter): a[index] = letter;
+                case Null(index):
+                
             }
         }
         return a.join("").replace("null", "");
+    }
+
+    /**
+        Gets an array of Mathematical Atributes and groups related elements:
+
+         - Multiple numbers grouped together will become one element (Done)
+         - StartClosure and EndClosure should be merged into one Closure
+         - Division hand sides will be merged into one `Division` element
+         - The resulting array will be in order, indices will be set to the current index in the array.
+    **/
+    public static function splitBlocks(attributes:Array<MathAttribute>):Array<MathAttribute> {
+        //first, merge numbers
+        var numbersMerged = attributes.copy();
+        attributes.push(Null(-1));
+        var currentNum = "";
+        var startIndex = -1;
+        for (a in attributes) {
+            switch a {
+                case Number(index, letter): {
+                    if (startIndex == -1) startIndex = index;
+                    currentNum += letter;
+                }
+                default: {
+                    if (currentNum.length != 0) {
+                        //set the other items to `Null(-1)` to be removed later.
+                        for (i in startIndex...startIndex + currentNum.length) {
+                            numbersMerged[i] = Null(-1);
+                        }
+                        numbersMerged[startIndex] = Number(startIndex, currentNum);
+                        currentNum = "";
+                        startIndex = -1;
+                    }
+                    trace(a);
+                }
+            }
+        }
+        numbersMerged = numbersMerged.filter(a -> !Type.enumEq(a, Null(-1)));
+        return numbersMerged;
     }
 }

@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://lime.software/project/1.0.2 http://lime.software/xsd/project-1.0.2.xsd">
 	
 	<section if="openfl">
-		<assets path="assets/DynamicTextField" rename="assets/texter/DynamicTextField" include="*.png" embed="true" />
+		<assets path="assets/DynamicTextField" rename="assets/texter/DynamicTextField" include="*.png"/>
+		<assets path="assets/MathTextField" rename="assets/texter/DynamicTextField" include="*.ttf|*.png"/>
 	</section>
 </project>
