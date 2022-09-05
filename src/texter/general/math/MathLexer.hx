@@ -41,7 +41,19 @@ class MathLexer {
     }
 
     public static function condenseAttributes(attributes:Array<MathAttribute>):Array<MathAttribute> {
-        var condensed:Array<MathAttribute> = reorderAttributes(attributes);
+        var whitespaced:Array<MathAttribute> = reorderAttributes(attributes);
+
+        //first, remove all whitespaces
+        for (a in whitespaced) {
+            switch a {
+                case Variable(index, " "): whitespaced[index] = null;
+                case Number(index, " "): whitespaced[index] = null;
+                case Sign(index, " "): whitespaced[index] = null;
+                default: a;
+            }
+        }
+
+        var condensed = whitespaced.filter(a -> a != null);
 
         //go over the reordered attributes, and check if the pattern of `Letter + ( + Content + )` exists. if so, type it as a FunctionLetter.
         for (i in 0...condensed.length - 2) {
@@ -59,13 +71,12 @@ class MathLexer {
             }
         }
 
-        var copy = condensed.copy();
         //iterate again, but now try to group divisions. This is the hardest part, and the array will be rewritten.
-        for (i in 1...copy.length - 1) {
-            var item = copy[i - 1];
-            var _item = copy[i];
-            var __item = copy[i + 1];
-
+        for (i in 1...condensed.length - 1) {
+            var item = condensed[i - 1];
+            var _item = condensed[i];
+            var __item = condensed[i + 1];
+            if (_item == null) continue;
             switch _item {
                 case Sign(i, "/") | Sign(i, "\\") | Sign(i, "÷"): {
                     switch [item, __item] {
@@ -73,17 +84,17 @@ class MathLexer {
                             //search from the first index, backwards for an opening (
                             var ind = inb;
                             var attributesOnUpperHandSide = [];
-                            while (!Type.enumEq(copy[ind], Sign(ind, "(")) && ind > 0) {
+                            while (!Type.enumEq(condensed[ind], Sign(ind, "(")) && ind > 0) {
                                 ind--;
-                                attributesOnUpperHandSide.push(copy[ind]);
+                                attributesOnUpperHandSide.push(condensed[ind]);
                             }
 
                             //search from the first index, backwards for an opening (
                             var ind2 = ina;
                             var attributesOnLowerHandSide = [];
-                            while (!Type.enumEq(copy[ind2], Sign(ind2, ")")) && ind2 < copy.length - 1) {
+                            while (!Type.enumEq(condensed[ind2], Sign(ind2, ")")) && ind2 < condensed.length - 1) {
                                 ind2++;
-                                attributesOnLowerHandSide.push(copy[ind2]);
+                                attributesOnLowerHandSide.push(condensed[ind2]);
                             }
 
                             var indexSetter = attributesOnUpperHandSide.copy();
@@ -109,9 +120,9 @@ class MathLexer {
                             //search from the first index, backwards for an opening (
                             var ind2 = ina;
                             var attributesOnLowerHandSide = [];
-                            while (!Type.enumEq(copy[ind2], Sign(ind2, ")")) && ind2 < copy.length - 1) {
+                            while (!Type.enumEq(condensed[ind2], Sign(ind2, ")")) && ind2 < condensed.length - 1) {
                                 ind2++;
-                                attributesOnLowerHandSide.push(copy[ind2]);
+                                attributesOnLowerHandSide.push(condensed[ind2]);
                             }
 
                             var indexSetter = attributesOnLowerHandSide.copy();
@@ -131,9 +142,9 @@ class MathLexer {
                             //search from the first index, backwards for an opening (
                             var ind = inb;
                             var attributesOnUpperHandSide = [];
-                            while (!Type.enumEq(copy[ind], Sign(ind, "(")) && ind > 0) {
+                            while (!Type.enumEq(condensed[ind], Sign(ind, "(")) && ind > 0) {
                                 ind--;
-                                attributesOnUpperHandSide.push(copy[ind]);
+                                attributesOnUpperHandSide.push(condensed[ind]);
                             }
 
                             var indexSetter = attributesOnUpperHandSide.copy();
@@ -166,24 +177,7 @@ class MathLexer {
             }
         }
 
-        return refine(condensed.filter((a) -> a != null));
-    }
-
-    /**
-     * Removes Duplicates and lightly processes the array.
-     */
-    public static function refine(attributes:Array<MathAttribute>) {
-        return getUnique(attributes);
-    }
-
-    static function getUnique<T>(array:Array<T>) {
-        var l = [];
-        for (v in array) {
-         	if (l.indexOf(v) == -1) { // array has not v
-            	l.push(v);
-            }
-         }
-        return l;
+        return condensed.filter((a) -> a != null);
     }
 
     public static function getAttributeText(attributes:Array<MathAttribute>):String {

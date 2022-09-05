@@ -11,7 +11,7 @@ class CharTools
 
 		Every letter appears only once.
 	**/
-	public static var allRtlChars:String = "ابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمنںوہھءیے یهونملگکقفغعظطضصشسژزرذدخحچجثتپباءހށނރބޅކއވމފދތލގޏސޑޒޓޔޕޖޗޘޙޚޛޜޝޞޟޠޡޢޣޤޥ ަ  ާ ި  ީ ު  ޫ ެ  ޭ  ޮ  ޯ ްޱآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهويىًٌٍَُِّْـאבגדהוזחטיךכלםמןנסעףפץצקרשתװױײ׳״𐡀𐡁𐡂𐡃𐡄𐡅𐡆𐡇𐡈𐡉𐡊𐡋𐡌𐡍𐡎𐡏𐡐𐡑𐡒𐡓𐡔𐡕𐡗𐡘𐡙𐡚𐡛𐡜𐡝𐡞𐡟یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء";
+	public static var allRtlChars:String = "ابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمنںوہھءیےیهونملگکقفغعظطضصشسژزرذدخحچجثتپباءހށނރބޅކއވމފދތލގޏސޑޒޓޔޕޖޗޘޙޚޛޜޝޞޟޠޡޢޣޤޥަާިީުޫެޭޮޯްޱآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهويىًٌٍَُِّْـאבגדהוזחטיךכלםמןנסעףפץצקרשתװױײ׳״𐡀𐡁𐡂𐡃𐡄𐡅𐡆𐡇𐡈𐡉𐡊𐡋𐡌𐡍𐡎𐡏𐡐𐡑𐡒𐡓𐡔𐡕𐡗𐡘𐡙𐡚𐡛𐡜𐡝𐡞𐡟یهونملگکقفغعظطضصشسژزرذدخحچجثتپباء";
 	/**
 		An `EReg` of all arabic & hebrew letters. It'll check if a `String` 
 		contains 1 or more chars from a RTL (right-to-left) language.
@@ -209,6 +209,7 @@ class CharTools
 	}
 
 	public static function isRTL(char:String):Bool {
+		if (char == "" || char == null) return false;
 		return char == RLI || char == RLO || allRtlChars.indexOf(char) != -1;
 	}
 
