@@ -58,6 +58,48 @@ class MathLexer {
     }
 
     /**
+     * Fixes the output of `splitBlocks` to correctly print to a string.
+     * 
+     * takes in an array of attributes and resets their order to actually make sense:
+     * 
+     * this
+     * ```
+     * [Variable(6, "x"), Closure(")", 19, [Number(3, "123")])]
+     * ```
+     * becomes this:
+     * ```
+     * [Variable(0, "x"), Closure(")", 1, [Number(0, "123")])]
+     * ```
+     * 
+     * `Null`s will always have an index of -1.
+     */
+    public static function resetAttributeOrder(attributes:Array<MathAttribute>):Array<MathAttribute> {
+        var copy = attributes.copy();
+        for (i in 0...copy.length) {
+            var element = attributes[i];
+            switch element {
+                case FunctionDefinition(_, letter): copy[i] = FunctionDefinition(i, letter);
+                case Variable(index, letter): copy[i] = Variable(i, letter);
+                case Number(index, letter): copy[i] = Number(i, letter);
+                case Sign(index, letter): copy[i] = Sign(i, letter);
+                case StartClosure(index, letter): copy[i] = StartClosure(i, letter);
+                case EndClosure(index, letter): copy[i] = EndClosure(i, letter);
+                case Closure(index, letter, content): {
+                    var contentCopy = resetAttributeOrder(content);
+                    copy[i] = Closure(i, letter, contentCopy);
+                }
+                case Division(index, upperHandSide, lowerHandSide): {
+                    var uhs = resetAttributeOrder([upperHandSide]);
+                    var lhs = resetAttributeOrder([lowerHandSide]);
+                    copy[i] = Division(i, uhs[0], lhs[0]);
+                }
+                case Null(index): copy[i] = Null(-1);
+            }
+        }
+        return copy;
+    }
+
+    /**
      * Removes completely duplicate elements (elements with the same arguments & type). The first element of the similar
      * ones will be the only one "saved"
      * @param attributes the array that mioght contain duplicates
@@ -124,12 +166,12 @@ class MathLexer {
     }
 
     /**
-        Gets an array of Mathematical Atributes and groups related elements:
+        Gets an array of Mathematical Atributes and groups related elements to be more "useful":
 
-         - Multiple numbers grouped together will become one element (Done)
+         - Multiple numbers grouped together will become one element
          - StartClosure and EndClosure should be merged into one `Closure`
          - Division hand sides will be merged into one `Division` element
-         - The resulting array will be in order, indices will be set to the current index in the array.
+         - The resulting array will be in order, but element indices will get messed up. before extracting the text, use `resetAttributesOrder()`
     **/
     public static function splitBlocks(attributes:Array<MathAttribute>):Array<MathAttribute> {
         //first, merge numbers
@@ -162,6 +204,7 @@ class MathLexer {
         //TODO: #8 More efficient implementation of parenthesis grouping in SplitBlocks
         //Closure grouping - iterative scan from the begining of the array for Start & End Closure elements
         var closuresMerged = numbersMerged.copy();
+        trace(closuresMerged);
         var i = 0;
         var start:Int = -1, end:Int = -1;
         var elements:Array<MathAttribute> = [];
@@ -170,19 +213,18 @@ class MathLexer {
             switch element {
                 case StartClosure(index, letter): {
                     elements = [];
-                    start = index;
+                    start = i;
                 }
                 case EndClosure(index, letter): {
-                    end = index;
-                    for (id in start...end + 1) {
+                    end = i;
+                    for (id in start...end) {
                         closuresMerged[id] = Null(-1);
                     }
-                    closuresMerged[end] = Closure(end, letter, elements);
+                    closuresMerged[i] = Closure(end, letter, elements);
                     start = end = -1;
                     i = 0;
                     continue;
                 }
-                case Closure(index, letter, content):
                 case Null(index): //dont push nulls
                 default: {
                     if (start != -1) {
@@ -194,6 +236,22 @@ class MathLexer {
         }
         closuresMerged = closuresMerged.filter(a -> !Type.enumEq(a, Null(-1)));
 
-        return closuresMerged;
+        var divisionsCondensed = closuresMerged.copy();
+        //if we go end -> start, we would be able to scan everything, and still nest correctly
+        var i = divisionsCondensed.length;
+        while (--i > 0) {
+            var element = divisionsCondensed[i];
+            switch element {
+                case Sign(index, "/") | Sign(index, "\\") | Sign(index, "÷"):{
+                    var uhs = divisionsCondensed[i - 1];
+                    var lhs = divisionsCondensed[i + 1];
+                    divisionsCondensed[i] = Division(i, uhs, lhs);
+                    divisionsCondensed[i - 1] = divisionsCondensed[i + 1] = Null(-1);
+                }
+                default:
+            }
+        }
+
+        return divisionsCondensed.filter(a -> !Type.enumEq(a, Null(-1)));
     }
 }

@@ -10,6 +10,26 @@
 
 this class provides the ability to display mathematical forms of strings. no special syntax is required (e.g. this: `f(x) = 2x + 5` is valid)
 
+**MathLexer - new Class!**
+
+`MathLexer` is an "internal" class, used by mathematical displays inside the `texter` library to display mathematical expressions in a more advanced and natural way. Theres nothing preventing you from using it yourself, but it might not be as straight forward as just getting some text and putting it through a function. If you want to make a mathematical expression display of your own, you can look at the implementations that already exist inside this library.
+
+ - added `getMathAttributes`
+ - added `splitBlocks`
+ - added `reorderAttributes`
+ - added `resetAttributesOrder`
+ - added `removeDuplicates`
+ - added `condenseWhitespaces`
+ - added `extractTextFromAttributes`
+
+
+2.3.2 (September 5th, 2022)
+===
+
+ - fixed allRtlLetters containing whitespaces
+ - fixed FlxInputTextRTL assuming RTL direction
+ - fixed FlxInputTextRTL backspace not working
+ - fixed FlxInputTextRTL typing getting messy after typing a whitespaces
 
 2.3.1 (September 4th, 2022)
 ===

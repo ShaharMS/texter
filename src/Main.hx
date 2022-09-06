@@ -27,9 +27,24 @@ my name is שחר and היום אני בן 16
 		//	).join("\n")
 		//);
 		trace(
-			MathLexer.splitBlocks(
-				MathLexer.getMathAttributes(
-					"(12345x) + 3490"
+			//MathLexer.extractTextFromAttributes(
+				MathLexer.resetAttributeOrder(
+					MathLexer.splitBlocks(
+						MathLexer.getMathAttributes(
+							"((12345x) + 4)/(3490)"
+						)
+					)	
+				)
+			//)
+		);
+		trace(
+			MathLexer.extractTextFromAttributes(
+				MathLexer.resetAttributeOrder(
+					MathLexer.splitBlocks(
+						MathLexer.getMathAttributes(
+							"((12345x) + 4)/(3490)"
+						)
+					)	
 				)
 			)
 		);
