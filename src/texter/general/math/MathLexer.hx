@@ -116,7 +116,7 @@ class MathLexer {
                 }
                 case StartClosure(index, letter): a[index] = letter;
                 case EndClosure(index, letter): a[index] = letter;
-                case Null(index):
+                case Null(index): 
                 
             }
         }
@@ -127,7 +127,7 @@ class MathLexer {
         Gets an array of Mathematical Atributes and groups related elements:
 
          - Multiple numbers grouped together will become one element (Done)
-         - StartClosure and EndClosure should be merged into one Closure
+         - StartClosure and EndClosure should be merged into one `Closure`
          - Division hand sides will be merged into one `Division` element
          - The resulting array will be in order, indices will be set to the current index in the array.
     **/
@@ -158,6 +158,42 @@ class MathLexer {
             }
         }
         numbersMerged = numbersMerged.filter(a -> !Type.enumEq(a, Null(-1)));
-        return numbersMerged;
+
+        //TODO: #8 More efficient implementation of parenthesis grouping in SplitBlocks
+        //Closure grouping - iterative scan from the begining of the array for Start & End Closure elements
+        var closuresMerged = numbersMerged.copy();
+        var i = 0;
+        var start:Int = -1, end:Int = -1;
+        var elements:Array<MathAttribute> = [];
+        while (i < numbersMerged.length) {
+            var element = closuresMerged[i];
+            switch element {
+                case StartClosure(index, letter): {
+                    elements = [];
+                    start = index;
+                }
+                case EndClosure(index, letter): {
+                    end = index;
+                    for (id in start...end + 1) {
+                        closuresMerged[id] = Null(-1);
+                    }
+                    closuresMerged[end] = Closure(end, letter, elements);
+                    start = end = -1;
+                    i = 0;
+                    continue;
+                }
+                case Closure(index, letter, content):
+                case Null(index): //dont push nulls
+                default: {
+                    if (start != -1) {
+                        elements.push(element);
+                    }
+                }
+            }
+            i++;
+        }
+        closuresMerged = closuresMerged.filter(a -> !Type.enumEq(a, Null(-1)));
+
+        return closuresMerged;
     }
 }

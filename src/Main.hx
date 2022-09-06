@@ -20,16 +20,16 @@ my name is שחר and היום אני בן 16
 		//var eq = "f(x) = 5x + (444x)/(30542315) + 61x";
 		//trace(MathLexer.condenseAttributes(MathLexer.getMathAttributes(eq)));
 		//trace(MathLexer.extractTextFromAttributes(MathLexer.condenseAttributes(MathLexer.getMathAttributes(eq))));
-		var e = "(4x + 5) * 3x + (2x + 5) * (2x + 5)/(4x + 6)";
-		trace(
-			MathLexer.reorderAttributes(
-				MathLexer.getMathAttributes(e)
-			).join("\n")
-		);
+		//var e = "(4x + 5) * 3x + (2x + 5) * (2x + 5)/(4x + 6)";
+		//trace(
+		//	MathLexer.reorderAttributes(
+		//		MathLexer.getMathAttributes(e)
+		//	).join("\n")
+		//);
 		trace(
 			MathLexer.splitBlocks(
 				MathLexer.getMathAttributes(
-					"12345x + 3490"
+					"(12345x) + 3490"
 				)
 			)
 		);
