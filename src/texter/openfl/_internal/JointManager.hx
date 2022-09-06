@@ -226,7 +226,7 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
 				tf.textFieldWidth = -width;
 			}
-			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4;
+			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4 else tf.textFieldHeight = p.h;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -259,7 +259,7 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				tf.textFieldWidth = -width;
 			}
-			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4;
+			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4 else tf.textFieldHeight = p.h;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -293,6 +293,7 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y + height;
 				tf.textFieldHeight = -height;
 			}
+			tf.textFieldWidth = p.w;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -325,6 +326,7 @@ class JointManager
 				tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
 				tf.textFieldHeight = -height;
 			}
+			tf.textFieldWidth = p.w;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);

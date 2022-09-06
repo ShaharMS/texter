@@ -23,12 +23,20 @@ this class provides the ability to display mathematical forms of strings. no spe
  - added `extractTextFromAttributes`
 
 
+**DynamicTextField:**
+
+ - added `borderSize`
+ - added `virtualBorderSize`
+ - added missing implementation for `resizable`
+ - fixed weird behavior when dragging the sides of the text field, while its rotated
+
+
 2.3.2 (September 5th, 2022)
 ===
 
  - fixed allRtlLetters containing whitespaces
  - fixed FlxInputTextRTL assuming RTL direction
- - fixed FlxInputTextRTL backspace not working
+ - fixed FlxInputTextRTL backspace not working correctly
  - fixed FlxInputTextRTL typing getting messy after typing a whitespaces
 
 2.3.1 (September 4th, 2022)

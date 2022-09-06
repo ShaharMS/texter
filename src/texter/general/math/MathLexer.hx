@@ -73,7 +73,7 @@ class MathLexer {
      * 
      * `Null`s will always have an index of -1.
      */
-    public static function resetAttributeOrder(attributes:Array<MathAttribute>):Array<MathAttribute> {
+    public static function resetAttributesOrder(attributes:Array<MathAttribute>):Array<MathAttribute> {
         var copy = attributes.copy();
         for (i in 0...copy.length) {
             var element = attributes[i];
@@ -85,12 +85,12 @@ class MathLexer {
                 case StartClosure(index, letter): copy[i] = StartClosure(i, letter);
                 case EndClosure(index, letter): copy[i] = EndClosure(i, letter);
                 case Closure(index, letter, content): {
-                    var contentCopy = resetAttributeOrder(content);
+                    var contentCopy = resetAttributesOrder(content);
                     copy[i] = Closure(i, letter, contentCopy);
                 }
                 case Division(index, upperHandSide, lowerHandSide): {
-                    var uhs = resetAttributeOrder([upperHandSide]);
-                    var lhs = resetAttributeOrder([lowerHandSide]);
+                    var uhs = resetAttributesOrder([upperHandSide]);
+                    var lhs = resetAttributesOrder([lowerHandSide]);
                     copy[i] = Division(i, uhs[0], lhs[0]);
                 }
                 case Null(index): copy[i] = Null(-1);
@@ -195,7 +195,6 @@ class MathLexer {
                         currentNum = "";
                         startIndex = -1;
                     }
-                    trace(a);
                 }
             }
         }

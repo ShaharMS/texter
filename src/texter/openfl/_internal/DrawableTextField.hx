@@ -1,5 +1,6 @@
 package texter.openfl._internal;
 
+import openfl.text.TextField;
 import openfl.display.Shape;
 import openfl.events.Event;
 import openfl.display.Sprite;
@@ -15,6 +16,7 @@ class DrawableTextField extends TextFieldCompatibility {
     
     public function new() {
         super();
+        textField = new TextField();
         addChild(textField);
         m.graphics.drawRect(0,0,textField.width, textField.height);
         addChild(m);

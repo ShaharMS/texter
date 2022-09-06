@@ -93,7 +93,6 @@ class DynamicTextField extends Sprite {
      * This flag is flipped when the user starts dragging the text field.
 	 * 
 	 * the dragging operation starts when the textfield starts moving.
-
      */
 	public var currentlyDragging(default, null):Bool = false;
 
@@ -104,10 +103,6 @@ class DynamicTextField extends Sprite {
 	 *
 	 * When set, the text field will automatically resize to
 	 * match the current dimensions of the text.
-	 *
-	 * Notice - You can control the max/min dimensions
-	 * of the text field by setting 
-	 * `maxWidth`, `minWidth`, `maxHeight` and `minHeight`.
 	 */
 	public var matchTextSize(default, set):Bool = false;
 
@@ -152,6 +147,24 @@ class DynamicTextField extends Sprite {
 	public var textFieldHeight(get, set):Float;
 
 	/**
+	 	Sets the thickness of the borders connecting the joints of this `DynamicTextField`. 
+
+		Setting this to `0` or setting `border` to `false` will remove the borders, and thus remove the ability to drag the text field around.
+
+	**/
+	public var borderSize(default, set):Float = 1;
+
+	/**
+	 	Sets the range from the border on which you can click and still drag the border, even if you arent directly above the
+		border's graphic.
+
+		Use this if you're noticing difficulties in clicking the borders, and thus dragging the text field.
+
+		This value cannot be lower than `borderSize`. if set to a lower value, the value will get clamped at `borderSize`.
+	**/
+	public var virtualBorderSize(default, set):Float = 5;
+
+	/**
 		A callback function that triggers when the text field has been dragged.
 		
 		@param x The **current** x position of the text field.
@@ -182,6 +195,10 @@ class DynamicTextField extends Sprite {
 	**/
 	public var onRotated:(Float, Float) -> Void = (rotation, previousRotation) -> {};
     
+    /**
+     * Creates a new `DynamicTextField` object. joints and borders will be visible by default.
+	 * You can turn this off by setting `hideControlsWhenUnfocused`.
+     */
     public function new() {
         super();
         textField = new TextField();
@@ -198,29 +215,19 @@ class DynamicTextField extends Sprite {
 		jointGraphics = new JointGraphic(this);
 		rm = new JointManager(this);
 
-        for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
-            b.graphics.lineStyle(1, borderColor);
-        }
+        set_virtualBorderSize(virtualBorderSize); //already calls set_borderSize
 
-        borders.top.graphics.moveTo(0,0);
-        borders.top.graphics.lineTo(textField.width, 0);
         borders.top.x = borders.top.y = 0;
         addChild(borders.top);
 
-        borders.bottom.graphics.moveTo(0, 0);
-        borders.bottom.graphics.lineTo(textField.width, 0);
         borders.bottom.x = 0;
         borders.bottom.y = textField.height;
         addChild(borders.bottom);
 
-        borders.left.graphics.moveTo(0,0);
-        borders.left.graphics.lineTo(0, textField.height);
         borders.left.x = 0;
         borders.left.y = 0;
         addChild(borders.left);
 
-        borders.right.graphics.moveTo(0, 0);
-        borders.right.graphics.lineTo(0, textField.height);
         borders.right.x = textField.width;
         borders.right.y = 0;
         addChild(borders.right);
@@ -447,12 +454,50 @@ class DynamicTextField extends Sprite {
     //GETTERS & SETTERS
     //--------------------------------------------------------------------------
 
-	function set_resizableSides(value):{left:Bool, right:Bool, top:Bool, bottom:Bool} {
-		throw new haxe.exceptions.NotImplementedException();
+	function set_resizable(value:Bool):Bool {
+
+		if (value && !resizable) {
+			joints.topLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopLeft);
+			joints.topRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopRight);
+			joints.bottomLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomLeft);
+			joints.bottomRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomRight);
+			joints.middleLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeLeft);
+			joints.middleRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeRight);
+			joints.middleTop.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
+			joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
+		} else if (!value && resizable) {
+			joints.topLeft.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopLeft);
+			joints.topRight.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopRight);
+			joints.bottomLeft.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomLeft);
+			joints.bottomRight.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomRight);
+			joints.middleLeft.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeLeft);
+			joints.middleRight.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeRight);
+			joints.middleTop.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
+			joints.middleBottom.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
+		}
+		return resizable = value;
 	}
 
-	function set_resizable(value:Bool):Bool {
-		throw new haxe.exceptions.NotImplementedException();
+	function set_borderSize(value:Float) {
+		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.graphics.clear();
+            b.graphics.lineStyle(value, borderColor);
+        }
+		if (value == 0) return borderSize = value; //skip drawing
+
+        borders.top.graphics.moveTo(0,0);
+        borders.top.graphics.lineTo(textField.width, 0);
+
+        borders.bottom.graphics.moveTo(0, 0);
+        borders.bottom.graphics.lineTo(textField.width, 0);
+
+        borders.left.graphics.moveTo(0,0);
+        borders.left.graphics.lineTo(0, textField.height);
+
+        borders.right.graphics.moveTo(0, 0);
+        borders.right.graphics.lineTo(0, textField.height);
+
+		return borderSize = value;
 	}
 
 	function set_rotatable(value:Bool):Bool {
@@ -476,7 +521,10 @@ class DynamicTextField extends Sprite {
         textField.width = value - JOINT_GUTTER * 2 - 1;
 		for (b in [borders.top, borders.bottom]) {
 			b.graphics.clear();
-			b.graphics.lineStyle(1, borderColor);
+			b.graphics.lineStyle(borderSize, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(textField.width, 0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
 			b.graphics.moveTo(0,0);
 			b.graphics.lineTo(textField.width, 0);
 		}
@@ -502,7 +550,10 @@ class DynamicTextField extends Sprite {
         textField.height = value - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
 		for (b in [borders.left, borders.right]) {
 			b.graphics.clear();
-			b.graphics.lineStyle(1, borderColor);
+			b.graphics.lineStyle(borderSize, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(0, textField.height);
+			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
 			b.graphics.moveTo(0,0);
 			b.graphics.lineTo(0, textField.height);
 		}
@@ -528,7 +579,10 @@ class DynamicTextField extends Sprite {
 		textField.width = width - JOINT_GUTTER * 2 - 1;
 		for (b in [borders.top, borders.bottom]) {
 			b.graphics.clear();
-			b.graphics.lineStyle(1, borderColor);
+			b.graphics.lineStyle(borderSize, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(textField.width, 0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
 			b.graphics.moveTo(0,0);
 			b.graphics.lineTo(textField.width, 0);
 		}
@@ -550,7 +604,10 @@ class DynamicTextField extends Sprite {
 		textField.height = height - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
 		for (b in [borders.left, borders.right]) {
 			b.graphics.clear();
-			b.graphics.lineStyle(1, borderColor);
+			b.graphics.lineStyle(borderSize, borderColor);
+			b.graphics.moveTo(0,0);
+			b.graphics.lineTo(0, textField.height);
+			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
 			b.graphics.moveTo(0,0);
 			b.graphics.lineTo(0, textField.height);
 		}
@@ -616,6 +673,34 @@ class DynamicTextField extends Sprite {
 	function set_textFieldHeight(value:Float):Float {
 		height = value + ROTATION_JOINT_GUTTER + JOINT_GUTTER + 1;
 		return value;
+	}
+
+	
+	function set_virtualBorderSize(value:Float):Float {
+		if (value < borderSize) {
+			value = borderSize;
+			return virtualBorderSize = value;
+		}
+		set_borderSize(borderSize);
+		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			b.graphics.clear();
+            b.graphics.lineStyle(value, borderColor , 0.01);
+        }
+		if (value == 0) return virtualBorderSize = value; //skip drawing
+
+        borders.top.graphics.moveTo(0,0);
+        borders.top.graphics.lineTo(textField.width, 0);
+
+        borders.bottom.graphics.moveTo(0, 0);
+        borders.bottom.graphics.lineTo(textField.width, 0);
+
+        borders.left.graphics.moveTo(0,0);
+        borders.left.graphics.lineTo(0, textField.height);
+
+        borders.right.graphics.moveTo(0, 0);
+        borders.right.graphics.lineTo(0, textField.height);
+
+		return virtualBorderSize = value;
 	}
 
 
@@ -769,7 +854,7 @@ class DynamicTextField extends Sprite {
 		if there currently is no border, but the color is visible only if the text
 		field has the `border` property set to `true`.
 	**/
-	public var borderColor(default, set):Int = 0x7A7A7A;
+	public var borderColor(default, set):Int = 0x333333;
 
 	/**
 		An integer(1-based index) that indicates the bottommost line that is
