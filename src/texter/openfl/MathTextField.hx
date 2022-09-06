@@ -6,6 +6,7 @@ import openfl.events.Event;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import texter.openfl._internal.TextFieldCompatibility;
+import texter.openfl._internal.DrawableTextField;
 
 /**
  * A TextField that specializes in displaying mathematical
@@ -16,7 +17,7 @@ import texter.openfl._internal.TextFieldCompatibility;
  */
 class MathTextField extends TextFieldCompatibility {
 
-    var textFields:Array<TextField> = [];
+    var textFields:Array<DrawableTextField> = [];
 
     public function new() {
         super();
@@ -25,10 +26,12 @@ class MathTextField extends TextFieldCompatibility {
 
     function render(e:Event) {
         var currentText = text;
-        var mathProps:Array<MathAttribute> = MathLexer.splitBlocks(
-            MathLexer.reorderAttributes(
-                MathLexer.getMathAttributes(currentText)
-            )
+        var mathProps:Array<MathAttribute> = MathLexer.resetAttributeOrder(
+            MathLexer.splitBlocks(
+                MathLexer.getMathAttributes(
+                    text
+                )
+            )	
         );
         
     }
