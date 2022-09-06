@@ -93,7 +93,7 @@ if requested/PRed. it currently has 2 methods:
 
  - added `onDragged` - a callback, triggered whenever the textfield stopped dragging. contains previous, and current position.
  - added `onResized` - a callback, triggered whenever the textfield has been resized. contains previous, and current dimensions & position.
- - added `onRotated` - a callback, triggered whenever the textfield has been rotated. contains previous and current rotation, in degress. Notice - this accounts for rotation around center.
+ - added `onRotated` - a callback, triggered whenever the textfield has been rotated. contains previous and current rotation, in degrees. Notice - this accounts for rotation around center.
  - added conversion methods from textField sizes to object sizes:
     - `textFieldWidthToObjectWidth()`
     - `textFieldHeightToObjectWidth()`
@@ -135,13 +135,13 @@ properties:
 
  - added `splitOnParagraph()` 
  - added `multiply()` to repeat a string a number of times
- - added `subtract()` to remove the last occurence of a string from a string
+ - added `subtract()` to remove the last occurrence of a string from a string
  - added `sortByLength()` to sort a list of strings by their length
  - added `sortByValue()` to sort a list of floats by their value
  - added `sortByIntValue()` to sort a list of integers by their value
  - added `getLineIndexOfChar()` to get the line index of a substring in a string
  - added `contains()` to check if a string contains a substring
- - added `countOccurencesOf()` to count the number of occurences of a substring in a string
+ - added `countOccurrencesOf()` to count the number of occurrences of a substring in a string
  - added `loremIpsumText` property to `TextTools`
  - moved `src.texter.general.TextTools` to `src.TextTools`
 
@@ -149,7 +149,7 @@ properties:
 ===
 
  - fixed inability to compile to c++
- - renovated FlxInputText, should now uniformly support multilne text across platforms 
+ - renovated FlxInputText, should now uniformly support multiline text across platforms 
  - fixed visual glitches when visualizing markdown alignment
 
 2.0.2 & 2.0.3 (April 13, 2022)
@@ -196,13 +196,13 @@ I promised for every major update to have a new framework supported, and the new
 **OpenFL!**
 ### **New Features:**
 
-**TextFeildRTL - new class!**
+**TextFieldRTL - new class!**
 `TextFieldRTL` is an "extention" of `TextField` that adds support for multiple things, such as **right-to-left text** and **built-in markdown visualization**.
 
 It also adds some convenience methods & fields for working with the object, that `TextField` doesn't have.
 
  - added `autoAlign` property - aligns the text according to the first strongly typed character
- - added `openningDirection` (read-only) - specifies the base direction of the text
+ - added `openingDirection` (read-only) - specifies the base direction of the text
  - added `alignment` property, similar to `autoSize` but more understandable
  - added `overlay` property, you can now draw on top of the text
  - added `underlay` property, you can now draw below the text
@@ -230,8 +230,8 @@ It also adds some convenience methods & fields for working with the object, that
 **Markdown - new class! features:**
 
  - added a field that gives access to the visualizer - `visualizer`
- - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdowPatterns`
- - added `syntaxBlocks` field - you can redefine highlight pasers there.
+ - added access to all markdown patterns via `Markdown.patterns`. more information in `MarkdownPatterns`
+ - added `syntaxBlocks` field - you can redefine highlight parsers there.
  - added `interpret()` - a cross-platform, cross-framework markdown interpreter based on ADTs (algebric data types) from `MarkdownEffect.hx`
  - added `visualizeMarkdown` - a (soon to be) cross-framework method to display markdown visuals
 
@@ -269,7 +269,7 @@ It also adds some convenience methods & fields for working with the object, that
 **MarkdownBlocks - new class!**
 
 `MarkdownBlocks` is the class that handles the code block's syntax highlighting in markdown.
-It provides a user friendly way to edit the syntax, and all syntax handlers can be redefiend with `MarkdownBlocks.parseLang = function(...)`
+It provides a user friendly way to edit the syntax, and all syntax handlers can be redefined with `MarkdownBlocks.parseLang = function(...)`
 
 For now, syntax highlighting is only available (out-of-the-box) for theses languages:
 
@@ -314,8 +314,8 @@ I want to thank **PXShadow** for providing the map itself and making this possib
 **FlxInputText**
  - fixed first char nor disappearing after deleting all of the text (JS)
  - fixed multiline crashing the app on JS
- - fixed wierd bugs with the height's consistency
- - fixed horizontal scrolling behaving wierdly on multiline text
+ - fixed weird bugs with the height's consistency
+ - fixed horizontal scrolling behaving weirdly on multiline text
 
 1.1.4 (March 20, 2022)
 ===
@@ -341,7 +341,7 @@ I want to thank **PXShadow** for providing the map itself and making this possib
 ### FlxInputTextRTL
 
  - fixed sound tray activating when pressing `-` or `=` while having focus
- - fixed `getCharBoundraies` crashing when the text contains only `space` chars & `enter`s
+ - fixed `getCharBoundaries` crashing when the text contains only `space` chars & `enter`s
 
 
 1.1.2 (February 29, 2022)
@@ -352,7 +352,7 @@ I want to thank **PXShadow** for providing the map itself and making this possib
 - removed testing files 
 - fixed incorrect markdown syntax in CHANGELOG
 - `About Copying` in `README.md` has been removed since it isn't relevant
-- `LICENSE` file was chaned to `LICENSE.md`
+- `LICENSE` file was changed to `LICENSE.md`
 
 1.1.1 (February 28, 2022)
 ===
