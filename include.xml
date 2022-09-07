@@ -4,6 +4,6 @@
 	
 	<section if="openfl">
 		<assets path="assets/DynamicTextField" rename="assets/texter/DynamicTextField" include="*.png"/>
-		<assets path="assets/MathTextField" rename="assets/texter/DynamicTextField" include="*.ttf|*.png"/>
+		<assets path="assets/MathTextField" rename="assets/texter/MathTextField" include="*.ttf|*.png"/>
 	</section>
 </project>

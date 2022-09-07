@@ -1,5 +1,7 @@
 package texter.openfl;
 
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 import openfl.text.TextFormat;
 import texter.general.math.MathAttribute;
 import texter.general.math.MathLexer;
@@ -20,14 +22,19 @@ class MathTextField extends TextFieldCompatibility {
 
     var textFields:Array<DrawableTextField> = [];
 
+    var baseBackground:Bitmap;
+
     public function new() {
         super();
         textField = new TextField();
         textField.addEventListener(Event.CHANGE, render);
         textField.x = textField.y = -100;
+        textField.defaultTextFormat.size = 16;
         addEventListener(Event.ADDED_TO_STAGE, e -> {
             stage.addChild(textField);
         });
+        baseBackground = new Bitmap(new BitmapData(100, 100, true));
+        addChild(baseBackground);
     }
 
     public function render(e:Event) {
@@ -111,9 +118,10 @@ class MathTextField extends TextFieldCompatibility {
         }
         trace("gets to line 108");
         var xPos = 0.;
+        trace(textFields);
         for (t in textFields) {
-            if (defaultTextFormat.bold) t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-bold.ttf", null, 0x000000);
-            else  t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-regular.ttf", null, 0x000000);
+            if (defaultTextFormat.bold) t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-bold.ttf", 40, 0x000000);
+            else  t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-regular.ttf", 40, 0x000000);
             t.width = t.textWidth + 4;
             t.height = t.textHeight + 4;
             t.x = xPos;
