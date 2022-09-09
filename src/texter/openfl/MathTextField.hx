@@ -69,8 +69,8 @@ class MathTextField extends TextFieldCompatibility {
                     var uhsText = MathLexer.extractTextFromAttributes([upperHandSide]);
                     var lhsText = MathLexer.extractTextFromAttributes([lowerHandSide]);
                     var t = new DrawableTextField();
-                    t.defaultTextFormat = new TextFormat(null, textField.defaultTextFormat.size);
-                    t.text = '$uhsText\n\n$lhsText';
+                    t.defaultTextFormat = new TextFormat(null, textField.defaultTextFormat.size, null, null, null, null, null, null, "center");
+                    t.text = '$uhsText\n$lhsText';
                     textFields.push(t);
                 }
                 case Variable(index, letter): {
@@ -120,6 +120,7 @@ class MathTextField extends TextFieldCompatibility {
         var xPos = 0.;
         trace(textFields);
         for (t in textFields) {
+            addChild(t);
             if (defaultTextFormat.bold) t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-bold.ttf", 40, 0x000000);
             else  t.defaultTextFormat = new TextFormat("assets/texter/MathTextField/math-regular.ttf", 40, 0x000000);
             t.width = t.textWidth + 4;
@@ -127,7 +128,6 @@ class MathTextField extends TextFieldCompatibility {
             t.x = xPos;
             xPos += t.width;
             t.y = t.height > textField.height ? 0 : textField.height / 2 - t.height / 2;
-            addChild(t);
         }
         trace(x, y, textField.width, textField.height, textFields);
     }
