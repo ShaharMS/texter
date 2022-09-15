@@ -11,6 +11,8 @@ package;
  */
 class TextTools
 {
+	public static var fonts(default, null):MultilangFonts = @:privateAccess new MultilangFonts();
+
 	/**
 	 * replaces the last occurrence of `replace` in `string` with `by`
 	 * @param string the string to replace in
@@ -381,4 +383,11 @@ enum TextDirection
 	RTL;
 	LTR;
 	UNDETERMINED;
+}
+
+private class MultilangFonts {
+	function new() {}
+
+	public var sans:String = "assets/texter/TextTools/sans.ttf";
+	public var serif:String = "assets/texter/TextTools/serif.ttf";
 }

@@ -107,27 +107,72 @@ class BidiTools {
 
     public static function __attachLiveOpenFL(textfield:TextField):Void {
         
-        var unbidified:String = textfield.text;
-        var outsideStage = new TextField();
-        function displayChanges(e:Event) {
-            outsideStage.text = textfield.text.contains(CharTools.RLM) ? Bidi.unbidify(textfield.text) : textfield.text;
-            var prevc = textfield.caretIndex;
-            textfield.text = bidifyString(outsideStage.text);
-            var relCaretIndex = prevc + textfield.text.substring(0, prevc).countOccurrencesOf(CharTools.RLM);
-            while (textfield.text.charAt(relCaretIndex - 1) == " ") relCaretIndex--;
-            trace(textfield.text.charAt(relCaretIndex));
-            textfield.setSelection(relCaretIndex, relCaretIndex);
-            trace(textfield.text.indexesOf(CharTools.RLM));
-            trace(textfield.text.countOccurrencesOf("\n"));
+        var isolated = "";
+        var currentlyRTL = false;
+        function manage(letter:String) {
+            // if the user didnt intend to edit the text, dont do anything
+		    if (textfield.stage.focus != textfield) return;
+		    // if the caret is broken for some reason, fix it
+		    if (textfield.caretIndex < 0) textfield.setSelection(0,0);
+		    // set up the letter - remove null chars, add rtl mark to letters from RTL languages
+		    var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
+		    #if !js
+		    if (letter != null)
+		    {
+			    // logic for general RTL letters, spacebar, punctuation mark
+			    if (CharTools.isRTL(letter)
+			    	|| (currentlyRTL && letter == " ")
+			    	|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
+			    {
+			    	t = CharTools.RLO + letter;
+			    	currentlyRTL = true;
+			    }
+			    // logic for when the user converted from RTL to LTR
+			    else if (currentlyRTL)
+			    {
+			    	t = letter;
+			    	currentlyRTL = false;
+			    	hasConverted = true;
+
+			    	// after conversion, the caret needs to move itself to he end of the RTL text.
+			    	// the last spacebar also needs to be moved
+			    	if (textfield.text.charAt(textfield.caretIndex) == " ")
+			    	{
+					t = CharTools.PDF + " " + letter;
+					textfield.text = textfield.text.substring(0, textfield.caretIndex) + textfield.text.substring(textfield.caretIndex, textfield.text.length);
+					addedSpace = true;
+				}
+				textfield.setSelection(textfield.caretIndex + 1,textfield.caretIndex + 1);
+
+				while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex)) || textfield.text.charAt(textfield.caretIndex) == " " && textfield.caretIndex != textfield.text.length) 
+                    textfield.setSelection(textfield.caretIndex + 1,textfield.caretIndex + 1);
+			    }
+			    // logic for everything else - LTR letters, special chars...
+		    	else
+		    	{
+		    		t = letter;
+		    	}
+		    }
+		    else
+		    	"";
+
+		    #else t = letter; #end
+		    if (t.length > 0 && (textfield.maxChars == 0 || (textfield.text.length + t.length) < textfield.maxChars))
+		    {
+                final oc = textfield.caretIndex;
+		    	textfield.replaceSelectedText(t);
+                textfield.setSelection(oc + 1,oc + 1);
+		    	if (hasConverted) textfield.setSelection(textfield.caretIndex + 1,textfield.caretIndex + 1);
+		    	if (addedSpace) textfield.setSelection(textfield.caretIndex + 1,textfield.caretIndex + 1);
+		    }
         } 
 
         function invoke(fromEvent = false, e:Event) {
             if (fromEvent) textfield.removeEventListener(Event.ADDED_TO_STAGE, invoke.bind(true));
-            outsideStage = new TextField();
-            outsideStage.x = outsideStage.y = -200;
-            outsideStage.width = outsideStage.height = 100;
-            textfield.stage.addChild(outsideStage);
-            textfield.addEventListener(Event.CHANGE, displayChanges);
+            @:privateAccess textfield.__inputEnabled = true;
+            textfield.stage.window.onTextInput.remove(@:privateAccess textfield.window_onTextInput);
+            textfield.stage.window.onTextInput.add(manage);
+            textfield.stage.window.onKeyDown.add(@:privateAccess textfield.window_onKeyDown);
         }
         
         if (textfield.stage == null) {
