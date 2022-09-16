@@ -4,6 +4,12 @@
 **TextTools:**
 
  - added `insert()`
+ - deprecated `indexesFromArray()`
+ - added `indexesOfSubs()` as a replacement - replaced for a cleaner, more understandable name.
+ - added `fonts` field, containing sans & serif, multilingual fonts.
+ - fixes `loremIpsum()`not taking the extra `length` argument into account
+ - fixed documentation formatting & typos
+ - added missing documentation to `remove()`, `replace()`, `contains()`, `reverse()`
 
 
 **MathTextField - new Class!**
@@ -30,6 +36,11 @@ this class provides the ability to display mathematical forms of strings. no spe
  - added missing implementation for `resizable`
  - fixed weird behavior when dragging the sides of the text field, while its rotated
 
+**TextFieldRTL**
+
+ - removed deprecation notice. this class is repurposed :)
+ - all selection related bugs should not appear anymore.
+ - now relies on an external, BiDi algorithm.
 
 2.3.2 (September 5th, 2022)
 ===

@@ -14,9 +14,11 @@ using TextTools;
 /**
     This class provides useful tools to add support for Right-to-Left Texts.
 
-    to use it, you need to add the following line to the top of your file:
+    to use it, I recommand adding the following line to the top of your file:
     
         using BidiTools;
+
+    then, you can use
 **/
 class BidiTools {
     
@@ -191,7 +193,7 @@ class BidiTools {
     }
 
     public static overload extern inline function attachBidifier(textfield:TextFieldRTL) {
-        __attachOpenFL(textfield.textField);
+        __attachOpenFL(textfield);
     }
     #end
 
