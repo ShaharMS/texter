@@ -172,8 +172,14 @@ class BidiTools {
         function invoke(fromEvent = false, e:Event) {
             if (fromEvent) textfield.removeEventListener(Event.ADDED_TO_STAGE, invoke.bind(true));
             @:privateAccess textfield.__inputEnabled = true;
+            textfield.addEventListener(FocusEvent.FOCUS_IN, e -> {
+                textfield.stage.window.onTextInput.remove(@:privateAccess textfield.window_onTextInput);
+				textfield.stage.window.onTextInput.remove(manage);
+                textfield.stage.window.onTextInput.add(manage);
+            });
             textfield.stage.window.onTextInput.remove(@:privateAccess textfield.window_onTextInput);
-            textfield.stage.window.onTextInput.add(manage);
+			textfield.stage.window.onTextInput.remove(manage);
+			textfield.stage.window.onTextInput.add(manage);
             textfield.stage.window.onKeyDown.add(@:privateAccess textfield.window_onKeyDown);
         }
         
