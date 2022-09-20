@@ -126,7 +126,20 @@ class BidiTools
 	public static function __attachLiveOpenFL(textfield:TextField):Void
 	{
 		var isolated = "";
-		var currentlyRTL = false;
+		var currentlyOppositeDirection = false;
+        final getStartingDirection = () -> {
+            var index = 0;
+            while (CharTools.isSoft(textfield.text.charAt(index)) && index < textfield.text.length) index++;
+            return CharTools.isRTL(textfield.text.charAt(index)) ? RTL : LTR;
+        }
+        final setOppositeDirection = () -> {
+            trace((CharTools.isRTL(textfield.text.charAt(textfield.caretIndex))
+            || (currentlyOppositeDirection && textfield.text.charAt(textfield.caretIndex) == " ")
+            || (CharTools.generalMarks.contains(textfield.text.charAt(textfield.caretIndex)) && currentlyOppositeDirection)));
+            return currentlyOppositeDirection = (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex))
+                || (currentlyOppositeDirection && textfield.text.charAt(textfield.caretIndex) == " ")
+                || (CharTools.generalMarks.contains(textfield.text.charAt(textfield.caretIndex)) && currentlyOppositeDirection));
+        }
 		function manageTextInput(letter:String)
 		{
 			// if the user didnt intend to edit the text, dont do anything
@@ -144,34 +157,31 @@ class BidiTools
 			{
 				// logic for general RTL letters, spacebar, punctuation marks
 				if (CharTools.isRTL(letter)
-					|| (currentlyRTL && letter == " ")
-					|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
+					|| (currentlyOppositeDirection && letter == " ")
+					|| (CharTools.generalMarks.contains(letter) && currentlyOppositeDirection))
 				{
 					t = CharTools.RLO + letter;
-					currentlyRTL = true;
+					currentlyOppositeDirection = true;
 				}
 				// logic for when the user converted from RTL to LTR
-				else if (currentlyRTL)
+				else if (currentlyOppositeDirection)
 				{
 					t = letter;
-					currentlyRTL = false;
+					currentlyOppositeDirection = false;
 					hasConverted = true;
 
-					// after conversion, the caret needs to move itself to he end of the RTL text.
+                    // after conversion, the caret needs to move itself to he end of the RTL text.
 					// the last spacebar also needs to be moved
 					if (textfield.text.charAt(textfield.caretIndex) == " ")
-					{
-						t = CharTools.PDF + " " + letter;
-						textfield.text = textfield.text.substring(0, textfield.caretIndex)
-							+ textfield.text.substring(textfield.caretIndex, textfield.text.length);
-						addedSpace = true;
-					}
-					textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
-
-					while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex))
-						|| textfield.text.charAt(textfield.caretIndex) == " "
-						&& textfield.caretIndex != textfield.text.length)
-						textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
+                    {
+                        t = CharTools.PDF + " " + letter;
+                        textfield.text = textfield.text.substring(0, textfield.caretIndex)
+                            + textfield.text.substring(textfield.caretIndex, textfield.text.length);
+                        addedSpace = true;
+                    }
+                    textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
+    
+                    while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex)) || textfield.text.charAt(textfield.caretIndex) == " " && textfield.caretIndex != textfield.text.length) textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
 				}
 				// logic for everything else - LTR letters, special chars...
 				else
@@ -203,7 +213,7 @@ class BidiTools
 				case RETURN, NUMPAD_ENTER:
 					if (textfield.__textEngine.multiline) {
 
-                        if (currentlyRTL && textfield.selectionBeginIndex == textfield.selectionEndIndex) {
+                        if (currentlyOppositeDirection && textfield.selectionBeginIndex == textfield.selectionEndIndex) {
                             //If we just insert a newline, everything would go one line down and leave an empty line at the top
                             //we need to go through the letters until we hit something LTR, and insert a newline before that.
                             //special case: if we have a spacebar before that LTR letter, we should insert the newline before that spacebar
@@ -234,7 +244,7 @@ class BidiTools
 					}
 
 				case BACKSPACE, DELETE:
-                    if (key == BACKSPACE && !currentlyRTL || key == DELETE && currentlyRTL) {
+                    if (key == BACKSPACE && !currentlyOppositeDirection || key == DELETE && currentlyOppositeDirection) {
                         if (textfield.__selectionIndex == textfield.__caretIndex && textfield.__caretIndex > 0) textfield.__selectionIndex = textfield.__caretIndex - 1;
 
 					    if (textfield.__selectionIndex != textfield.__caretIndex) {
@@ -247,7 +257,7 @@ class BidiTools
 					    	textfield.__stopCursorTimer();
 					    	textfield.__startCursorTimer();
 					    }
-                    } else if (key == DELETE && !currentlyRTL || key == BACKSPACE && currentlyRTL) {
+                    } else if (key == DELETE && !currentlyOppositeDirection || key == BACKSPACE && currentlyOppositeDirection) {
                         if (textfield.__selectionIndex == textfield.__caretIndex && textfield.__caretIndex < textfield.__text.length) textfield.__selectionIndex = textfield.__caretIndex + 1;
 
 					    if (textfield.__selectionIndex != textfield.__caretIndex)
@@ -270,6 +280,7 @@ class BidiTools
 					if (!modifier.shiftKey) textfield.__selectionIndex = textfield.__caretIndex;
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
 
 				case RIGHT if (textfield.selectable):
 					if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) textfield.__caretBeginningOfNextLine();
@@ -278,6 +289,8 @@ class BidiTools
 					if (!modifier.shiftKey) textfield.__selectionIndex = textfield.__caretIndex;
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
+
 
 				case DOWN if (textfield.selectable):
 					if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
@@ -295,6 +308,8 @@ class BidiTools
 					}
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
+
 
 				case UP if (textfield.selectable):
 					if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
@@ -312,6 +327,7 @@ class BidiTools
 					}
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
 
 				case HOME if (textfield.selectable):
 					if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
@@ -329,6 +345,8 @@ class BidiTools
 					}
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
+
 
 				case END if (textfield.selectable):
 					if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
@@ -346,6 +364,8 @@ class BidiTools
 					}
 
 					textfield.setSelection(textfield.__selectionIndex, textfield.__caretIndex);
+                    setOppositeDirection();
+
 
 				case C:
 					#if lime
