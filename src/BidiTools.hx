@@ -222,7 +222,6 @@ class BidiTools
 
 						while (textfield.caretIndex > 0 && (CharTools.isLTR(textfield.text.charAt(textfield.caretIndex - 1)) || CharTools.isSoft(textfield.text.charAt(textfield.caretIndex - 1)))) {
 							textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
-							trace(textfield.caretIndex);
 						}
 							
 					}
@@ -255,6 +254,7 @@ class BidiTools
 					if (addedSpace)
 						textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
 				}
+				trace(getStartingDirection());
 			}
 		}
 
@@ -265,14 +265,14 @@ class BidiTools
 				case RETURN, NUMPAD_ENTER:
 					if (textfield.__textEngine.multiline)
 					{
-						if (currentlyOppositeDirection && textfield.selectionBeginIndex == textfield.selectionEndIndex)
+						if (((currentlyOppositeDirection && getStartingDirection() == LTR) || (!currentlyOppositeDirection && getStartingDirection() == RTL)) && textfield.selectionBeginIndex == textfield.selectionEndIndex)
 						{
 							// If we just insert a newline, everything would go one line down and leave an empty line at the top
 							// we need to go through the letters until we hit something LTR, and insert a newline before that.
 							// special case: if we have a spacebar before that LTR letter, we should insert the newline before that spacebar
 							var spacebarDefecit = 0; // used to traverse back on spacebars
 							while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex))
-								|| textfield.text.charAt(textfield.caretIndex) == " "
+								|| CharTools.isSoft(textfield.text.charAt(textfield.caretIndex))
 								&& textfield.caretIndex != textfield.text.length)
 							{
 								trace(textfield.text.charAt(textfield.caretIndex));
