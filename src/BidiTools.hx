@@ -176,12 +176,12 @@ class BidiTools
                     {
                         t = CharTools.PDF + " " + letter;
                         textfield.text = textfield.text.substring(0, textfield.caretIndex)
-                            + textfield.text.substring(textfield.caretIndex, textfield.text.length);
+                            + textfield.text.substring(textfield.caretIndex + 1, textfield.text.length);
                         addedSpace = true;
                     }
                     textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
     
-                    while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex)) || textfield.text.charAt(textfield.caretIndex) == " " && textfield.caretIndex != textfield.text.length) textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
+                    while (CharTools.isRTL(textfield.text.charAt(textfield.caretIndex)) || CharTools.isSoft(textfield.text.charAt(textfield.caretIndex)) && textfield.caretIndex != textfield.text.length) textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
 				}
 				// logic for everything else - LTR letters, special chars...
 				else
@@ -244,6 +244,7 @@ class BidiTools
 					}
 
 				case BACKSPACE, DELETE:
+					setOppositeDirection();
                     if (key == BACKSPACE && !currentlyOppositeDirection || key == DELETE && currentlyOppositeDirection) {
                         if (textfield.__selectionIndex == textfield.__caretIndex && textfield.__caretIndex > 0) textfield.__selectionIndex = textfield.__caretIndex - 1;
 
