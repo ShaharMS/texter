@@ -80,13 +80,13 @@ class TextTools
 	 * @return the array of the two parts
 	 */
 	 public static function splitOnLast(string:String, delimiter:String):Array<String>
-		{
-			var place = string.lastIndexOf(delimiter);
-			var result = new Array<String>();
-			result.push(string.substring(0, place));
-			result.push(string.substring(place + delimiter.length));
-			return result;
-		}
+	{
+		var place = string.lastIndexOf(delimiter);
+		var result = new Array<String>();
+		result.push(string.substring(0, place));
+		result.push(string.substring(place + delimiter.length));
+		return result;
+	}
 
 	/**
 	 * Splits a text into paragraphs, determined by HTML/Markdown markup
@@ -362,22 +362,22 @@ class TextTools
 		return lineIndex;
 	}
 
-    /**
-     * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
-     * @param string the string to search in
-     * @param sub the substring to search for
-     * @return The amount of times `sub` was found in `string`
-     */
+    	/**
+    	 * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
+     	 * @param string the string to search in
+    	 * @param sub the substring to search for
+    	 * @return The amount of times `sub` was found in `string`
+     	 */
 	public static function countOccurrencesOf(string:String, sub:String):Int
-    {
-        var count = 0;
-        while (contains(string, sub))
-        {
-            count++;
-            string = replacefirst(string, sub, "");
-        }
-        return count;
-    }
+    	{
+       		var count = 0;
+        	while (contains(string, sub))
+        	{
+            		count++;
+            		string = replacefirst(string, sub, "");
+        	}
+        	return count;
+    	}
 
 	/**
 		Returns `true` if `string` contains `contains` and  `false` otherwise.
@@ -385,11 +385,11 @@ class TextTools
 		When `contains` is `null`, the function returns `false`.  
 		When `contains` is `""`, the function returns `true`
 	**/
-    public static function contains(string:String, contains:String):Bool
-    {
+    	public static function contains(string:String, contains:String):Bool
+    	{
 		if (string == null) return false;
-        return string.indexOf(contains) != -1;
-    }
+        	return string.indexOf(contains) != -1;
+    	}
 
 	/**
 	 * Removes all occurrences of `sub` inside of `string`.
