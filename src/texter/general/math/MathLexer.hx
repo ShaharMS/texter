@@ -1,11 +1,19 @@
 package texter.general.math;
 
 import flash.utils.QName;
+
 using TextTools;
 using StringTools;
 using texter.general.CharTools;
+
 class MathLexer {
-    
+
+    public static var numbers:String = '0123456789';
+
+    public static var startClosures:String = '{[(';
+
+    public static var endClosures:String = '}])';
+
     /**
      * Returns a simplified array of mathematical attributes. to further
      * process this array, you can use the rest of the functions in this class.
@@ -19,13 +27,13 @@ class MathLexer {
         for (i in 0...text.length) {
             var char = text.charAt(i);
 
-            if ("0123456789".contains(char)) {
+            if (numbers.contains(char)) {
                 attributes.push(Number(i, char));
             }
-            else if ("{[(".contains(char)) {
+            else if (startClosures.contains(char)) {
                 attributes.push(StartClosure(i, char));
             }
-            else if ("}])".contains(char)) {
+            else if (endClosures.contains(char)) {
                 attributes.push(EndClosure(i, char));
             }
             else if ('${CharTools.generalMarks.join("")}√'.contains(char)) {
@@ -125,9 +133,8 @@ class MathLexer {
         for (a in whitespaced) {
             if (a == null) continue;
             switch a {
-                case Variable(index, " "): whitespaced[index] = Null(index);
-                case Number(index, " "): whitespaced[index] = Null(index);
-                case Sign(index, " "): whitespaced[index] = Null(index);
+                case Variable(index, " ") | Number(index, " ") | Sign(index, " "):
+                    whitespaced[index] = Null(index);
                 default:
             }
         }
