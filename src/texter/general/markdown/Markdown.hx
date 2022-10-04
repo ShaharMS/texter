@@ -27,7 +27,6 @@ using texter.general.TextTools;
  */
 class Markdown
 {
-
 	/**
 	 * The `patterns` field contains all of the patterns used to parse markdown text.   
 	 * 
@@ -48,8 +47,8 @@ class Markdown
 	public static inline var visualizer = MarkdownVisualizer;
 
 	static var markdownRules(default, null):Array<EReg> = [
-		patterns.doubleSpaceNewlineEReg, //Done.
-		patterns.backslashNewlineEReg, //Done.
+		patterns.doubleSpaceNewlineEReg, // Done.
+		patterns.backslashNewlineEReg, // Done.
 		patterns.alignmentEReg, // Done.
 		patterns.indentEReg, // Done.
 		patterns.hRuledTitleEReg, // Done.
@@ -72,72 +71,73 @@ class Markdown
 	];
 
 	/**
-	 * Mostly for internal use, but can also be useful for creating your own
-	 * Markdown styling.
-	 * 
-	 * This function takes in a string formatted in Markdown, and each time it encounteres
-	 * a Markdown "special effect" (headings, charts, points, etc.), it pushes
-	 * a style corresponding to the found effect. 
-	 * 
-	 * for some effects, it also includes a built-in visual effect:
-	 *  - Unordered Lists
-	 *  - Emojis
-	 *  - Tables (coming soon)
-	 * 
-	 * after finding the effects, it calls:
-	 * 
-	 * ### onComplete:
-	 * 
-	 * The `onComplete()` will get called after the text has been processed:
-	 *  - **First Argument - The Actual Text**: to keep the text clean, after proccessing the text, a markdown-
-	 * free version of the text is returned (altho some marks do remain, such as the list items and hrules)
-	 *  - **Second Argument - The Effects** - this array contains lots of ADTs (algebric data types). Those
-	 * contain the actual data - most of them contain the start & end index of the effect, and some contain more
-	 * data (things like list numbers, indentation...)
-	 * 
-	 * ### Things to notice:
+		* Mostly for internal use, but can also be useful for creating your own
+		* Markdown styling.
+		* 
+		* This function takes in a string formatted in Markdown, and each time it encounteres
+		* a Markdown "special effect" (headings, charts, points, etc.), it pushes
+		* a style corresponding to the found effect. 
+		* 
+		* for some effects, it also includes a built-in visual effect:
+		*  - Unordered Lists
+		*  - Emojis
+		*  - Tables (coming soon)
+		* 
+		* after finding the effects, it calls:
+		* 
+		* ### onComplete:
+		* 
+		* The `onComplete()` will get called after the text has been processed:
+		*  - **First Argument - The Actual Text**: to keep the text clean, after proccessing the text, a markdown-
+		* free version of the text is returned (altho some marks do remain, such as the list items and hrules)
+		*  - **Second Argument - The Effects** - this array contains lots of ADTs (algebric data types). Those
+		* contain the actual data - most of them contain the start & end index of the effect, and some contain more
+		* data (things like list numbers, indentation...)
+		* 
+		* ### Things to notice:
 
-	 *  - The markdown text contains zero-width spaces (\u200B) in the text in order to keep track of effect positions.
-	 *  - The effect's range is from startIndex up to, but not including endIndex.
-	 *  - certine effects will already be rendered by the interpreter, so no need to mess with those.
-	 *  - The interpreter doesnt support everything markdown has to offer (yet). supported markups:  
-	 * 	  - **Headings**: #, ##, ###, ####, #####, ######, #######
-	 * 	  - **Lists (also nested)**: -, *, +, 1., 2.
-	 * 	  - **CodeBlocks**: ``````, ~~~~~~, four spaces
-	 * 	  - **Inline Code**: ``
-	 * 	  - **Italics**: _, *
-	 * 	  - **Bolds**: **, __
-	 * 	  - **Strikethrough**: ~~~~
-	 * 	  - **Links**: `[]()`
-	 * 	  - **Math**: $$
-	 * 	  - **Emojis**: :emojiNameHere:
-	 * 	  - **HRules**: ---, ***, ___, ===, +++
-	 * 	  - **HRuled Headings**: H1 - title\n===,+++,***, H2 - title\n---,___
-	 * 	  - **Paragraph Gaps** (two or more newlines)
-	 *    - **NewLines** \ or double-whitespace at the end of the line
-	 *	  - **Cancel Symbol**: \\{SYMBOL HERE}
-	 * 
-	 * 	  There are also some extra additions:
-	 * 
-	 * 	  - **Alignment**: <align="left">, <align="right">, <align="center">, <align="justify"> -> </align>
-	 * 	  - **Tabs**: \t
-	 * 
-	 * 
-	 * @param markdownText Just a plain string with markdown formatting. If you want to make sure 
-	 * the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
+		*  - The markdown text contains zero-width spaces (\u200B) in the text in order to keep track of effect positions.
+		*  - The effect's range is from startIndex up to, but not including endIndex.
+		*  - certine effects will already be rendered by the interpreter, so no need to mess with those.
+		*  - The interpreter doesnt support everything markdown has to offer (yet). supported markups:  
+		* 	  - **Headings**: #, ##, ###, ####, #####, ######, #######
+		* 	  - **Lists (also nested)**: -, *, +, 1., 2.
+		* 	  - **CodeBlocks**: ``````, ~~~~~~, four spaces
+		* 	  - **Inline Code**: ``
+		* 	  - **Italics**: _, *
+		* 	  - **Bolds**: **, __
+		* 	  - **Strikethrough**: ~~~~
+		* 	  - **Links**: `[]()`
+		* 	  - **Math**: $$
+		* 	  - **Emojis**: :emojiNameHere:
+		* 	  - **HRules**: ---, ***, ___, ===, +++
+		* 	  - **HRuled Headings**: H1 - title\n===,+++,***, H2 - title\n---,___
+		* 	  - **Paragraph Gaps** (two or more newlines)
+		*    - **NewLines** \ or double-whitespace at the end of the line
+		*	  - **Cancel Symbol**: \\{SYMBOL HERE}
+		* 
+		* 	  There are also some extra additions:
+		* 
+		* 	  - **Alignment**: <align="left">, <align="right">, <align="center">, <align="justify"> -> </align>
+		* 	  - **Tabs**: \t
+		* 
+		* 
+		* @param markdownText Just a plain string with markdown formatting. If you want to make sure 
+		* the formatting is correct, just write the markdown text in a `.md` file and do `File.getContent("path/to/file.md")`
 	 */
 	public static function interpret(markdownText:String, onComplete:(String, Array<MarkdownEffect>) -> Void)
 	{
 		var lineTexts = StringTools.replace(markdownText, "\r", "");
 		var effects:Array<MarkdownEffect> = [];
 
-		//now, we should handle \SYMBOL
+		// now, we should handle \SYMBOL
 
 		for (rule in markdownRules)
 		{
 			while (rule.match(lineTexts))
 			{
-				if (rule == patterns.indentEReg) {
+				if (rule == patterns.indentEReg)
+				{
 					lineTexts = rule.replace(lineTexts, "​".multiply(rule.matched(1).length) + rule.matched(2));
 					final info = rule.matchedPos();
 					final pos = info.pos - 1 < 0 ? info.pos : info.pos - 1;
@@ -251,35 +251,39 @@ class Markdown
 					final info = rule.matchedPos();
 					effects.push(CodeBlock(rule.matched(1), info.pos, info.pos + info.len));
 				}
-				else if (rule == patterns.tabCodeblockEReg) 
+				else if (rule == patterns.tabCodeblockEReg)
 				{
 					lineTexts = rule.replace(lineTexts, "​​​​" + "​​​$1​​​");
 					final info = rule.matchedPos();
 					effects.push(TabCodeBlock(info.pos, info.pos + info.len + 4));
 				}
-				else if (rule == patterns.emojiEReg) 
+				else if (rule == patterns.emojiEReg)
 				{
 					var emoji = '​${texter.general.Emoji.emojiFromString[rule.matched(1)]}${"​".multiply(rule.matched(1).length - 2)}';
-					if (emoji.contains("undefined")) emoji = rule.matched(1).replace(":", "​");
+					if (emoji.contains("undefined"))
+						emoji = rule.matched(1).replace(":", "​");
 					lineTexts = rule.replace(lineTexts, emoji);
 					final info = rule.matchedPos();
 					effects.push(Emoji(emoji, info.pos, info.pos + info.len));
-				} 
-				else if (rule == patterns.parSepEReg) {
+				}
+				else if (rule == patterns.parSepEReg)
+				{
 					lineTexts = rule.replace(lineTexts, "\r\r");
 					final info = rule.matchedPos();
 					effects.push(ParagraphGap(info.pos, info.pos + 2));
-				} 
-				else if (rule == patterns.alignmentEReg) {
+				}
+				else if (rule == patterns.alignmentEReg)
+				{
 					final align = rule.matched(1);
 					var placeholder = "​".multiply(align.length);
 					lineTexts = rule.replace(lineTexts, "​".multiply(10) + placeholder + rule.matched(2) + "​".multiply(8));
 					final info = rule.matchedPos();
 					effects.push(Alignment(align, info.pos, info.pos + info.len));
 				}
-				else if (rule == patterns.backslashNewlineEReg) lineTexts = rule.replace(lineTexts, "\n");
-				else if (rule == patterns.doubleSpaceNewlineEReg) lineTexts = rule.replace(lineTexts, "\n" + "​");
-
+				else if (rule == patterns.backslashNewlineEReg)
+					lineTexts = rule.replace(lineTexts, "\n");
+				else if (rule == patterns.doubleSpaceNewlineEReg)
+					lineTexts = rule.replace(lineTexts, "\n" + "​");
 			}
 		}
 		onComplete(lineTexts.replace("\r", "\n").replace("\\t", "  ") + "\n", effects);
@@ -302,7 +306,8 @@ class Markdown
 		```
 
 	**/
-	public static overload extern inline function visualizeMarkdown(textField:openfl.text.TextField):openfl.text.TextField {
+	public static overload extern inline function visualizeMarkdown(textField:openfl.text.TextField):openfl.text.TextField
+	{
 		return visualizer.generateVisuals(textField);
 	}
 	#end

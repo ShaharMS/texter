@@ -6,10 +6,10 @@ import openfl.geom.Matrix;
 import texter.openfl.DynamicTextField;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
-
 import texter.openfl._internal.JointGraphic.*;
 
 using Math;
+
 class JointManager
 {
 	public var tf:DynamicTextField;
@@ -19,13 +19,13 @@ class JointManager
 		this.tf = tf;
 	}
 
-
 	var tX:Float;
 	var tY:Float;
 	var tWidth:Float;
 	var tHeight:Float;
 
-	function setPrevStats() {
+	function setPrevStats()
+	{
 		tX = tf.x;
 		tY = tf.y;
 		tWidth = tf.textFieldWidth;
@@ -34,12 +34,13 @@ class JointManager
 
 	public function startResizeTopLeft(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
 			w: tf.textFieldWidth, // gutter
-			h: tf.textFieldHeight// gutter
+			h: tf.textFieldHeight // gutter
 		};
 		setPrevStats();
 
@@ -75,7 +76,8 @@ class JointManager
 
 	public function startResizeTopRight(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -93,17 +95,17 @@ class JointManager
 				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
-			
+
 			final width = p.w - (p.x - e.stageX);
 			final height = p.h + (p.y - e.stageY);
-            trace("width: " + width + " height: " + height);
-            
+			trace("width: " + width + " height: " + height);
+
 			tf.textFieldWidth = width;
 			tf.textFieldHeight = height;
 
-            tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
-			
-            if (width < 0)
+			tf.y = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).y;
+
+			if (width < 0)
 			{
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				trace(width);
@@ -121,7 +123,8 @@ class JointManager
 
 	public function startResizeBottomLeft(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -135,7 +138,7 @@ class JointManager
 			if (!e.buttonDown)
 			{
 				tf.stage.removeEventListener(MouseEvent.MOUSE_MOVE, res);
-				
+
 				tf.onResized(tf.x, tf.y, tf.textFieldWidth, tf.textFieldHeight, tX, tY, tWidth, tHeight);
 				return;
 			}
@@ -161,7 +164,8 @@ class JointManager
 
 	public function startResizeBottomRight(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -200,7 +204,8 @@ class JointManager
 
 	public function startResizeLeft(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -226,7 +231,10 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x + width;
 				tf.textFieldWidth = -width;
 			}
-			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4 else tf.textFieldHeight = p.h;
+			if (tf.matchTextSize)
+				tf.textFieldHeight = tf.textHeight + 4
+			else
+				tf.textFieldHeight = p.h;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -234,7 +242,8 @@ class JointManager
 
 	public function startResizeRight(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -259,7 +268,10 @@ class JointManager
 				tf.x = tf.parent.globalToLocal(new Point(e.stageX, e.stageY)).x;
 				tf.textFieldWidth = -width;
 			}
-			if (tf.matchTextSize) tf.textFieldHeight = tf.textHeight + 4 else tf.textFieldHeight = p.h;
+			if (tf.matchTextSize)
+				tf.textFieldHeight = tf.textHeight + 4
+			else
+				tf.textFieldHeight = p.h;
 		}
 
 		tf.stage.addEventListener(MouseEvent.MOUSE_MOVE, res);
@@ -267,7 +279,8 @@ class JointManager
 
 	public function startResizeTop(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -301,7 +314,8 @@ class JointManager
 
 	public function startResizeBottom(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var p = {
 			x: e.stageX,
 			y: e.stageY,
@@ -334,7 +348,8 @@ class JointManager
 
 	public function startRotation(e:MouseEvent)
 	{
-		if (tf.hideControlsWhenUnfocused) tf.showControls();
+		if (tf.hideControlsWhenUnfocused)
+			tf.showControls();
 		var rect:Rectangle = tf.getBounds(tf.parent);
 		var centerX = rect.left + (rect.width / 2);
 		var centerY = rect.top + (rect.height / 2);

@@ -24,13 +24,13 @@ import openfl.text.TextLineMetrics;
 import openfl.geom.Rectangle;
 import openfl.events.TextEvent;
 
+abstract class TextFieldCompatibility extends Sprite
+{
+	public var textField:TextField;
 
-abstract class TextFieldCompatibility extends Sprite {
-
-    public var textField:TextField;
-    //--------------------------------------------------------------------------
-    //TEXTFIELD COMPATIBILITY
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// TEXTFIELD COMPATIBILITY
+	//--------------------------------------------------------------------------
 
 	/**
 		The type of anti-aliasing used for this text field. Use
@@ -529,263 +529,390 @@ abstract class TextFieldCompatibility extends Sprite {
 	**/
 	public var wordWrap(get, set):Bool;
 
-    //getters and setters for TEXTFIELD COMPATIBILITY
+	// getters and setters for TEXTFIELD COMPATIBILITY
 
-    function get_antiAliasType():openfl.text.AntiAliasType {
-        return textField.antiAliasType;
-    }   
-    function set_antiAliasType(value:openfl.text.AntiAliasType):openfl.text.AntiAliasType {
-        return textField.antiAliasType = value;
-    }
-    function get_autoSize():openfl.text.TextFieldAutoSize {
-        return textField.autoSize;
-    }
-    function set_autoSize(value:openfl.text.TextFieldAutoSize):openfl.text.TextFieldAutoSize {
-        return textField.autoSize = value;
-    }
-    function get_background():Bool {
-        return textField.background;
-    }
-    function set_background(value:Bool):Bool {
-        return textField.background = value;
-    }
-    function get_backgroundColor():Int {
-        return textField.backgroundColor;
-    }
-    function set_backgroundColor(value:Int):Int {
-        return textField.backgroundColor = value;
-    }
-    function set_border(value:Bool):Bool {
-        textField.border = value;
+	function get_antiAliasType():openfl.text.AntiAliasType
+	{
+		return textField.antiAliasType;
+	}
+
+	function set_antiAliasType(value:openfl.text.AntiAliasType):openfl.text.AntiAliasType
+	{
+		return textField.antiAliasType = value;
+	}
+
+	function get_autoSize():openfl.text.TextFieldAutoSize
+	{
+		return textField.autoSize;
+	}
+
+	function set_autoSize(value:openfl.text.TextFieldAutoSize):openfl.text.TextFieldAutoSize
+	{
+		return textField.autoSize = value;
+	}
+
+	function get_background():Bool
+	{
+		return textField.background;
+	}
+
+	function set_background(value:Bool):Bool
+	{
+		return textField.background = value;
+	}
+
+	function get_backgroundColor():Int
+	{
+		return textField.backgroundColor;
+	}
+
+	function set_backgroundColor(value:Int):Int
+	{
+		return textField.backgroundColor = value;
+	}
+
+	function set_border(value:Bool):Bool
+	{
+		textField.border = value;
 		return value;
-    }
-    function set_borderColor(value:Int):Int {
-        return textField.borderColor = value;
-    }
-    function get_bottomScrollV():Int {
-        return textField.bottomScrollV;
-    }
-    function get_caretIndex():Int {
-        return textField.caretIndex;
-    }
-    function get_condenseWhite():Bool {
-        return textField.condenseWhite;
-    }
-    function set_condenseWhite(value:Bool):Bool {
-        return textField.condenseWhite = value;
-    }
-    function get_defaultTextFormat():openfl.text.TextFormat {
-        return textField.defaultTextFormat;
-    }
-    function set_defaultTextFormat(value:openfl.text.TextFormat):openfl.text.TextFormat {
-        return textField.defaultTextFormat = value;
-    }
-    function get_displayAsPassword():Bool {
-        return textField.displayAsPassword;
-    }
-    function set_displayAsPassword(value:Bool):Bool {
-        return textField.displayAsPassword = value;
-    }
-    function get_embedFonts():Bool {
-        return textField.embedFonts;
-    }
-    function set_embedFonts(value:Bool):Bool {
-        return textField.embedFonts = value;
-    }
-    function get_gridFitType():openfl.text.GridFitType {
-        return textField.gridFitType;
-    }
-    function set_gridFitType(value:openfl.text.GridFitType):openfl.text.GridFitType {
-        return textField.gridFitType = value;
-    }
-    function get_htmlText():String {
-        return textField.htmlText;
-    }
-    function set_htmlText(value:String):String {
-        return textField.htmlText = value;
-    }
-    function get_length():Int {
-        return textField.length;
-    }
-    function get_maxChars():Int {
-        return textField.maxChars;
-    }
-    function set_maxChars(value:Int):Int {
-        return textField.maxChars = value;
-    }
-    function get_maxScrollH():Int {
-        return textField.maxScrollH;
-    }
-    function get_maxScrollV():Int {
-        return textField.maxScrollV;
-    }
-    function get_mouseWheelEnabled():Bool {
-        return textField.mouseWheelEnabled;
-    }
-    function set_mouseWheelEnabled(value:Bool):Bool {
-        return textField.mouseWheelEnabled = value;
-    }
-    function get_multiline():Bool {
-        return textField.multiline;
-    }
-    function set_multiline(value:Bool):Bool {
-        return textField.multiline = value;
-    }
-    function get_numLines():Int {
-        return textField.numLines;
-    }
-    function get_restrict():String {
-        return textField.restrict;
-    }
-    function set_restrict(value:String):String {
-        return textField.restrict = value;
-    }
-    function get_scrollH():Int {
-        return textField.scrollH;
-    }
-    function set_scrollH(value:Int):Int {
-        return textField.scrollH = value;
-    }
-    function get_scrollV():Int {
-        return textField.scrollV;
-    }
-    function set_scrollV(value:Int):Int {
-        return textField.scrollV = value;
-    }
-    function get_selectable():Bool {
-        return textField.selectable;
-    }
-    function set_selectable(value:Bool):Bool {
-        return textField.selectable = value;
-    }
-    function get_selectionBeginIndex():Int {
-        return textField.selectionBeginIndex;
-    }
-    function get_selectionEndIndex():Int {
-        return textField.selectionEndIndex;
-    }
-    function get_sharpness():Float {
-        return textField.sharpness;
-    }
-    function set_sharpness(value:Float):Float {
-        return textField.sharpness = value;
-    }
-    function get_text():String {
-        return textField.text;
-    }
-    function set_text(value:String):String {
-        return textField.text = value;
-    }
-    function get_textColor():Int {
-        return textField.textColor;
-    }
-    function set_textColor(value:Int):Int {
-        return textField.textColor = value;
-    }
-    function get_textHeight():Float {
-        return textField.textHeight;
-    }
-    function get_textWidth():Float {
-        return textField.textWidth;
-    }
-    function get_type():openfl.text.TextFieldType {
-        return textField.type;
-    }
-    function set_type(value:openfl.text.TextFieldType):openfl.text.TextFieldType {
-        return textField.type = value;
-    }
-    function get_wordWrap():Bool {
-        return textField.wordWrap;
-    }
-    function set_wordWrap(value:Bool):Bool {
-        return textField.wordWrap = value;
-    }
+	}
 
-	function get_styleSheet():StyleSheet {
+	function set_borderColor(value:Int):Int
+	{
+		return textField.borderColor = value;
+	}
+
+	function get_bottomScrollV():Int
+	{
+		return textField.bottomScrollV;
+	}
+
+	function get_caretIndex():Int
+	{
+		return textField.caretIndex;
+	}
+
+	function get_condenseWhite():Bool
+	{
+		return textField.condenseWhite;
+	}
+
+	function set_condenseWhite(value:Bool):Bool
+	{
+		return textField.condenseWhite = value;
+	}
+
+	function get_defaultTextFormat():openfl.text.TextFormat
+	{
+		return textField.defaultTextFormat;
+	}
+
+	function set_defaultTextFormat(value:openfl.text.TextFormat):openfl.text.TextFormat
+	{
+		return textField.defaultTextFormat = value;
+	}
+
+	function get_displayAsPassword():Bool
+	{
+		return textField.displayAsPassword;
+	}
+
+	function set_displayAsPassword(value:Bool):Bool
+	{
+		return textField.displayAsPassword = value;
+	}
+
+	function get_embedFonts():Bool
+	{
+		return textField.embedFonts;
+	}
+
+	function set_embedFonts(value:Bool):Bool
+	{
+		return textField.embedFonts = value;
+	}
+
+	function get_gridFitType():openfl.text.GridFitType
+	{
+		return textField.gridFitType;
+	}
+
+	function set_gridFitType(value:openfl.text.GridFitType):openfl.text.GridFitType
+	{
+		return textField.gridFitType = value;
+	}
+
+	function get_htmlText():String
+	{
+		return textField.htmlText;
+	}
+
+	function set_htmlText(value:String):String
+	{
+		return textField.htmlText = value;
+	}
+
+	function get_length():Int
+	{
+		return textField.length;
+	}
+
+	function get_maxChars():Int
+	{
+		return textField.maxChars;
+	}
+
+	function set_maxChars(value:Int):Int
+	{
+		return textField.maxChars = value;
+	}
+
+	function get_maxScrollH():Int
+	{
+		return textField.maxScrollH;
+	}
+
+	function get_maxScrollV():Int
+	{
+		return textField.maxScrollV;
+	}
+
+	function get_mouseWheelEnabled():Bool
+	{
+		return textField.mouseWheelEnabled;
+	}
+
+	function set_mouseWheelEnabled(value:Bool):Bool
+	{
+		return textField.mouseWheelEnabled = value;
+	}
+
+	function get_multiline():Bool
+	{
+		return textField.multiline;
+	}
+
+	function set_multiline(value:Bool):Bool
+	{
+		return textField.multiline = value;
+	}
+
+	function get_numLines():Int
+	{
+		return textField.numLines;
+	}
+
+	function get_restrict():String
+	{
+		return textField.restrict;
+	}
+
+	function set_restrict(value:String):String
+	{
+		return textField.restrict = value;
+	}
+
+	function get_scrollH():Int
+	{
+		return textField.scrollH;
+	}
+
+	function set_scrollH(value:Int):Int
+	{
+		return textField.scrollH = value;
+	}
+
+	function get_scrollV():Int
+	{
+		return textField.scrollV;
+	}
+
+	function set_scrollV(value:Int):Int
+	{
+		return textField.scrollV = value;
+	}
+
+	function get_selectable():Bool
+	{
+		return textField.selectable;
+	}
+
+	function set_selectable(value:Bool):Bool
+	{
+		return textField.selectable = value;
+	}
+
+	function get_selectionBeginIndex():Int
+	{
+		return textField.selectionBeginIndex;
+	}
+
+	function get_selectionEndIndex():Int
+	{
+		return textField.selectionEndIndex;
+	}
+
+	function get_sharpness():Float
+	{
+		return textField.sharpness;
+	}
+
+	function set_sharpness(value:Float):Float
+	{
+		return textField.sharpness = value;
+	}
+
+	function get_text():String
+	{
+		return textField.text;
+	}
+
+	function set_text(value:String):String
+	{
+		return textField.text = value;
+	}
+
+	function get_textColor():Int
+	{
+		return textField.textColor;
+	}
+
+	function set_textColor(value:Int):Int
+	{
+		return textField.textColor = value;
+	}
+
+	function get_textHeight():Float
+	{
+		return textField.textHeight;
+	}
+
+	function get_textWidth():Float
+	{
+		return textField.textWidth;
+	}
+
+	function get_type():openfl.text.TextFieldType
+	{
+		return textField.type;
+	}
+
+	function set_type(value:openfl.text.TextFieldType):openfl.text.TextFieldType
+	{
+		return textField.type = value;
+	}
+
+	function get_wordWrap():Bool
+	{
+		return textField.wordWrap;
+	}
+
+	function set_wordWrap(value:Bool):Bool
+	{
+		return textField.wordWrap = value;
+	}
+
+	function get_styleSheet():StyleSheet
+	{
 		return textField.styleSheet;
 	}
 
-	function set_styleSheet(value:StyleSheet):StyleSheet {
+	function set_styleSheet(value:StyleSheet):StyleSheet
+	{
 		return textField.styleSheet = value;
 	}
 
 	// functions to replicate TextField methods
 	// template to use:
-	
-		// /**
-		// 	* Documentation present in the original TextField class.
-		// 	*
-		// 	* @param arg1 Documentation present in the original TextField class.
-		// 	* @param arg2 Documentation present in the original TextField class.
-		// 	* @return Documentation present in the original TextField class. 
-		// **/
-		//public function textFieldMethod(arg1:X, arg2:Y) {
-		//	textField.textFieldMethod(arg1, arg2);
-		//}
-	
+	// /**
+	// 	* Documentation present in the original TextField class.
+	// 	*
+	// 	* @param arg1 Documentation present in the original TextField class.
+	// 	* @param arg2 Documentation present in the original TextField class.
+	// 	* @return Documentation present in the original TextField class.
+	// **/
+	// public function textFieldMethod(arg1:X, arg2:Y) {
+	//	textField.textFieldMethod(arg1, arg2);
+	// }
 	// end template
 
-	public function appendText(text:String):Void {
+	public function appendText(text:String):Void
+	{
 		textField.appendText(text);
 	}
 
-	public function getCharBoundaries(charIndex:Int):Rectangle {
+	public function getCharBoundaries(charIndex:Int):Rectangle
+	{
 		return textField.getCharBoundaries(charIndex);
 	}
 
-	public function getCharIndexAtPoint(x:Float, y:Float):Int {
+	public function getCharIndexAtPoint(x:Float, y:Float):Int
+	{
 		return textField.getCharIndexAtPoint(x, y);
 	}
 
-	public function getFirstCharInParagraph(charIndex:Int):Int {
+	public function getFirstCharInParagraph(charIndex:Int):Int
+	{
 		return textField.getFirstCharInParagraph(charIndex);
 	}
 
-	public function getLineIndexAtPoint(x:Float, y:Float):Int {
+	public function getLineIndexAtPoint(x:Float, y:Float):Int
+	{
 		return textField.getLineIndexAtPoint(x, y);
 	}
 
-	public function getLineIndexOfChar(charIndex:Int):Int {
+	public function getLineIndexOfChar(charIndex:Int):Int
+	{
 		return textField.getLineIndexOfChar(charIndex);
 	}
 
-	public function getLineLength(lineIndex:Int):Int {
+	public function getLineLength(lineIndex:Int):Int
+	{
 		return textField.getLineLength(lineIndex);
 	}
 
-	public function getLineMetrics(lineIndex:Int):TextLineMetrics {
+	public function getLineMetrics(lineIndex:Int):TextLineMetrics
+	{
 		return textField.getLineMetrics(lineIndex);
 	}
 
-	public function getLineOffset(lineIndex:Int):Int {
+	public function getLineOffset(lineIndex:Int):Int
+	{
 		return textField.getLineOffset(lineIndex);
 	}
 
-	public function getLineText(lineIndex:Int):String {
+	public function getLineText(lineIndex:Int):String
+	{
 		return textField.getLineText(lineIndex);
 	}
 
-	public function getParagraphLength(charIndex:Int):Int {
+	public function getParagraphLength(charIndex:Int):Int
+	{
 		return textField.getParagraphLength(charIndex);
 	}
 
-	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat {
+	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat
+	{
 		return textField.getTextFormat(beginIndex, endIndex);
 	}
 
-	public function replaceSelectedText(value:String):Void {
+	public function replaceSelectedText(value:String):Void
+	{
 		textField.replaceSelectedText(value);
 	}
 
-	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void {
+	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
+	{
 		textField.replaceText(beginIndex, endIndex, newText);
 	}
 
-	public function setSelection(beginIndex:Int, endIndex:Int):Void {
+	public function setSelection(beginIndex:Int, endIndex:Int):Void
+	{
 		textField.setSelection(beginIndex, endIndex);
 	}
 
-	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int):Void {
+	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int):Void
+	{
 		textField.setTextFormat(format, beginIndex, endIndex);
 	}
 }

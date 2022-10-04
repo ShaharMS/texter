@@ -123,13 +123,13 @@ class FlxInputText extends FlxText
 	 * callback that is triggered when this text field gets focus
 	 * @since 2.2.0
 	 */
-	public var focusGained:Void -> Void = () -> return;
+	public var focusGained:Void->Void = () -> return;
 
 	/**
 	 * callback that is triggered when this text field loses focus
 	 * @since 2.2.0
 	 */
-	public var focusLost:Void -> Void = () -> return;
+	public var focusLost:Void->Void = () -> return;
 
 	/**
 	 * The Case that's being enforced. Either ALL_CASES, UPPER_CASE or LOWER_CASE.
@@ -211,12 +211,14 @@ class FlxInputText extends FlxText
 	 * @param  BackgroundColor  The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param  EmbeddedFont  Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK, BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK,
+			BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, EmbeddedFont);
 		backgroundColor = BackgroundColor;
 
-		if (BackgroundColor != FlxColor.TRANSPARENT) background = true;
+		if (BackgroundColor != FlxColor.TRANSPARENT)
+			background = true;
 
 		caretColor = color = TextColor;
 
@@ -228,12 +230,14 @@ class FlxInputText extends FlxText
 		hasFocus = false;
 		fieldBorderSprite = new FlxSprite(X, Y);
 		backgroundSprite = new FlxSprite(X, Y);
-		if (!background) fieldBorderSprite.visible = backgroundSprite.visible = false;
+		if (!background)
+			fieldBorderSprite.visible = backgroundSprite.visible = false;
 
 		lines = 1;
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
-		if (Text == null) Text = "";
+		if (Text == null)
+			Text = "";
 		text = Text;
 
 		calcFrame();
@@ -468,7 +472,7 @@ class FlxInputText extends FlxText
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
 		if (_charBoundaries == null || charIndex < 0 || _charBoundaries.length <= 0)
-			return new Rectangle(2,2);
+			return new Rectangle(2, 2);
 
 		var charBoundaries:Rectangle = new Rectangle(),
 			actualIndex = charIndex;
@@ -530,7 +534,8 @@ class FlxInputText extends FlxText
 
 	private override function set_text(Text:String):String
 	{
-		if (Text == "") Text = "​";
+		if (Text == "")
+			Text = "​";
 		#if !js
 		if (textField != null)
 		{
@@ -680,8 +685,10 @@ class FlxInputText extends FlxText
 	{
 		super.calcFrame(RunOnCpp);
 
-		var h = if (text.length > 0) getCharBoundaries(text.length).height else height;var h = if (text.length > 0) getCharBoundaries(text.length).height else height;
-		#if js if (caret != null && text == "") text = "​"; #end 
+		var h = if (text.length > 0) getCharBoundaries(text.length).height else height;
+		var h = if (text.length > 0) getCharBoundaries(text.length).height else height;
+		#if js if (caret != null && text == "")
+			text = "​"; #end
 		if (fieldBorderSprite != null)
 		{
 			if (fieldBorderThickness > 0)
@@ -933,7 +940,7 @@ class FlxInputText extends FlxText
 				boundaries = getCharBoundaries(caretIndex - 1);
 				if (boundaries != null)
 				{
-					caret.x = boundaries.right + x ;
+					caret.x = boundaries.right + x;
 					caret.y = boundaries.top + y;
 				}
 			}

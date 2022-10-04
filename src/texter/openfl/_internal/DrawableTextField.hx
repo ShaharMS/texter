@@ -8,25 +8,27 @@ import openfl.display.Sprite;
 /**
  * A regular textfield with a sprite baclground. will get released in the future when more feature-rich
  */
-class DrawableTextField extends TextFieldCompatibility {
-    
+class DrawableTextField extends TextFieldCompatibility
+{
+	public var backgroundSprite = new Sprite();
 
-    public var backgroundSprite = new Sprite();
-    var m = new Shape();
-    
-    public function new() {
-        super();
-        textField = new TextField();
-        addChild(textField);
-        m.graphics.drawRect(0,0,textField.width, textField.height);
-        addChild(m);
-        backgroundSprite.mask = m;
-        addChild(backgroundSprite);
-        addEventListener(Event.ENTER_FRAME, render);
-    }
+	var m = new Shape();
 
-    function render(e:Event) {
-        m.graphics.drawRect(0,0,textField.width, textField.height);
-        backgroundSprite.x = textField.scrollH;
-    }
+	public function new()
+	{
+		super();
+		textField = new TextField();
+		addChild(textField);
+		m.graphics.drawRect(0, 0, textField.width, textField.height);
+		addChild(m);
+		backgroundSprite.mask = m;
+		addChild(backgroundSprite);
+		addEventListener(Event.ENTER_FRAME, render);
+	}
+
+	function render(e:Event)
+	{
+		m.graphics.drawRect(0, 0, textField.width, textField.height);
+		backgroundSprite.x = textField.scrollH;
+	}
 }
