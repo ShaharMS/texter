@@ -1,270 +1,348 @@
 package texter.general.bidi;
 
 import texter.general.CharTools;
+
 using TextTools;
 
-class Bidi {
-    
-    public static function getTextAttributes(text:String, convCheck = true) {
-       
-        var attributes:Array<TextAttribute> = [Bidified];
-        text.remove("\r");
-        if (text.contains(CharTools.RLM) && convCheck) {
-            //get the first RLM
-            var rlmIndex = text.indexOf(CharTools.RLM);
-            //get the last RLM
-            var rlmEndIndex = text.lastIndexOf(CharTools.RLM);
-            //get the text between the two RLM
-            var rlmText = text.substring(rlmIndex + 1, rlmEndIndex);
-            //get the text before the first RLM
-            var rlmPreText = text.substring(0, rlmIndex);
-            //get the text after the last RLM
-            var rlmPostText = text.substring(rlmEndIndex + 1);
-            //combine with unbifiy
-            text = rlmPreText + unbidify(rlmText) + rlmPostText;
-        }
-        text = text.replace(CharTools.RLM, "");
-        var rtlString = "";
-        var ltrString = "";
-        var processedNewLine = true;
-        var currentLineDir = UNDETERMINED;
+class Bidi
+{
+	public static function getTextAttributes(text:String, convCheck = true)
+	{
+		var attributes:Array<TextAttribute> = [Bidified];
+		text.remove("\r");
+		if (text.contains(CharTools.RLM) && convCheck)
+		{
+			// get the first RLM
+			var rlmIndex = text.indexOf(CharTools.RLM);
+			// get the last RLM
+			var rlmEndIndex = text.lastIndexOf(CharTools.RLM);
+			// get the text between the two RLM
+			var rlmText = text.substring(rlmIndex + 1, rlmEndIndex);
+			// get the text before the first RLM
+			var rlmPreText = text.substring(0, rlmIndex);
+			// get the text after the last RLM
+			var rlmPostText = text.substring(rlmEndIndex + 1);
+			// combine with unbifiy
+			text = rlmPreText + unbidify(rlmText) + rlmPostText;
+		}
+		text = text.replace(CharTools.RLM, "");
+		var rtlString = "";
+		var ltrString = "";
+		var processedNewLine = true;
+		var currentLineDir = UNDETERMINED;
 
-        function endOfStringCheck(i:Int) {
-            if (i == text.length - 1) {
-                if (rtlString.length > 0) {
-                    attributes.push(Rtl(rtlString));
-                    rtlString = "";
-                } else if (ltrString.length > 0) {
-                    attributes.push(Ltr(ltrString));
-                    ltrString = "";
-                }
-                attributes.push(LineEnd);
-            }
-        }
-        for (i in 0...text.length) {
-            var char = text.charAt(i);
-            if (CharTools.softChars.contains(char)) {
-                if (i != text.length - 1) {
-                    var ti = i;
-                    var nextChar = if (convCheck) text.charAt(++ti) else text.charAt(--ti);
-                    while (CharTools.softChars.contains(nextChar)) {
-                        if (ti == if (convCheck) text.length - 1 else 0) {
-                            if (rtlString.length > 0) {
-                                rtlString += char;
-                            } else if (ltrString.length > 0) {
-                                ltrString += char;
-                            }
-                            if (convCheck) endOfStringCheck(i);
-                            break;
-                        }
-                        nextChar = if (convCheck) text.charAt(++ti) else text.charAt(--ti);
-                    }
-                    if (char == CharTools.NEWLINE) {
-                        if (rtlString.length > 0) {
-                            attributes.push(Rtl(rtlString));
-                            rtlString = "";
-                        } else if (ltrString.length > 0) {
-                            attributes.push(Ltr(ltrString));
-                            ltrString = "";
-                        }
-                        attributes.push(LineEnd);
-                        processedNewLine = true;
-                    }
-                    else if (CharTools.numbers.contains(nextChar)) {
-                        if (rtlString.length > 0) {
-                            rtlString += char;
-                        } else if (ltrString.length > 0) {
-                            ltrString += char;
-                        }
-                    } 
-                    else if (CharTools.isRTL(nextChar)) {
-                        //if the direction is RTL, spacebars should be added to the RTL string
-                        if (currentLineDir == RTL) {
-                            if (ltrString.length > 0) {
-                                attributes.push(Ltr(ltrString));
-                                ltrString = "";
-                            }
-                            rtlString += char;
-                        } 
-                        // the direction is LTR, spacebats should be added the the ltr strings
-                        else {
-                            if (ltrString.length > 0) {
-                                ltrString += char;
-                                attributes.push(Ltr(ltrString));
-                                ltrString = "";
-                            } else {
-                                rtlString += char;
-                            }
-                        }
-                    } else {
-                        //if the direction is RTL, spacebars should be added to the RTL string
-                        if (currentLineDir == RTL) {
-                            if (rtlString.length > 0) {
-                                rtlString += char;
-                                attributes.push(Rtl(rtlString));
-                                rtlString = "";
-                            } else {
-                                ltrString += char;
-                            }
-                        } 
-                        // the direction is LTR, spacebats should be added the the ltr strings
-                        else {
-                            if (rtlString.length > 0) {
-                                attributes.push(Rtl(rtlString));
-                                rtlString = "";
-                            } 
-                            ltrString += char;
-                        }
-                    }
-                    endOfStringCheck(i);
-                    continue;
-                }
-                if (ltrString.length > 0) {
-                    ltrString += char;
-                    endOfStringCheck(i);
-                    continue;
-                } else if (rtlString.length > 0) {
-                    rtlString += char;
-                    endOfStringCheck(i);
-                    continue;
-                } else {
-                    attributes.push(SoftChar(char, UNDETERMINED));
-                    endOfStringCheck(i);
-                    continue;
-                }
-            } 
+		function endOfStringCheck(i:Int)
+		{
+			if (i == text.length - 1)
+			{
+				if (rtlString.length > 0)
+				{
+					attributes.push(Rtl(rtlString));
+					rtlString = "";
+				}
+				else if (ltrString.length > 0)
+				{
+					attributes.push(Ltr(ltrString));
+					ltrString = "";
+				}
+				attributes.push(LineEnd);
+			}
+		}
+		for (i in 0...text.length)
+		{
+			var char = text.charAt(i);
+			if (CharTools.softChars.contains(char))
+			{
+				if (i != text.length - 1)
+				{
+					var ti = i;
+					var nextChar = if (convCheck) text.charAt(++ti) else text.charAt(--ti);
+					while (CharTools.softChars.contains(nextChar))
+					{
+						if (ti == if (convCheck) text.length - 1 else 0)
+						{
+							if (rtlString.length > 0)
+							{
+								rtlString += char;
+							}
+							else if (ltrString.length > 0)
+							{
+								ltrString += char;
+							}
+							if (convCheck)
+								endOfStringCheck(i);
+							break;
+						}
+						nextChar = if (convCheck) text.charAt(++ti) else text.charAt(--ti);
+					}
+					if (char == CharTools.NEWLINE)
+					{
+						if (rtlString.length > 0)
+						{
+							attributes.push(Rtl(rtlString));
+							rtlString = "";
+						}
+						else if (ltrString.length > 0)
+						{
+							attributes.push(Ltr(ltrString));
+							ltrString = "";
+						}
+						attributes.push(LineEnd);
+						processedNewLine = true;
+					}
+					else if (CharTools.numbers.contains(nextChar))
+					{
+						if (rtlString.length > 0)
+						{
+							rtlString += char;
+						}
+						else if (ltrString.length > 0)
+						{
+							ltrString += char;
+						}
+					}
+					else if (CharTools.isRTL(nextChar))
+					{
+						// if the direction is RTL, spacebars should be added to the RTL string
+						if (currentLineDir == RTL)
+						{
+							if (ltrString.length > 0)
+							{
+								attributes.push(Ltr(ltrString));
+								ltrString = "";
+							}
+							rtlString += char;
+						}
+						// the direction is LTR, spacebats should be added the the ltr strings
+						else
+						{
+							if (ltrString.length > 0)
+							{
+								ltrString += char;
+								attributes.push(Ltr(ltrString));
+								ltrString = "";
+							}
+							else
+							{
+								rtlString += char;
+							}
+						}
+					}
+					else
+					{
+						// if the direction is RTL, spacebars should be added to the RTL string
+						if (currentLineDir == RTL)
+						{
+							if (rtlString.length > 0)
+							{
+								rtlString += char;
+								attributes.push(Rtl(rtlString));
+								rtlString = "";
+							}
+							else
+							{
+								ltrString += char;
+							}
+						}
+						// the direction is LTR, spacebats should be added the the ltr strings
+						else
+						{
+							if (rtlString.length > 0)
+							{
+								attributes.push(Rtl(rtlString));
+								rtlString = "";
+							}
+							ltrString += char;
+						}
+					}
+					endOfStringCheck(i);
+					continue;
+				}
+				if (ltrString.length > 0)
+				{
+					ltrString += char;
+					endOfStringCheck(i);
+					continue;
+				}
+				else if (rtlString.length > 0)
+				{
+					rtlString += char;
+					endOfStringCheck(i);
+					continue;
+				}
+				else
+				{
+					attributes.push(SoftChar(char, UNDETERMINED));
+					endOfStringCheck(i);
+					continue;
+				}
+			}
 
-            if (char == CharTools.NEWLINE) {
-                if (rtlString.length > 0) {
-                    attributes.push(Rtl(rtlString));
-                    rtlString = "";
-                } else if (ltrString.length > 0) {
-                    attributes.push(Ltr(ltrString));
-                    ltrString = "";
-                }
-                attributes.push(LineEnd);
-                processedNewLine = true;
-                currentLineDir = UNDETERMINED;
+			if (char == CharTools.NEWLINE)
+			{
+				if (rtlString.length > 0)
+				{
+					attributes.push(Rtl(rtlString));
+					rtlString = "";
+				}
+				else if (ltrString.length > 0)
+				{
+					attributes.push(Ltr(ltrString));
+					ltrString = "";
+				}
+				attributes.push(LineEnd);
+				processedNewLine = true;
+				currentLineDir = UNDETERMINED;
 
-                endOfStringCheck(i);
+				endOfStringCheck(i);
 
-                continue;
-            }
+				continue;
+			}
 
-            if (CharTools.numbers.contains(char)) {
-                if (ltrString.length > 0) {
-                    ltrString += char;
-                    endOfStringCheck(i);
-                    continue;
-                } else {
-                    rtlString += char;
-                    endOfStringCheck(i);
-                    continue;
-                }
-            }
+			if (CharTools.numbers.contains(char))
+			{
+				if (ltrString.length > 0)
+				{
+					ltrString += char;
+					endOfStringCheck(i);
+					continue;
+				}
+				else
+				{
+					rtlString += char;
+					endOfStringCheck(i);
+					continue;
+				}
+			}
 
-            if (CharTools.isRTL(char)) {
-                if (processedNewLine) {
-                    attributes.push(LineDirection(RTL));
-                    currentLineDir = RTL;
-                    processedNewLine = false;
-                }
-                if (ltrString.length > 0) {
-                    attributes.push(Ltr(ltrString));
-                    ltrString = "";
-                }
-                rtlString += char;
+			if (CharTools.isRTL(char))
+			{
+				if (processedNewLine)
+				{
+					attributes.push(LineDirection(RTL));
+					currentLineDir = RTL;
+					processedNewLine = false;
+				}
+				if (ltrString.length > 0)
+				{
+					attributes.push(Ltr(ltrString));
+					ltrString = "";
+				}
+				rtlString += char;
 
-                endOfStringCheck(i);
-                
-                continue;
-            } else {
-                if (rtlString.length > 0) {
-                    attributes.push(Rtl(rtlString));
-                    rtlString = "";
-                }
-            }
+				endOfStringCheck(i);
 
-            // we have an LTR char
-            if (processedNewLine) {
-                attributes.push(LineDirection(LTR));
-                currentLineDir = LTR;
-                processedNewLine = false;
-            }
-            if (rtlString.length > 0) {
-                attributes.push(Rtl(rtlString));
-                rtlString = "";
-            }
-            ltrString += char;
+				continue;
+			}
+			else
+			{
+				if (rtlString.length > 0)
+				{
+					attributes.push(Rtl(rtlString));
+					rtlString = "";
+				}
+			}
 
-            endOfStringCheck(i);
-        }
-        attributes.push(Bidified);
-        return attributes;
-    }
+			// we have an LTR char
+			if (processedNewLine)
+			{
+				attributes.push(LineDirection(LTR));
+				currentLineDir = LTR;
+				processedNewLine = false;
+			}
+			if (rtlString.length > 0)
+			{
+				attributes.push(Rtl(rtlString));
+				rtlString = "";
+			}
+			ltrString += char;
 
-    public static function unbidify(text:String) {
-        return process(text, false);
-    }
+			endOfStringCheck(i);
+		}
+		attributes.push(Bidified);
+		return attributes;
+	}
 
-    public static function process(text:String, convCheck:Bool = true):String {
-        var attributes:Array<TextAttribute> = getTextAttributes(text, convCheck);
-        return processTextAttributes(attributes);
-    }
+	public static function unbidify(text:String)
+	{
+		return process(text, false);
+	}
 
-    public static function processTextAttributes(attributes:Array<TextAttribute>):String {
-        var result = "";
+	public static function process(text:String, convCheck:Bool = true):String
+	{
+		var attributes:Array<TextAttribute> = getTextAttributes(text, convCheck);
+		return processTextAttributes(attributes);
+	}
 
-        var currentLineDirection = UNDETERMINED;
-        for (a in attributes) {
-            switch a {
-                case Bidified: result += CharTools.RLM;
-                case LineDirection(letterType): currentLineDirection = letterType;
-                case Rtl(string): {
-                    //we want to find all number groups in the string, reverse them, and then reverse the whole string
-                    var numberEreg = ~/\d+/;
-                    var groups = string.indexesFromEReg(numberEreg);
-                    for (i in 0...groups.length) {
-                        var group = groups[i];
-                        var groupStr = string.substring(group.startIndex, group.endIndex);
-                        var reversed = groupStr.reverse();
-                        string = string.replace(groupStr, reversed);
-                    }
-                    switch currentLineDirection {
-                        case RTL: {
-                            //find the previous line break
-                            var index = result.length - 1;
-                            while (result.charAt(index) != "\n" && index > 0) index--;
-                            result = result.substring(0, index + 1) + string.reverse() + result.substring(index + 1);
-                        }
-                        case LTR | UNDETERMINED: result += string.reverse();
-                    }
+	public static function processTextAttributes(attributes:Array<TextAttribute>):String
+	{
+		var result = "";
 
-                }
-                case Ltr(string): {
-                    switch currentLineDirection {
-                        case RTL: {
-                            //find the previous line break
-                            var index = result.length - 1;
-                            while (result.charAt(index) != "\n" && index > 0) index--;
-                            result = result.substring(0, index + 1) + string + result.substring(index + 1);
-                        }
-                        case LTR | UNDETERMINED: result += string;
-                    }
-                }
-                case SoftChar(string, generalDirection): result += string;
-                case LineEnd: result += "\n";
-            }
-            if (result.charAt(result.length - 1) == "\n") result = result.replaceLast("\n", "");
-        }
-        return result;
-    }
+		var currentLineDirection = UNDETERMINED;
+		for (a in attributes)
+		{
+			switch a
+			{
+				case Bidified:
+					result += CharTools.RLM;
+				case LineDirection(letterType):
+					currentLineDirection = letterType;
+				case Rtl(string):
+					{
+						// we want to find all number groups in the string, reverse them, and then reverse the whole string
+						var numberEreg = ~/\d+/;
+						var groups = string.indexesFromEReg(numberEreg);
+						for (i in 0...groups.length)
+						{
+							var group = groups[i];
+							var groupStr = string.substring(group.startIndex, group.endIndex);
+							var reversed = groupStr.reverse();
+							string = string.replace(groupStr, reversed);
+						}
+						switch currentLineDirection
+						{
+							case RTL: {
+									// find the previous line break
+									var index = result.length - 1;
+									while (result.charAt(index) != "\n" && index > 0)
+										index--;
+									result = result.substring(0, index + 1) + string.reverse() + result.substring(index + 1);
+								}
+							case LTR | UNDETERMINED: result += string.reverse();
+						}
+					}
+				case Ltr(string):
+					{
+						switch currentLineDirection
+						{
+							case RTL: {
+									// find the previous line break
+									var index = result.length - 1;
+									while (result.charAt(index) != "\n" && index > 0)
+										index--;
+									result = result.substring(0, index + 1) + string + result.substring(index + 1);
+								}
+							case LTR | UNDETERMINED: result += string;
+						}
+					}
+				case SoftChar(string, generalDirection):
+					result += string;
+				case LineEnd:
+					result += "\n";
+			}
+			if (result.charAt(result.length - 1) == "\n")
+				result = result.replaceLast("\n", "");
+		}
+		return result;
+	}
 
-    public static function stringityAttributes(array:Array<TextAttribute>):String {
-        var result = "";
-        for (a in array) {
-            result += Std.string(a) + "\n";
-        }
-        return result;
-    }
+	public static function stringityAttributes(array:Array<TextAttribute>):String
+	{
+		var result = "";
+		for (a in array)
+		{
+			result += Std.string(a) + "\n";
+		}
+		return result;
+	}
 }
