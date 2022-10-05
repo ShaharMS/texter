@@ -206,7 +206,7 @@ class DynamicTextField extends Sprite
 		super();
 		textField = new TextField();
 		textField.defaultTextFormat = new TextFormat(null, null, null, null, null, null, null, null, "left", Std.int(JOINT_GUTTER * 2),
-			Std.int(JOINT_GUTTER * 2), null, null);
+			Std.int(JOINT_GUTTER * 2));
 		addChild(textField);
 
 		borders = {
