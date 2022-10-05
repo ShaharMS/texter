@@ -5,7 +5,7 @@ using TextTools;
 
 class Bidi {
     
-    public static function getTextAttributes(text:String, ?convCheck = true) {
+    public static function getTextAttributes(text:String, convCheck = true) {
        
         var attributes:Array<TextAttribute> = [Bidified];
         text.remove("\r");
@@ -207,7 +207,7 @@ class Bidi {
         return process(text, false);
     }
 
-    public static function process(text:String, ?convCheck:Bool = true):String {
+    public static function process(text:String, convCheck:Bool = true):String {
         var attributes:Array<TextAttribute> = getTextAttributes(text, convCheck);
         return processTextAttributes(attributes);
     }
