@@ -193,7 +193,9 @@ class BidiTools
 					{
 						t = letter;
 					}
-				} else {
+				}
+				else
+				{
 					// logic for general RTL letters, spacebar, punctuation marks
 					if (CharTools.isLTR(letter)
 						|| (currentlyOppositeDirection && letter == " ")
@@ -220,10 +222,12 @@ class BidiTools
 						}
 						textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
 
-						while (textfield.caretIndex > 0 && (CharTools.isLTR(textfield.text.charAt(textfield.caretIndex - 1)) || CharTools.isSoft(textfield.text.charAt(textfield.caretIndex - 1)))) {
+						while (textfield.caretIndex > 0
+							&& (CharTools.isLTR(textfield.text.charAt(textfield.caretIndex - 1))
+								|| CharTools.isSoft(textfield.text.charAt(textfield.caretIndex - 1))))
+						{
 							textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
 						}
-							
 					}
 					// logic for everything else - LTR letters, special chars...
 					else
@@ -239,16 +243,20 @@ class BidiTools
 			#end
 			if (t.length > 0 && (textfield.maxChars == 0 || (textfield.text.length + t.length) < textfield.maxChars))
 			{
-				if (!CharTools.isSoft(letter) && (textfield.text.length == 0 || startingLetter == "")) startingLetter = letter.charAt(0);
+				if (!CharTools.isSoft(letter) && (textfield.text.length == 0 || startingLetter == ""))
+					startingLetter = letter.charAt(0);
 				final oc = textfield.caretIndex;
 				textfield.replaceSelectedText(t);
 				textfield.setSelection(oc + 1, oc + 1);
-				if (getStartingDirection() == LTR) {
+				if (getStartingDirection() == LTR)
+				{
 					if (hasConverted)
 						textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
 					if (addedSpace)
 						textfield.setSelection(textfield.caretIndex + 1, textfield.caretIndex + 1);
-				} else {
+				}
+				else
+				{
 					if (hasConverted)
 						textfield.setSelection(textfield.caretIndex - 1, textfield.caretIndex - 1);
 					if (addedSpace)
@@ -265,7 +273,9 @@ class BidiTools
 				case RETURN, NUMPAD_ENTER:
 					if (textfield.__textEngine.multiline)
 					{
-						if (((currentlyOppositeDirection && getStartingDirection() == LTR) || (!currentlyOppositeDirection && getStartingDirection() == RTL)) && textfield.selectionBeginIndex == textfield.selectionEndIndex)
+						if (((currentlyOppositeDirection && getStartingDirection() == LTR)
+							|| (!currentlyOppositeDirection && getStartingDirection() == RTL))
+							&& textfield.selectionBeginIndex == textfield.selectionEndIndex)
 						{
 							// If we just insert a newline, everything would go one line down and leave an empty line at the top
 							// we need to go through the letters until we hit something LTR, and insert a newline before that.

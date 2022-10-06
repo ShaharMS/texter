@@ -21,7 +21,6 @@ import openfl.display.Sprite;
 import openfl.text.TextLineMetrics;
 import openfl.geom.Rectangle;
 import openfl.events.TextEvent;
-
 import texter.openfl._internal.JointGraphic.*;
 import texter.openfl._internal.JointGraphic;
 import texter.openfl._internal.JointManager;
@@ -31,57 +30,57 @@ import texter.openfl._internal.JointManager;
  * 
  * Those controls can be dynamically managed by the user.
  */
-class DynamicTextField extends Sprite {
-    
-	//privates
+class DynamicTextField extends Sprite
+{
+	// privates
 	var offsetX:Float = 0;
 	var offsetY:Float = 0;
 	var rm:JointManager;
 
+	public var textField:TextField;
 
-    public var textField:TextField;
-
-    /**
-     * A container for all border sprites
-     */
-    public var borders:{
-        left:Sprite,
-        right:Sprite,
-        top:Sprite,
-        bottom:Sprite
-    };
+	/**
+	 * A container for all border sprites
+	 */
+	public var borders:
+		{
+			left:Sprite,
+			right:Sprite,
+			top:Sprite,
+			bottom:Sprite
+		};
 
 	/**
 	 * A container for all joint sprites
 	 */
-    public var joints:{
-        middleLeft:Sprite,
-        middleRight:Sprite,
-        middleTop:Sprite,
-        middleBottom:Sprite,
-        topLeft:Sprite,
-        topRight:Sprite,
-        bottomLeft:Sprite,
-        bottomRight:Sprite,
-		rotation:Sprite
-    };
+	public var joints:
+		{
+			middleLeft:Sprite,
+			middleRight:Sprite,
+			middleTop:Sprite,
+			middleBottom:Sprite,
+			topLeft:Sprite,
+			topRight:Sprite,
+			bottomLeft:Sprite,
+			bottomRight:Sprite,
+			rotation:Sprite
+		};
 
-    /**
-     * Whether or not the text field is dynamically resizable by the user:
-     * 
-     * When enabled, the user can extend the text field's size when pressing the corners/middles.
-     */
-    public var resizable(default, set):Bool = true;
+	/**
+	 * Whether or not the text field is dynamically resizable by the user:
+	 * 
+	 * When enabled, the user can extend the text field's size when pressing the corners/middles.
+	 */
+	public var resizable(default, set):Bool = true;
 
-    /**
-     * Whether or not the text field has an interactive rotation button:
-     * 
-     * When enabled, the user can rotate the textfield by pressing the rotation button.
+	/**
+	 * Whether or not the text field has an interactive rotation button:
+	 * 
+	 * When enabled, the user can rotate the textfield by pressing the rotation button.
 	 * 
 	 * When disabled, the rotation button is hidden.
-     */
-    public var rotatable(default, set):Bool = true;
-
+	 */
+	public var rotatable(default, set):Bool = true;
 
 	/*
 	 * Whether or not the text field can be dragged around
@@ -89,11 +88,11 @@ class DynamicTextField extends Sprite {
 	 */
 	public var draggable(default, set):Bool = true;
 
-    /**
-     * This flag is flipped when the user starts dragging the text field.
+	/**
+	 * This flag is flipped when the user starts dragging the text field.
 	 * 
 	 * the dragging operation starts when the textfield starts moving.
-     */
+	 */
 	public var currentlyDragging(default, null):Bool = false;
 
 	/**
@@ -106,13 +105,13 @@ class DynamicTextField extends Sprite {
 	 */
 	public var matchTextSize(default, set):Bool = false;
 
-    /**
-     * An array of the `BitmapData` objects used to draw the text field's corners & middles.
-     * 
-     * - If the array contains only one element, the text field will use that element f
+	/**
+	 * An array of the `BitmapData` objects used to draw the text field's corners & middles.
+	 * 
+	 * - If the array contains only one element, the text field will use that element f
 	 * or all corners & middles.
-     */
-    public var jointGraphics(default, null):JointGraphic;
+	 */
+	public var jointGraphics(default, null):JointGraphic;
 
 	/**
 	 * When the text field isnt selected (or, out of focus), 
@@ -147,7 +146,9 @@ class DynamicTextField extends Sprite {
 	public var textFieldHeight(get, set):Float;
 
 	/**
-	 	Sets the thickness of the borders connecting the joints of this `DynamicTextField`. 
+		Sets the thickness of the borders connecting the joints of this `DynamicTextField`. 
+			 	Sets the thickness of the borders connecting the joints of this `DynamicTextField`. 
+		Sets the thickness of the borders connecting the joints of this `DynamicTextField`. 
 
 		Setting this to `0` or setting `border` to `false` will remove the borders, and thus remove the ability to drag the text field around.
 
@@ -155,7 +156,7 @@ class DynamicTextField extends Sprite {
 	public var borderSize(default, set):Float = 1;
 
 	/**
-	 	Sets the range from the border on which you can click and still drag the border, even if you arent directly above the
+		Sets the range from the border on which you can click and still drag the border, even if you arent directly above the
 		border's graphic.
 
 		Use this if you're noticing difficulties in clicking the borders, and thus dragging the text field.
@@ -166,7 +167,7 @@ class DynamicTextField extends Sprite {
 
 	/**
 		A callback function that triggers when the text field has been dragged.
-		
+
 		@param x The **current** x position of the text field.
 		@param y The **current** y position of the text field.
 		@param previousX The previous x position of the text field, before the dragging started.
@@ -186,7 +187,8 @@ class DynamicTextField extends Sprite {
 		@param previousTextFieldWidth The previous width of the text field, before the resizing started. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
 		@param previousTextFieldHeight The previous height of the text field, before the resizing started. **Notice - this is the width of the textField object, not the entire `DynamicTextField`**
 	**/
-	public var onResized:(Float, Float, Float, Float, Float, Float, Float, Float) -> Void = (x, y, width, height, previousX, previousY, previousWidth, previousHeight) -> {};
+	public var onResized:(Float, Float, Float, Float, Float, Float, Float,
+		Float) -> Void = (x, y, width, height, previousX, previousY, previousWidth, previousHeight) -> {};
 
 	/**
 		A callback function that triggers when the text field has been rotated.
@@ -194,48 +196,51 @@ class DynamicTextField extends Sprite {
 		@param previousRotation The previous rotation of the text field, before the rotation started, in degrees.
 	**/
 	public var onRotated:(Float, Float) -> Void = (rotation, previousRotation) -> {};
-    
-    /**
-     * Creates a new `DynamicTextField` object. joints and borders will be visible by default.
-	 * You can turn this off by setting `hideControlsWhenUnfocused`.
-     */
-    public function new() {
-        super();
-        textField = new TextField();
-		textField.defaultTextFormat = new TextFormat(null, null, null , null, null, null, null, null, "left", Std.int(JOINT_GUTTER * 2), Std.int(JOINT_GUTTER * 2), null, null);
-        addChild(textField);
 
-        borders = {
-            left: new Sprite(),
-            right: new Sprite(),
-            top: new Sprite(),
-            bottom: new Sprite()
-        };
+	/**
+	 * Creates a new `DynamicTextField` object. joints and borders will be visible by default.
+	 * You can turn this off by setting `hideControlsWhenUnfocused`.
+	 */
+	public function new()
+	{
+		super();
+		textField = new TextField();
+		textField.defaultTextFormat = new TextFormat(null, null, null, null, null, null, null, null, "left", Std.int(JOINT_GUTTER * 2),
+			Std.int(JOINT_GUTTER * 2));
+		addChild(textField);
+
+		borders = {
+			left: new Sprite(),
+			right: new Sprite(),
+			top: new Sprite(),
+			bottom: new Sprite()
+		};
 
 		jointGraphics = new JointGraphic(this);
 		rm = new JointManager(this);
 
-        set_virtualBorderSize(virtualBorderSize); //already calls set_borderSize
+		set_virtualBorderSize(virtualBorderSize); // already calls set_borderSize
 
-        borders.top.x = borders.top.y = 0;
-        addChild(borders.top);
+		borders.top.x = borders.top.y = 0;
+		addChild(borders.top);
 
-        borders.bottom.x = 0;
-        borders.bottom.y = textField.height;
-        addChild(borders.bottom);
+		borders.bottom.x = 0;
+		borders.bottom.y = textField.height;
+		addChild(borders.bottom);
 
-        borders.left.x = 0;
-        borders.left.y = 0;
-        addChild(borders.left);
+		borders.left.x = 0;
+		borders.left.y = 0;
+		addChild(borders.left);
 
-        borders.right.x = textField.width;
-        borders.right.y = 0;
-        addChild(borders.right);
+		borders.right.x = textField.width;
+		borders.right.y = 0;
+		addChild(borders.right);
 
-        for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.addEventListener(MouseEvent.MOUSE_OVER, mouseOverBorder);
-            b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
-        }
+			b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
+		}
 
 		joints = {
 			middleLeft: new Sprite(),
@@ -249,7 +254,17 @@ class DynamicTextField extends Sprite {
 			rotation: new Sprite()
 		};
 
-		for (j in [joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight]) {
+		for (j in [
+			joints.middleLeft,
+			joints.middleRight,
+			joints.middleTop,
+			joints.middleBottom,
+			joints.topLeft,
+			joints.topRight,
+			joints.bottomLeft,
+			joints.bottomRight
+		])
+		{
 			j.addChild(new Bitmap(jointGraphics.defaultGraphic));
 			j.addEventListener(MouseEvent.MOUSE_OVER, mouseOverJoint);
 		}
@@ -273,83 +288,97 @@ class DynamicTextField extends Sprite {
 		joints.middleTop.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
 		joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
 
-        joints.rotation.addChild(new Bitmap(jointGraphics.rotationHandle));
+		joints.rotation.addChild(new Bitmap(jointGraphics.rotationHandle));
 		joints.rotation.addEventListener(MouseEvent.MOUSE_OVER, mouseOverJoint);
 		joints.rotation.addEventListener(MouseEvent.MOUSE_DOWN, rm.startRotation);
-		
+
 		addChild(joints.rotation);
 
 		textField.addEventListener(MouseEvent.MOUSE_OVER, mouseOverTextField);
-        this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+		this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 
-		//call setters for positioning things correctly
+		// call setters for positioning things correctly
 		set_width(width);
 		set_height(height);
-		
+
 		textField.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
 		textField.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 		textField.addEventListener(Event.CHANGE, onTextChange);
-		
-
-		
-    }
+	}
 
 	//--------------------------------------------------------------------------
 	// PUBLIC METHODS
 	//--------------------------------------------------------------------------
 
-	public function textFieldWidthToObjectWidth(?width:Float):Float {
-		if (width == null) width = textFieldWidth;
+	public function textFieldWidthToObjectWidth(?width:Float):Float
+	{
+		if (width == null)
+			width = textFieldWidth;
 		return width + (JOINT_GUTTER * 2) + 1;
 	}
 
-	public function textFieldHeightToObjectHeight(?height:Float):Float {
-		if (height == null) height = textFieldHeight;
+	public function textFieldHeightToObjectHeight(?height:Float):Float
+	{
+		if (height == null)
+			height = textFieldHeight;
 		return height + ROTATION_JOINT_GUTTER + JOINT_GUTTER + 1;
 	}
 
-	public function objectWidthToTextFieldWidth(?width:Float):Float {
-		if (width == null) width = this.width;
+	public function objectWidthToTextFieldWidth(?width:Float):Float
+	{
+		if (width == null)
+			width = this.width;
 		return width - (JOINT_GUTTER * 2) - 1;
 	}
 
-	public function objectHeightToTextFieldHeight(?height:Float):Float {
-		if (height == null) height = this.height;
+	public function objectHeightToTextFieldHeight(?height:Float):Float
+	{
+		if (height == null)
+			height = this.height;
 		return height - ROTATION_JOINT_GUTTER - JOINT_GUTTER - 1;
 	}
-
 
 	//--------------------------------------------------------------------------
 	// Dragging
 	//--------------------------------------------------------------------------
 	var prevX:Float;
 	var prevY:Float;
-	function registerDrag(e:MouseEvent) {
-		if (hideControlsWhenUnfocused) {
+
+	function registerDrag(e:MouseEvent)
+	{
+		if (hideControlsWhenUnfocused)
+		{
 			showControls();
 		}
-		if (draggable && offsetX == 0) {
+		if (draggable && offsetX == 0)
+		{
 			offsetX = parent.mouseX - x;
 			offsetY = parent.mouseY - y;
 			prevX = x;
 			prevY = y;
-			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			for (b in [borders.left, borders.right, borders.top, borders.bottom])
+			{
 				b.removeEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
 			}
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, drag);
 		}
 	}
 
-	function drag(e:MouseEvent) {
-		if (draggable && e.buttonDown) {
+	function drag(e:MouseEvent)
+	{
+		if (draggable && e.buttonDown)
+		{
 			currentlyDragging = true;
 			x = parent.globalToLocal(new Point(e.stageX, e.stageY)).x - offsetX;
 			y = parent.globalToLocal(new Point(e.stageX, e.stageY)).y - offsetY;
-		} else {
+		}
+		else
+		{
 			offsetX = offsetY = 0;
 			currentlyDragging = false;
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, drag);
-			for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+			for (b in [borders.left, borders.right, borders.top, borders.bottom])
+			{
 				b.addEventListener(MouseEvent.MOUSE_DOWN, registerDrag);
 			}
 			onDragged(x, y, prevX, prevY);
@@ -357,68 +386,79 @@ class DynamicTextField extends Sprite {
 	}
 
 	//--------------------------------------------------------------------------
-	//FOCUS FUNCTIONS
+	// FOCUS FUNCTIONS
 	//--------------------------------------------------------------------------
 
-	function onFocusIn(e:FocusEvent) {
+	function onFocusIn(e:FocusEvent)
+	{
 		trace("focus in");
-		if (hideControlsWhenUnfocused) showControls();
+		if (hideControlsWhenUnfocused)
+			showControls();
 	}
-	function onFocusOut(e:FocusEvent) {
+
+	function onFocusOut(e:FocusEvent)
+	{
 		trace("focus out");
-		if (hideControlsWhenUnfocused) hideControls();
+		if (hideControlsWhenUnfocused)
+			hideControls();
 	}
 
 	//--------------------------------------------------------------------------
-	//TEXT FUNCTIONS
+	// TEXT FUNCTIONS
 	//--------------------------------------------------------------------------
 
-	function onTextChange(e:Event) {
-		if (matchTextSize) {
+	function onTextChange(e:Event)
+	{
+		if (matchTextSize)
+		{
 			set_textFieldHeight(textField.textHeight + 4);
 		}
 	}
 
 	//--------------------------------------------------------------------------
-	//CURSOR FUNCTIONS
+	// CURSOR FUNCTIONS
 	//--------------------------------------------------------------------------
-    function mouseOverBorder(e:MouseEvent) {
-        Mouse.cursor = MouseCursor.MOVE;
-    }
+	function mouseOverBorder(e:MouseEvent)
+	{
+		Mouse.cursor = MouseCursor.MOVE;
+	}
 
-	function mouseOverJoint(e:MouseEvent) {
-		if (currentlyDragging) {
+	function mouseOverJoint(e:MouseEvent)
+	{
+		if (currentlyDragging)
+		{
 			Mouse.cursor = MouseCursor.MOVE;
 			return;
 		}
 		Mouse.show();
 		// i hate this too
-		if (e.target == joints.topLeft) {
+		if (e.target == joints.topLeft || e.target == joints.bottomRight)
+		{
 			Mouse.cursor = MouseCursor.RESIZE_NWSE;
-		} else if (e.target == joints.topRight) {
+		}
+		else if (e.target == joints.topRight || e.target == joints.bottomLeft)
+		{
 			Mouse.cursor = MouseCursor.RESIZE_NESW;
-		} else if (e.target == joints.bottomLeft) {
-			Mouse.cursor = MouseCursor.RESIZE_NESW;
-		} else if (e.target == joints.bottomRight) {
-			Mouse.cursor = MouseCursor.RESIZE_NWSE;
-		} else if (e.target == joints.middleLeft) {
+		}
+		else if (e.target == joints.middleLeft || e.target == joints.middleRight)
+		{
 			Mouse.cursor = MouseCursor.RESIZE_WE;
-		} else if (e.target == joints.middleRight) {
-			Mouse.cursor = MouseCursor.RESIZE_WE;
-		} else if (e.target == joints.middleTop) {
+		}
+		else if (e.target == joints.middleTop || e.target == joints.middleBottom)
+		{
 			Mouse.cursor = MouseCursor.RESIZE_NS;
-		} else if (e.target == joints.middleBottom) {
-			Mouse.cursor = MouseCursor.RESIZE_NS;
-		} 
+		}
 	}
 
-    function mouseOverTextField(e:MouseEvent) {
-        Mouse.cursor = !currentlyDragging ? MouseCursor.TEXT : MouseCursor.MOVE;
-    }
+	function mouseOverTextField(e:MouseEvent)
+	{
+		Mouse.cursor = !currentlyDragging ? MouseCursor.TEXT : MouseCursor.MOVE;
+	}
 
-    function mouseOut(e:MouseEvent) {
-        Mouse.cursor = !currentlyDragging ? MouseCursor.DEFAULT : MouseCursor.MOVE;
-    }
+	function mouseOut(e:MouseEvent)
+	{
+		Mouse.cursor = !currentlyDragging ? MouseCursor.DEFAULT : MouseCursor.MOVE;
+	}
 
 	/**
 		Hides everything, but the text field.
@@ -426,14 +466,27 @@ class DynamicTextField extends Sprite {
 		Called when the user shifts the focus from the text field,
 		and `hideControlsWhenUnfocused` is true.
 	**/
-	public function hideControls() {
-		//hide everything but the text field
-		for (j in [joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight, joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.rotation]) {
+	public function hideControls()
+	{
+		// hide everything but the text field
+		for (j in [
+			joints.topLeft,
+			joints.topRight,
+			joints.bottomLeft,
+			joints.bottomRight,
+			joints.middleLeft,
+			joints.middleRight,
+			joints.middleTop,
+			joints.middleBottom,
+			joints.rotation
+		])
+		{
 			j.visible = false;
 		}
 
-		//hide the borders
-		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+		// hide the borders
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.visible = false;
 		}
 	}
@@ -441,22 +494,36 @@ class DynamicTextField extends Sprite {
 	/**
 		Shows All of the joints and the borders.
 	**/
-	public function showControls() {
-		for (j in [joints.topLeft, joints.topRight, joints.bottomLeft, joints.bottomRight, joints.middleLeft, joints.middleRight, joints.middleTop, joints.middleBottom, joints.rotation]) {
+	public function showControls()
+	{
+		for (j in [
+			joints.topLeft,
+			joints.topRight,
+			joints.bottomLeft,
+			joints.bottomRight,
+			joints.middleLeft,
+			joints.middleRight,
+			joints.middleTop,
+			joints.middleBottom,
+			joints.rotation
+		])
+		{
 			j.visible = true;
 		}
-		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.visible = true;
 		}
 	}
 
-    //--------------------------------------------------------------------------
-    //GETTERS & SETTERS
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// GETTERS & SETTERS
+	//--------------------------------------------------------------------------
 
-	function set_resizable(value:Bool):Bool {
-
-		if (value && !resizable) {
+	function set_resizable(value:Bool):Bool
+	{
+		if (value && !resizable)
+		{
 			joints.topLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopLeft);
 			joints.topRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopRight);
 			joints.bottomLeft.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomLeft);
@@ -465,7 +532,9 @@ class DynamicTextField extends Sprite {
 			joints.middleRight.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeRight);
 			joints.middleTop.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTop);
 			joints.middleBottom.addEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottom);
-		} else if (!value && resizable) {
+		}
+		else if (!value && resizable)
+		{
 			joints.topLeft.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopLeft);
 			joints.topRight.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeTopRight);
 			joints.bottomLeft.removeEventListener(MouseEvent.MOUSE_DOWN, rm.startResizeBottomLeft);
@@ -478,155 +547,173 @@ class DynamicTextField extends Sprite {
 		return resizable = value;
 	}
 
-	function set_borderSize(value:Float) {
-		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+	function set_borderSize(value:Float)
+	{
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.graphics.clear();
-            b.graphics.lineStyle(value, borderColor);
-        }
-		if (value == 0) return borderSize = value; //skip drawing
+			b.graphics.lineStyle(value, borderColor);
+		}
+		if (value == 0)
+			return borderSize = value; // skip drawing
 
-        borders.top.graphics.moveTo(0,0);
-        borders.top.graphics.lineTo(textField.width, 0);
+		borders.top.graphics.moveTo(0, 0);
+		borders.top.graphics.lineTo(textField.width, 0);
 
-        borders.bottom.graphics.moveTo(0, 0);
-        borders.bottom.graphics.lineTo(textField.width, 0);
+		borders.bottom.graphics.moveTo(0, 0);
+		borders.bottom.graphics.lineTo(textField.width, 0);
 
-        borders.left.graphics.moveTo(0,0);
-        borders.left.graphics.lineTo(0, textField.height);
+		borders.left.graphics.moveTo(0, 0);
+		borders.left.graphics.lineTo(0, textField.height);
 
-        borders.right.graphics.moveTo(0, 0);
-        borders.right.graphics.lineTo(0, textField.height);
+		borders.right.graphics.moveTo(0, 0);
+		borders.right.graphics.lineTo(0, textField.height);
 
 		return borderSize = value;
 	}
 
-	function set_rotatable(value:Bool):Bool {
-		if (value) {
+	function set_rotatable(value:Bool):Bool
+	{
+		if (value)
+		{
 			joints.rotation.visible = true;
 		}
-		else {
+		else
+		{
 			joints.rotation.visible = false;
 		}
 		return value;
 	}
 
-	function set_draggable(value:Bool):Bool {
-		if (currentlyDragging) currentlyDragging = false;
+	function set_draggable(value:Bool):Bool
+	{
+		if (currentlyDragging)
+			currentlyDragging = false;
 
 		return value;
 	}
 
-    //override setters for width and height
-    override function set_width(value:Float) {
-        textField.width = value - JOINT_GUTTER * 2 - 1;
-		for (b in [borders.top, borders.bottom]) {
+	// override setters for width and height
+	override function set_width(value:Float)
+	{
+		textField.width = value - JOINT_GUTTER * 2 - 1;
+		for (b in [borders.top, borders.bottom])
+		{
 			b.graphics.clear();
 			b.graphics.lineStyle(borderSize, borderColor);
-			b.graphics.moveTo(0,0);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(textField.width, 0);
-			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
-			b.graphics.moveTo(0,0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor, 0.01);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(textField.width, 0);
 		}
 		borders.right.x = textField.width;
 
 		joints.topLeft.x = -JOINT_GUTTER;
-		joints.topRight.x = textField.width -JOINT_GUTTER;
-		joints.bottomLeft.x = 0 -JOINT_GUTTER;
-		joints.bottomRight.x = textField.width -JOINT_GUTTER;
+		joints.topRight.x = textField.width - JOINT_GUTTER;
+		joints.bottomLeft.x = 0 - JOINT_GUTTER;
+		joints.bottomRight.x = textField.width - JOINT_GUTTER;
 
-		joints.middleLeft.x = 0 -JOINT_GUTTER;
-		joints.middleRight.x = textField.width -JOINT_GUTTER;
+		joints.middleLeft.x = 0 - JOINT_GUTTER;
+		joints.middleRight.x = textField.width - JOINT_GUTTER;
 		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
 		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
 
 		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
-		
-		updateHeight();
-        return value;
-    }
 
-    override function set_height(value:Float) {
-        textField.height = value - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
-		for (b in [borders.left, borders.right]) {
+		updateHeight();
+		return value;
+	}
+
+	override function set_height(value:Float)
+	{
+		textField.height = value - JOINT_GUTTER - ROTATION_JOINT_GUTTER - 1;
+		for (b in [borders.left, borders.right])
+		{
 			b.graphics.clear();
 			b.graphics.lineStyle(borderSize, borderColor);
-			b.graphics.moveTo(0,0);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(0, textField.height);
-			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
-			b.graphics.moveTo(0,0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor, 0.01);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(0, textField.height);
 		}
 		borders.bottom.y = textField.height;
 
-		joints.topLeft.y = 0 -JOINT_GUTTER;
-		joints.topRight.y = 0 -JOINT_GUTTER;
-		joints.bottomLeft.y = textField.height -JOINT_GUTTER;
-		joints.bottomRight.y = textField.height -JOINT_GUTTER;
+		joints.topLeft.y = 0 - JOINT_GUTTER;
+		joints.topRight.y = 0 - JOINT_GUTTER;
+		joints.bottomLeft.y = textField.height - JOINT_GUTTER;
+		joints.bottomRight.y = textField.height - JOINT_GUTTER;
 
-		joints.middleLeft.y = textField.height / 2 -JOINT_GUTTER;
-		joints.middleRight.y = textField.height / 2 -JOINT_GUTTER;
-		joints.middleTop.y = 0 -JOINT_GUTTER;
-		joints.middleBottom.y = textField.height -JOINT_GUTTER;
+		joints.middleLeft.y = textField.height / 2 - JOINT_GUTTER;
+		joints.middleRight.y = textField.height / 2 - JOINT_GUTTER;
+		joints.middleTop.y = 0 - JOINT_GUTTER;
+		joints.middleBottom.y = textField.height - JOINT_GUTTER;
 
 		joints.rotation.y = -ROTATION_JOINT_GUTTER;
 
 		updateWidth();
-        return value;
-    }
+		return value;
+	}
 
-	function updateWidth() {
+	function updateWidth()
+	{
 		textField.width = width - JOINT_GUTTER * 2 - 1;
-		for (b in [borders.top, borders.bottom]) {
+		for (b in [borders.top, borders.bottom])
+		{
 			b.graphics.clear();
 			b.graphics.lineStyle(borderSize, borderColor);
-			b.graphics.moveTo(0,0);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(textField.width, 0);
-			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
-			b.graphics.moveTo(0,0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor, 0.01);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(textField.width, 0);
 		}
 		borders.right.x = textField.width;
 
 		joints.topLeft.x = -JOINT_GUTTER;
-		joints.topRight.x = textField.width -JOINT_GUTTER;
-		joints.bottomLeft.x = 0 -JOINT_GUTTER;
-		joints.bottomRight.x = textField.width -JOINT_GUTTER;
+		joints.topRight.x = textField.width - JOINT_GUTTER;
+		joints.bottomLeft.x = 0 - JOINT_GUTTER;
+		joints.bottomRight.x = textField.width - JOINT_GUTTER;
 
-		joints.middleLeft.x = 0 -JOINT_GUTTER;
-		joints.middleRight.x = textField.width -JOINT_GUTTER;
+		joints.middleLeft.x = 0 - JOINT_GUTTER;
+		joints.middleRight.x = textField.width - JOINT_GUTTER;
 		joints.middleTop.x = textField.width / 2 - joints.middleTop.width / 2;
 		joints.middleBottom.x = textField.width / 2 - joints.middleBottom.width / 2;
 		joints.rotation.x = textField.width / 2 - joints.rotation.width / 2;
 	}
 
-	function updateHeight() {
-		textField.height = height - JOINT_GUTTER  - ROTATION_JOINT_GUTTER - 1;
-		for (b in [borders.left, borders.right]) {
+	function updateHeight()
+	{
+		textField.height = height - JOINT_GUTTER - ROTATION_JOINT_GUTTER - 1;
+		for (b in [borders.left, borders.right])
+		{
 			b.graphics.clear();
 			b.graphics.lineStyle(borderSize, borderColor);
-			b.graphics.moveTo(0,0);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(0, textField.height);
-			b.graphics.lineStyle(virtualBorderSize, borderColor , 0.01);
-			b.graphics.moveTo(0,0);
+			b.graphics.lineStyle(virtualBorderSize, borderColor, 0.01);
+			b.graphics.moveTo(0, 0);
 			b.graphics.lineTo(0, textField.height);
 		}
 		borders.bottom.y = textField.height;
 
-		joints.topLeft.y = 0 -JOINT_GUTTER;
-		joints.topRight.y = 0 -JOINT_GUTTER;
-		joints.bottomLeft.y = textField.height -JOINT_GUTTER;
-		joints.bottomRight.y = textField.height -JOINT_GUTTER;
+		joints.topLeft.y = 0 - JOINT_GUTTER;
+		joints.topRight.y = 0 - JOINT_GUTTER;
+		joints.bottomLeft.y = textField.height - JOINT_GUTTER;
+		joints.bottomRight.y = textField.height - JOINT_GUTTER;
 
-		joints.middleLeft.y = textField.height / 2 -JOINT_GUTTER;
-		joints.middleRight.y = textField.height / 2 -JOINT_GUTTER;
-		joints.middleTop.y = 0 -JOINT_GUTTER;
-		joints.middleBottom.y = textField.height -JOINT_GUTTER;
+		joints.middleLeft.y = textField.height / 2 - JOINT_GUTTER;
+		joints.middleRight.y = textField.height / 2 - JOINT_GUTTER;
+		joints.middleTop.y = 0 - JOINT_GUTTER;
+		joints.middleBottom.y = textField.height - JOINT_GUTTER;
 		joints.rotation.y = -ROTATION_JOINT_GUTTER;
 	}
 
-	function set_matchTextSize(value:Bool):Bool {
-		if (value) {
+	function set_matchTextSize(value:Bool):Bool
+	{
+		if (value)
+		{
 			textField.width = textField.textWidth + 4;
 			textField.height = textField.textHeight + 4;
 		}
@@ -634,22 +721,29 @@ class DynamicTextField extends Sprite {
 		return matchTextSize = value;
 	}
 
-	function set_hideControlsWhenUnfocused(value:Bool) {
-		
-		if (!hasFocus) hideControls();
-		else showControls();
+	function set_hideControlsWhenUnfocused(value:Bool)
+	{
+		if (!hasFocus)
+			hideControls();
+		else
+			showControls();
 
 		return hideControlsWhenUnfocused = value;
 	}
 
-	function get_hasFocus():Bool {
-		if (stage == null) return false;
+	function get_hasFocus():Bool
+	{
+		if (stage == null)
+			return false;
 		return stage.focus == this;
 	}
 
-	function set_hasFocus(value:Bool):Bool {
-		if (stage == null) return value;
-		if (value) {
+	function set_hasFocus(value:Bool):Bool
+	{
+		if (stage == null)
+			return value;
+		if (value)
+		{
 			stage.focus = this;
 			return value;
 		}
@@ -657,112 +751,62 @@ class DynamicTextField extends Sprite {
 		return value;
 	}
 
-	function get_textFieldWidth():Float {
+	function get_textFieldWidth():Float
+	{
 		return textField.width;
 	}
 
-	function set_textFieldWidth(value:Float):Float {
+	function set_textFieldWidth(value:Float):Float
+	{
 		width = value + JOINT_GUTTER * 2 + 1;
 		return value;
 	}
 
-	function get_textFieldHeight():Float {
+	function get_textFieldHeight():Float
+	{
 		return textField.height;
 	}
 
-	function set_textFieldHeight(value:Float):Float {
+	function set_textFieldHeight(value:Float):Float
+	{
 		height = value + ROTATION_JOINT_GUTTER + JOINT_GUTTER + 1;
 		return value;
 	}
 
-	
-	function set_virtualBorderSize(value:Float):Float {
-		if (value < borderSize) {
+	function set_virtualBorderSize(value:Float):Float
+	{
+		if (value < borderSize)
+		{
 			value = borderSize;
 			return virtualBorderSize = value;
 		}
 		set_borderSize(borderSize);
-		for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.graphics.clear();
-            b.graphics.lineStyle(value, borderColor , 0.01);
-        }
-		if (value == 0) return virtualBorderSize = value; //skip drawing
+			b.graphics.lineStyle(value, borderColor, 0.01);
+		}
+		if (value == 0)
+			return virtualBorderSize = value; // skip drawing
 
-        borders.top.graphics.moveTo(0,0);
-        borders.top.graphics.lineTo(textField.width, 0);
+		borders.top.graphics.moveTo(0, 0);
+		borders.top.graphics.lineTo(textField.width, 0);
 
-        borders.bottom.graphics.moveTo(0, 0);
-        borders.bottom.graphics.lineTo(textField.width, 0);
+		borders.bottom.graphics.moveTo(0, 0);
+		borders.bottom.graphics.lineTo(textField.width, 0);
 
-        borders.left.graphics.moveTo(0,0);
-        borders.left.graphics.lineTo(0, textField.height);
+		borders.left.graphics.moveTo(0, 0);
+		borders.left.graphics.lineTo(0, textField.height);
 
-        borders.right.graphics.moveTo(0, 0);
-        borders.right.graphics.lineTo(0, textField.height);
+		borders.right.graphics.moveTo(0, 0);
+		borders.right.graphics.lineTo(0, textField.height);
 
 		return virtualBorderSize = value;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //--------------------------------------------------------------------------
-    //TEXTFIELD COMPATIBILITY
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// TEXTFIELD COMPATIBILITY
+	//--------------------------------------------------------------------------
 
 	/**
 		The type of anti-aliasing used for this text field. Use
@@ -1261,265 +1305,395 @@ class DynamicTextField extends Sprite {
 	**/
 	public var wordWrap(get, set):Bool;
 
-    //getters and setters for TEXTFIELD COMPATIBILITY
+	// getters and setters for TEXTFIELD COMPATIBILITY
 
-    function get_antiAliasType():openfl.text.AntiAliasType {
-        return textField.antiAliasType;
-    }   
-    function set_antiAliasType(value:openfl.text.AntiAliasType):openfl.text.AntiAliasType {
-        return textField.antiAliasType = value;
-    }
-    function get_autoSize():openfl.text.TextFieldAutoSize {
-        return textField.autoSize;
-    }
-    function set_autoSize(value:openfl.text.TextFieldAutoSize):openfl.text.TextFieldAutoSize {
-        return textField.autoSize = value;
-    }
-    function get_background():Bool {
-        return textField.background;
-    }
-    function set_background(value:Bool):Bool {
-        return textField.background = value;
-    }
-    function get_backgroundColor():Int {
-        return textField.backgroundColor;
-    }
-    function set_backgroundColor(value:Int):Int {
-        return textField.backgroundColor = value;
-    }
-    function set_border(value:Bool):Bool {
-        for (b in [borders.left, borders.right, borders.top, borders.bottom]) {
+	function get_antiAliasType():openfl.text.AntiAliasType
+	{
+		return textField.antiAliasType;
+	}
+
+	function set_antiAliasType(value:openfl.text.AntiAliasType):openfl.text.AntiAliasType
+	{
+		return textField.antiAliasType = value;
+	}
+
+	function get_autoSize():openfl.text.TextFieldAutoSize
+	{
+		return textField.autoSize;
+	}
+
+	function set_autoSize(value:openfl.text.TextFieldAutoSize):openfl.text.TextFieldAutoSize
+	{
+		return textField.autoSize = value;
+	}
+
+	function get_background():Bool
+	{
+		return textField.background;
+	}
+
+	function set_background(value:Bool):Bool
+	{
+		return textField.background = value;
+	}
+
+	function get_backgroundColor():Int
+	{
+		return textField.backgroundColor;
+	}
+
+	function set_backgroundColor(value:Int):Int
+	{
+		return textField.backgroundColor = value;
+	}
+
+	function set_border(value:Bool):Bool
+	{
+		for (b in [borders.left, borders.right, borders.top, borders.bottom])
+		{
 			b.visible = value;
 		}
 		return value;
-    }
-    function set_borderColor(value:Int):Int {
-        return textField.borderColor = value;
-    }
-    function get_bottomScrollV():Int {
-        return textField.bottomScrollV;
-    }
-    function get_caretIndex():Int {
-        return textField.caretIndex;
-    }
-    function get_condenseWhite():Bool {
-        return textField.condenseWhite;
-    }
-    function set_condenseWhite(value:Bool):Bool {
-        return textField.condenseWhite = value;
-    }
-    function get_defaultTextFormat():openfl.text.TextFormat {
-        return textField.defaultTextFormat;
-    }
-    function set_defaultTextFormat(value:openfl.text.TextFormat):openfl.text.TextFormat {
-        return textField.defaultTextFormat = value;
-    }
-    function get_displayAsPassword():Bool {
-        return textField.displayAsPassword;
-    }
-    function set_displayAsPassword(value:Bool):Bool {
-        return textField.displayAsPassword = value;
-    }
-    function get_embedFonts():Bool {
-        return textField.embedFonts;
-    }
-    function set_embedFonts(value:Bool):Bool {
-        return textField.embedFonts = value;
-    }
-    function get_gridFitType():openfl.text.GridFitType {
-        return textField.gridFitType;
-    }
-    function set_gridFitType(value:openfl.text.GridFitType):openfl.text.GridFitType {
-        return textField.gridFitType = value;
-    }
-    function get_htmlText():String {
-        return textField.htmlText;
-    }
-    function set_htmlText(value:String):String {
-        return textField.htmlText = value;
-    }
-    function get_length():Int {
-        return textField.length;
-    }
-    function get_maxChars():Int {
-        return textField.maxChars;
-    }
-    function set_maxChars(value:Int):Int {
-        return textField.maxChars = value;
-    }
-    function get_maxScrollH():Int {
-        return textField.maxScrollH;
-    }
-    function get_maxScrollV():Int {
-        return textField.maxScrollV;
-    }
-    function get_mouseWheelEnabled():Bool {
-        return textField.mouseWheelEnabled;
-    }
-    function set_mouseWheelEnabled(value:Bool):Bool {
-        return textField.mouseWheelEnabled = value;
-    }
-    function get_multiline():Bool {
-        return textField.multiline;
-    }
-    function set_multiline(value:Bool):Bool {
-        return textField.multiline = value;
-    }
-    function get_numLines():Int {
-        return textField.numLines;
-    }
-    function get_restrict():String {
-        return textField.restrict;
-    }
-    function set_restrict(value:String):String {
-        return textField.restrict = value;
-    }
-    function get_scrollH():Int {
-        return textField.scrollH;
-    }
-    function set_scrollH(value:Int):Int {
-        return textField.scrollH = value;
-    }
-    function get_scrollV():Int {
-        return textField.scrollV;
-    }
-    function set_scrollV(value:Int):Int {
-        return textField.scrollV = value;
-    }
-    function get_selectable():Bool {
-        return textField.selectable;
-    }
-    function set_selectable(value:Bool):Bool {
-        return textField.selectable = value;
-    }
-    function get_selectionBeginIndex():Int {
-        return textField.selectionBeginIndex;
-    }
-    function get_selectionEndIndex():Int {
-        return textField.selectionEndIndex;
-    }
-    function get_sharpness():Float {
-        return textField.sharpness;
-    }
-    function set_sharpness(value:Float):Float {
-        return textField.sharpness = value;
-    }
-    function get_text():String {
-        return textField.text;
-    }
-    function set_text(value:String):String {
-        return textField.text = value;
-    }
-    function get_textColor():Int {
-        return textField.textColor;
-    }
-    function set_textColor(value:Int):Int {
-        return textField.textColor = value;
-    }
-    function get_textHeight():Float {
-        return textField.textHeight;
-    }
-    function get_textWidth():Float {
-        return textField.textWidth;
-    }
-    function get_type():openfl.text.TextFieldType {
-        return textField.type;
-    }
-    function set_type(value:openfl.text.TextFieldType):openfl.text.TextFieldType {
-        return textField.type = value;
-    }
-    function get_wordWrap():Bool {
-        return textField.wordWrap;
-    }
-    function set_wordWrap(value:Bool):Bool {
-        return textField.wordWrap = value;
-    }
+	}
 
-	function get_styleSheet():StyleSheet {
+	function set_borderColor(value:Int):Int
+	{
+		return textField.borderColor = value;
+	}
+
+	function get_bottomScrollV():Int
+	{
+		return textField.bottomScrollV;
+	}
+
+	function get_caretIndex():Int
+	{
+		return textField.caretIndex;
+	}
+
+	function get_condenseWhite():Bool
+	{
+		return textField.condenseWhite;
+	}
+
+	function set_condenseWhite(value:Bool):Bool
+	{
+		return textField.condenseWhite = value;
+	}
+
+	function get_defaultTextFormat():openfl.text.TextFormat
+	{
+		return textField.defaultTextFormat;
+	}
+
+	function set_defaultTextFormat(value:openfl.text.TextFormat):openfl.text.TextFormat
+	{
+		return textField.defaultTextFormat = value;
+	}
+
+	function get_displayAsPassword():Bool
+	{
+		return textField.displayAsPassword;
+	}
+
+	function set_displayAsPassword(value:Bool):Bool
+	{
+		return textField.displayAsPassword = value;
+	}
+
+	function get_embedFonts():Bool
+	{
+		return textField.embedFonts;
+	}
+
+	function set_embedFonts(value:Bool):Bool
+	{
+		return textField.embedFonts = value;
+	}
+
+	function get_gridFitType():openfl.text.GridFitType
+	{
+		return textField.gridFitType;
+	}
+
+	function set_gridFitType(value:openfl.text.GridFitType):openfl.text.GridFitType
+	{
+		return textField.gridFitType = value;
+	}
+
+	function get_htmlText():String
+	{
+		return textField.htmlText;
+	}
+
+	function set_htmlText(value:String):String
+	{
+		return textField.htmlText = value;
+	}
+
+	function get_length():Int
+	{
+		return textField.length;
+	}
+
+	function get_maxChars():Int
+	{
+		return textField.maxChars;
+	}
+
+	function set_maxChars(value:Int):Int
+	{
+		return textField.maxChars = value;
+	}
+
+	function get_maxScrollH():Int
+	{
+		return textField.maxScrollH;
+	}
+
+	function get_maxScrollV():Int
+	{
+		return textField.maxScrollV;
+	}
+
+	function get_mouseWheelEnabled():Bool
+	{
+		return textField.mouseWheelEnabled;
+	}
+
+	function set_mouseWheelEnabled(value:Bool):Bool
+	{
+		return textField.mouseWheelEnabled = value;
+	}
+
+	function get_multiline():Bool
+	{
+		return textField.multiline;
+	}
+
+	function set_multiline(value:Bool):Bool
+	{
+		return textField.multiline = value;
+	}
+
+	function get_numLines():Int
+	{
+		return textField.numLines;
+	}
+
+	function get_restrict():String
+	{
+		return textField.restrict;
+	}
+
+	function set_restrict(value:String):String
+	{
+		return textField.restrict = value;
+	}
+
+	function get_scrollH():Int
+	{
+		return textField.scrollH;
+	}
+
+	function set_scrollH(value:Int):Int
+	{
+		return textField.scrollH = value;
+	}
+
+	function get_scrollV():Int
+	{
+		return textField.scrollV;
+	}
+
+	function set_scrollV(value:Int):Int
+	{
+		return textField.scrollV = value;
+	}
+
+	function get_selectable():Bool
+	{
+		return textField.selectable;
+	}
+
+	function set_selectable(value:Bool):Bool
+	{
+		return textField.selectable = value;
+	}
+
+	function get_selectionBeginIndex():Int
+	{
+		return textField.selectionBeginIndex;
+	}
+
+	function get_selectionEndIndex():Int
+	{
+		return textField.selectionEndIndex;
+	}
+
+	function get_sharpness():Float
+	{
+		return textField.sharpness;
+	}
+
+	function set_sharpness(value:Float):Float
+	{
+		return textField.sharpness = value;
+	}
+
+	function get_text():String
+	{
+		return textField.text;
+	}
+
+	function set_text(value:String):String
+	{
+		return textField.text = value;
+	}
+
+	function get_textColor():Int
+	{
+		return textField.textColor;
+	}
+
+	function set_textColor(value:Int):Int
+	{
+		return textField.textColor = value;
+	}
+
+	function get_textHeight():Float
+	{
+		return textField.textHeight;
+	}
+
+	function get_textWidth():Float
+	{
+		return textField.textWidth;
+	}
+
+	function get_type():openfl.text.TextFieldType
+	{
+		return textField.type;
+	}
+
+	function set_type(value:openfl.text.TextFieldType):openfl.text.TextFieldType
+	{
+		return textField.type = value;
+	}
+
+	function get_wordWrap():Bool
+	{
+		return textField.wordWrap;
+	}
+
+	function set_wordWrap(value:Bool):Bool
+	{
+		return textField.wordWrap = value;
+	}
+
+	function get_styleSheet():StyleSheet
+	{
 		return textField.styleSheet;
 	}
 
-	function set_styleSheet(value:StyleSheet):StyleSheet {
+	function set_styleSheet(value:StyleSheet):StyleSheet
+	{
 		return textField.styleSheet = value;
 	}
 
 	// functions to replicate TextField methods
 	// template to use:
-	
-		// /**
-		// 	* Documentation present in the original TextField class.
-		// 	*
-		// 	* @param arg1 Documentation present in the original TextField class.
-		// 	* @param arg2 Documentation present in the original TextField class.
-		// 	* @return Documentation present in the original TextField class. 
-		// **/
-		//public function textFieldMethod(arg1:X, arg2:Y) {
-		//	textField.textFieldMethod(arg1, arg2);
-		//}
-	
+	// /**
+	// 	* Documentation present in the original TextField class.
+	// 	*
+	// 	* @param arg1 Documentation present in the original TextField class.
+	// 	* @param arg2 Documentation present in the original TextField class.
+	// 	* @return Documentation present in the original TextField class.
+	// 	* @return Documentation present in the original TextField class.
+	// 	* @return Documentation present in the original TextField class.
+	// **/
+	// public function textFieldMethod(arg1:X, arg2:Y) {
+	//		textField.textFieldMethod(arg1, arg2);
+	// }
 	// end template
 
-	public function appendText(text:String):Void {
+	public function appendText(text:String):Void
+	{
 		textField.appendText(text);
 	}
 
-	public function getCharBoundaries(charIndex:Int):Rectangle {
+	public function getCharBoundaries(charIndex:Int):Rectangle
+	{
 		return textField.getCharBoundaries(charIndex);
 	}
 
-	public function getCharIndexAtPoint(x:Float, y:Float):Int {
+	public function getCharIndexAtPoint(x:Float = 0, y:Float = 0):Int
+	{
 		return textField.getCharIndexAtPoint(x, y);
 	}
 
-	public function getFirstCharInParagraph(charIndex:Int):Int {
+	public function getFirstCharInParagraph(charIndex:Int):Int
+	{
 		return textField.getFirstCharInParagraph(charIndex);
 	}
 
-	public function getLineIndexAtPoint(x:Float, y:Float):Int {
+	public function getLineIndexAtPoint(x:Float = 0, y:Float = 0):Int
+	{
 		return textField.getLineIndexAtPoint(x, y);
 	}
 
-	public function getLineIndexOfChar(charIndex:Int):Int {
+	public function getLineIndexOfChar(charIndex:Int):Int
+	{
 		return textField.getLineIndexOfChar(charIndex);
 	}
 
-	public function getLineLength(lineIndex:Int):Int {
+	public function getLineLength(lineIndex:Int):Int
+	{
 		return textField.getLineLength(lineIndex);
 	}
 
-	public function getLineMetrics(lineIndex:Int):TextLineMetrics {
+	public function getLineMetrics(lineIndex:Int):TextLineMetrics
+	{
 		return textField.getLineMetrics(lineIndex);
 	}
 
-	public function getLineOffset(lineIndex:Int):Int {
+	public function getLineOffset(lineIndex:Int):Int
+	{
 		return textField.getLineOffset(lineIndex);
 	}
 
-	public function getLineText(lineIndex:Int):String {
+	public function getLineText(lineIndex:Int):String
+	{
 		return textField.getLineText(lineIndex);
 	}
 
-	public function getParagraphLength(charIndex:Int):Int {
+	public function getParagraphLength(charIndex:Int):Int
+	{
 		return textField.getParagraphLength(charIndex);
 	}
 
-	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat {
+	public function getTextFormat(beginIndex:Int, endIndex:Int):TextFormat
+	{
 		return textField.getTextFormat(beginIndex, endIndex);
 	}
 
-	public function replaceSelectedText(value:String):Void {
+	public function replaceSelectedText(value:String):Void
+	{
 		textField.replaceSelectedText(value);
 	}
 
-	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void {
+	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
+	{
 		textField.replaceText(beginIndex, endIndex, newText);
 	}
 
-	public function setSelection(beginIndex:Int, endIndex:Int):Void {
+	public function setSelection(beginIndex:Int, endIndex:Int):Void
+	{
 		textField.setSelection(beginIndex, endIndex);
 	}
 
-	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int):Void {
+	public function setTextFormat(format:TextFormat, beginIndex:Int, endIndex:Int):Void
+	{
 		textField.setTextFormat(format, beginIndex, endIndex);
 	}
 }

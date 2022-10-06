@@ -1,7 +1,7 @@
 package texter.general.markdown;
 
 class MarkdownPatterns
-{	
+{
 	public static var hRuledTitleEReg(default, null):EReg = ~/([^\n]+)\n^(-{3,}|\+{3,}|_{3,}|\*{3,}|={3,})$/m;
 	public static var linkEReg(default, null):EReg = ~/\[([^\]]+)\]\(([^)]+)\)/m;
 	public static var codeEReg(default, null):EReg = ~/`([^`\n]+?)`/;

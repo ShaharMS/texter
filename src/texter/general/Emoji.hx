@@ -11,8 +11,8 @@ package texter.general;
  * **PXshadow's Github:**
  * https://github.com/PXshadow
  */
-class Emoji {
-    
+class Emoji
+{
 	public static var emojiFromString(default, null):Map<String, String> = [
 		':open_mailbox_with_raised_flag:' => '📬',
 		':pineapple:' => '🍍',

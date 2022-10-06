@@ -1,7 +1,6 @@
 #if flixel
 package texter.flixel;
 
-
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.events.KeyboardEvent;
@@ -29,10 +28,10 @@ class FlxInputTextRTL extends FlxInputText
 		 - if the character is from a RTL language - `alignment` will be set to `RIGHT`.
 		 - if the character is from any other language - `alignment` will be set to `LEFT`.
 		 - if the character is not from any specific language - `alignment` will be set to `UNDETERMINED`.
-		
-		
-		
-		 **`autoAlign` does not default to a certine direction when set to `false`**. it will
+
+
+
+		**`autoAlign` does not default to a certine direction when set to `false`**. it will
 		use the last direction it remembers when this `FlxInputTextRTL` was created/when `autoAlign` was still true;
 	**/
 	public var autoAlign(default, set):Bool = true;
@@ -54,6 +53,7 @@ class FlxInputTextRTL extends FlxInputText
 
 	var currentlyRTL:Bool = false;
 	var currentlyNumbers:Bool = false;
+
 	/**
 		Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 
@@ -79,19 +79,21 @@ class FlxInputTextRTL extends FlxInputText
 		FlxG.stage.window.onTextInput.add(regularKeysDown, false, 1);
 		FlxG.stage.window.onKeyDown.add(specialKeysDown, false, 2);
 		#if js FlxG.stage.window.onFocusOut.add(() -> hasFocus = false); #end
-		
 	}
 
 	#if js
-	override function update(elapsed:Float) {
-		if (FlxG.keys.justPressed.SPACE) {
+	override function update(elapsed:Float)
+	{
+		if (FlxG.keys.justPressed.SPACE)
+		{
 			regularKeysDown(" ");
 		}
 		super.update(elapsed);
 	}
 	#end
 
-	override function set_hasFocus(newFocus:Bool):Bool {
+	override function set_hasFocus(newFocus:Bool):Bool
+	{
 		FlxG.stage.window.textInputEnabled = true;
 		FlxG.sound.soundTrayEnabled = !newFocus;
 		return super.set_hasFocus(newFocus);
@@ -105,7 +107,8 @@ class FlxInputTextRTL extends FlxInputText
 		| **`specialKeysDown(KeyCode, KeyModifier)`** | used to get "editing" keys (backspace, capslock, arrow keys...) |
 		| **`regularKeysDown(String)`** | used to get "input" keys - regular letters of all languages and directions |
 	**/
-	override function onKeyDown(e:KeyboardEvent) return;
+	override function onKeyDown(e:KeyboardEvent)
+		return;
 
 	/**
 		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
@@ -121,17 +124,24 @@ class FlxInputTextRTL extends FlxInputText
 		if (!hasFocus)
 			return;
 		// handle copy-paste
-		if (modifier.ctrlKey) {
-			if (key == KeyCode.V) {
-				//paste text
+		if (modifier.ctrlKey)
+		{
+			if (key == KeyCode.V)
+			{
+				// paste text
 				var clipboardText = Clipboard.generalClipboard.getData(TEXT_FORMAT);
-				if (clipboardText == null) return;
-				if (currentlyRTL) {
+				if (clipboardText == null)
+					return;
+				if (currentlyRTL)
+				{
 					text = insertSubstring(text, clipboardText, caretIndex);
-				} else {
+				}
+				else
+				{
 					text = insertSubstring(text, clipboardText, caretIndex);
 					caretIndex += clipboardText.length;
-					if (caretIndex > text.length) caretIndex = text.length;
+					if (caretIndex > text.length)
+						caretIndex = text.length;
 				}
 			}
 		}
@@ -222,20 +232,20 @@ class FlxInputTextRTL extends FlxInputText
 				insertionIndex = caretIndex;
 				// starts a search for the last RTL char and places the "\n" there
 				// if the string ends and theres still no last RTl char, "\n" will be insterted at length.
-				while (CharTools.isRTL(text.charAt(insertionIndex))
-					|| text.charAt(insertionIndex) == " "
-					&& insertionIndex != text.length)
+				while (CharTools.isRTL(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length)
 					insertionIndex++;
 				text = insertSubstring(text, "\n", insertionIndex);
 				caretIndex = insertionIndex + 1;
 			}
 			onChange(FlxInputText.ENTER_ACTION);
 		}
-		else if (key == KeyCode.END) {
+		else if (key == KeyCode.END)
+		{
 			caretIndex = text.length;
 			onChange(FlxInputText.END_ACTION);
 		}
-		else if (key == KeyCode.HOME) {
+		else if (key == KeyCode.HOME)
+		{
 			caretIndex = 0;
 			onChange(FlxInputText.HOME_ACTION);
 		}
@@ -250,25 +260,26 @@ class FlxInputTextRTL extends FlxInputText
 	function regularKeysDown(letter:String)
 	{
 		// if the user didnt intend to edit the text, dont do anything
-		if (!hasFocus) return;
+		if (!hasFocus)
+			return;
 		// if the caret is broken for some reason, fix it
-		if (caretIndex < 0) caretIndex = 0;
+		if (caretIndex < 0)
+			caretIndex = 0;
 		// set up the letter - remove null chars, add rtl mark to letters from RTL languages
 		var t:String = "", hasConverted:Bool = false, addedSpace:Bool = false;
 		#if !js
 		if (letter != null)
 		{
 			// logic for general RTL letters, spacebar, punctuation mark
-			if (CharTools.isRTL(letter)
-				|| (currentlyRTL && letter == " ")
-				|| (CharTools.generalMarks.contains(letter) && currentlyRTL))
+			if (CharTools.isRTL(letter) || (currentlyRTL && letter == " ") || (CharTools.generalMarks.contains(letter) && currentlyRTL))
 			{
 				currentlyNumbers = false;
 				t = CharTools.RLO + letter;
 				currentlyRTL = true;
 				if (openingDirection == UNDETERMINED || text == "")
 				{
-					if (autoAlign) alignment = RIGHT;
+					if (autoAlign)
+						alignment = RIGHT;
 					openingDirection = RTL;
 				}
 			}
@@ -309,14 +320,17 @@ class FlxInputTextRTL extends FlxInputText
 		}
 		else
 			"";
-
-		#else t = letter; #end
+		#else
+		t = letter;
+		#end
 		if (t.length > 0 && (maxLength == 0 || (text.length + t.length) < maxLength))
 		{
 			caretIndex += t.length;
 			text = insertSubstring(text, t, caretIndex - 1);
-			if (hasConverted) caretIndex++;
-			if (addedSpace) caretIndex++;
+			if (hasConverted)
+				caretIndex++;
+			if (addedSpace)
+				caretIndex++;
 			onChange(FlxInputText.INPUT_ACTION);
 		}
 	}

@@ -79,7 +79,7 @@ class TextTools
 	 * @param delimiter the string to split on
 	 * @return the array of the two parts
 	 */
-	 public static function splitOnLast(string:String, delimiter:String):Array<String>
+	public static function splitOnLast(string:String, delimiter:String):Array<String>
 	{
 		var place = string.lastIndexOf(delimiter);
 		var result = new Array<String>();
@@ -202,8 +202,9 @@ class TextTools
 	 * @param subs an array of substrings to search for
 	 * @return an array of all positions of the substrings, from startIndex, up to but not including endIndex
 	 */
-	 @:deprecated("TextTools.indexesFromArray is deprecated. Use TextTools.indexesOfSubs() instead")
-	 public static function indexesFromArray(string:String, subs:Array<String>) return indexesOfSubs(string, subs);
+	@:deprecated("TextTools.indexesFromArray is deprecated. Use TextTools.indexesOfSubs() instead")
+	public static function indexesFromArray(string:String, subs:Array<String>)
+		return indexesOfSubs(string, subs);
 
 	/**
 	 * reports all occurences of the findings of `ereg` in `string`.
@@ -288,7 +289,8 @@ class TextTools
 		while (loremArray.length > paragraphs)
 			loremArray.pop();
 		var loremString = loremArray.join("\n\n");
-		if (length != -1) {
+		if (length != -1)
+		{
 			return loremString.substring(0, length);
 		}
 		return loremString;
@@ -362,22 +364,22 @@ class TextTools
 		return lineIndex;
 	}
 
-    	/**
-    	 * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
-     	 * @param string the string to search in
-    	 * @param sub the substring to search for
-    	 * @return The amount of times `sub` was found in `string`
-     	 */
+	/**
+	 * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
+	 * @param string the string to search in
+	 * @param sub the substring to search for
+	 * @return The amount of times `sub` was found in `string`
+	 */
 	public static function countOccurrencesOf(string:String, sub:String):Int
-    	{
-       		var count = 0;
-        	while (contains(string, sub))
-        	{
-            		count++;
-            		string = replacefirst(string, sub, "");
-        	}
-        	return count;
-    	}
+	{
+		var count = 0;
+		while (contains(string, sub))
+		{
+			count++;
+			string = replacefirst(string, sub, "");
+		}
+		return count;
+	}
 
 	/**
 		Returns `true` if `string` contains `contains` and  `false` otherwise.
@@ -385,11 +387,12 @@ class TextTools
 		When `contains` is `null`, the function returns `false`.  
 		When `contains` is `""`, the function returns `true`
 	**/
-    	public static function contains(string:String, contains:String):Bool
-    	{
-		if (string == null) return false;
-        	return string.indexOf(contains) != -1;
-    	}
+	public static function contains(string:String, contains:String):Bool
+	{
+		if (string == null)
+			return false;
+		return string.indexOf(contains) != -1;
+	}
 
 	/**
 	 * Removes all occurrences of `sub` inside of `string`.
@@ -409,14 +412,15 @@ class TextTools
 
 		If `replace` is the empty String `""`, `with` is inserted after each character
 		of `string` except the last one. 
-		
+
 		If `with` is also an empty String (`""`), `string` remains unchanged.
 
 		If `replace` or `with` are null, the string remains unchanged.
 	**/
 	public static function replace(string:String, replace:String, with:String):String
 	{
-		if (replace == null || with == null) return string;
+		if (replace == null || with == null)
+			return string;
 		return StringTools.replace(string, replace, with);
 	}
 
@@ -426,9 +430,11 @@ class TextTools
 	 * @param string the string to reverse
 	 * @return the reversed string.
 	 */
-	public static function reverse(string:String):String {
+	public static function reverse(string:String):String
+	{
 		var returnedString = '';
-		for (i in 1...string.length + 1) {
+		for (i in 1...string.length + 1)
+		{
 			returnedString += string.charAt(string.length - 1);
 		}
 		return returnedString;
@@ -437,7 +443,8 @@ class TextTools
 	/**
 		Inserts `substring` **after** `at`
 	**/
-	public static function insert(string:String, substring:String, at:Int) {
+	public static function insert(string:String, substring:String, at:Int)
+	{
 		return string.substring(0, at + 1) + substring + string.substring(at + 1);
 	}
 
@@ -461,7 +468,8 @@ enum TextDirection
 	UNDETERMINED;
 }
 
-private class MultilangFonts {
+private class MultilangFonts
+{
 	function new() {}
 
 	/**
@@ -472,6 +480,7 @@ private class MultilangFonts {
 	 * ```
 	 */
 	public var sans(default, null):String = "assets/texter/TextTools/sans.ttf";
+
 	/**
 	 * A `sans` font that supports many languages, of any direction. to use in your text field, do:
 	 * ```haxe
