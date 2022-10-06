@@ -366,7 +366,7 @@ class TextTools
 
 	/**
 	 * Searches for occurrences of `sub` in `string`, and returns the number of occurrences.
-	 	 	 * @param string the string to search in
+	 * @param string the string to search in
 	 * @param sub the substring to search for
 	 * @return The amount of times `sub` was found in `string`
 	 */
