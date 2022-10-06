@@ -67,9 +67,10 @@ class MathLexer
 		{
 			switch item
 			{
-				case Sign(index, _) | Variable(index, _) | Number(index, _) | StartClosure(index, _) | EndClosure(index, _) | Null(index) |
-					FunctionDefinition(index, _):
-					at[index] = item;
+				case Sign(index, _) | Variable(index, _) | Number(index, _) | StartClosure(index, _) | EndClosure(index, _) | Null(index) | FunctionDefinition(index, _):
+					{
+						at[index] = item;
+					}
 				default:
 			}
 		}
@@ -297,10 +298,10 @@ class MathLexer
 			switch element
 			{
 				case Sign(index, "/") | Sign(index, "\\") | Sign(index, "÷"):
-						var uhs = divisionsCondensed[i - 1];
-						var lhs = divisionsCondensed[i + 1];
-						divisionsCondensed[i] = Division(i, uhs, lhs);
-						divisionsCondensed[i - 1] = divisionsCondensed[i + 1] = Null(-1);
+					var uhs = divisionsCondensed[i - 1];
+					var lhs = divisionsCondensed[i + 1];
+					divisionsCondensed[i] = Division(i, uhs, lhs);
+					divisionsCondensed[i - 1] = divisionsCondensed[i + 1] = Null(-1);
 				default:
 			}
 		}
