@@ -3,6 +3,7 @@ package texter.flixel;
 
 import flixel.group.FlxSpriteGroup;
 import flixel.ui.FlxButton;
+import flixel.input.mouse.FlxMouseButton
 import flixel.FlxG;
 
 /**
@@ -40,6 +41,13 @@ class FlxTextButton extends FlxSpriteGroup
 	**/
 	public var onEnter:Void->Void;
 
+	#if FLX_MOUSE
+	/**
+	 * Which mouse buttons can trigger the button - by default only the left mouse button.
+	 */
+	public var mouseButtons:Array<FlxMouseButtonID> = [FlxMouseButtonID.LEFT];
+	#end
+
 	public function new(x:Float = 0, y:Float = 0, width:Int = 0, text:String = "", size:Int = 8, ?OnClick:Void->Void = null, ?OnEnter:Void->Void = null)
 	{
 		super(x, y);
@@ -55,6 +63,40 @@ class FlxTextButton extends FlxSpriteGroup
 
 		label = new FlxInputTextRTL(0, 0, width, text, size);
 		add(label);
+	}
+
+	function getMouseButtonPressed():Bool
+	{
+		var overlap:Bool = false;
+		#if FLX_MOUSE
+		for (camera in cameras)
+		{
+			for (buttonID in mouseButtons)
+			{
+				var button = FlxMouseButton.getByID(buttonID);
+				if (button != null && checkInput(FlxG.mouse, button, button.justPressedPosition, camera))
+				{
+					overlap = true;
+				}
+			}
+		}
+		return overlap;
+	}
+	function checkInput(pointer:FlxPointer, input:IFlxInput, justPressedPosition:FlxPoint, camera:FlxCamera):Bool
+	{
+		if (maxInputMovement != Math.POSITIVE_INFINITY
+			&& justPressedPosition.distanceTo(pointer.getScreenPosition(FlxPoint.weak())) > maxInputMovement
+			&& input == currentInput)
+		{
+			currentInput = null;
+		}
+		else if (overlapsPoint(pointer.getWorldPosition(camera, _point), true, camera))
+		{
+			updateStatus(input);
+			return true;
+		}
+
+		return false;
 	}
 
 	function get_status():Int
