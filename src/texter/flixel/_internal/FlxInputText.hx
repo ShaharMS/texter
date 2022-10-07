@@ -13,6 +13,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
 
+using StringTools;
 /**
 	* FlxInputText v1.11, ported to Haxe
 	* 
@@ -211,7 +212,7 @@ class FlxInputText extends FlxText
 	 * @param  BackgroundColor  The color of the background (FlxColor.TRANSPARENT for no background color)
 	 * @param  EmbeddedFont  Whether this text field uses embedded fonts or not
 	 */
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = FlxColor.BLACK,
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, Text:String = '', size:Int = 8, TextColor:Int = FlxColor.BLACK,
 			BackgroundColor:Int = FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, EmbeddedFont);
@@ -236,8 +237,6 @@ class FlxInputText extends FlxText
 		lines = 1;
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
-		if (Text == null)
-			Text = "";
 		text = Text;
 
 		calcFrame();
@@ -390,7 +389,7 @@ class FlxInputText extends FlxText
 			// Delete
 			else if (key == 46)
 			{
-				if (text.length > 0 && caretIndex < text.length)
+				if ((text.length > 0) && (caretIndex < text.length))
 				{
 					text = text.substring(0, caretIndex) + text.substring(caretIndex + 1);
 					onChange(DELETE_ACTION);
@@ -574,7 +573,7 @@ class FlxInputText extends FlxText
 			for (i in 0...text.length)
 			{
 				var r = getCharBoundaries(i);
-				if ((X >= r.x && X <= r.right && Y >= r.y && Y <= r.bottom)) // <----------------- CHANGE HERE
+				if (X >= r.x && X <= r.right && Y >= r.y && Y <= r.bottom) // <----------------- CHANGE HERE
 
 				{
 					return i;
@@ -593,11 +592,11 @@ class FlxInputText extends FlxText
 				{
 					if (i == 0)
 						i--;
-					if (i != -1 && !StringTools.contains(text, "\n"))
+					if (i != -1 && !text.contains("\n"))
 						i -= 2;
-					if (i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length == text.length - 1)
+					if (i + 1 + textField.getLineText(line).replace("\n", "").length == text.length - 1)
 						i++;
-					return i + 1 + StringTools.replace(textField.getLineText(line), "\n", "").length;
+					return i + 1 + textField.getLineText(line).replace("\n", "").length;
 				}
 				i++;
 			}
@@ -966,7 +965,7 @@ class FlxInputText extends FlxText
 
 		// Make sure the caret doesn't leave the textfield on single-line input texts
 
-		if ((lines == 1) && (caret.x + caret.width) > (x + width))
+		if ((lines == 1) && ((caret.x + caret.width) > (x + width)))
 		{
 			caret.x = x + width - 2;
 		}
