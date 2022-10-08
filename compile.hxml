@@ -3,4 +3,5 @@
 --interp
 --library lime
 --library openfl
+--library flixel
 --define reordered_attributes=1

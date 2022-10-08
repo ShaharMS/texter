@@ -1,9 +1,10 @@
 #if flixel
 package texter.flixel;
 
+import flixel.input.FlxInput;
 import flixel.group.FlxSpriteGroup;
 import flixel.ui.FlxButton;
-import flixel.input.mouse.FlxMouseButton
+import flixel.input.mouse.FlxMouseButton;
 import flixel.FlxG;
 
 /**
@@ -20,13 +21,13 @@ class FlxTextButton extends FlxSpriteGroup
 	public var label:FlxInputTextRTL;
 
 	/**
-			   		The current state of the button:
+		The current state of the button:
 
-			| State | Situation |
-			| --- | --- |
-			| `FlxButton.NORMAL` | when the button isn't overlapped by the mouse/touchpoint |
-			| `FlxButton.HIGHLIGHT` | when the mouse overlaps the button, but isn't pressed |
-			| `FlxButton.PRESSED` | when the mouse/touchpoint not only overlap the button, but are also pressed |
+		| State | Situation |
+		| --- | --- |
+		| `FlxButton.NORMAL` 	| when the button isn't overlapped by the mouse/touchpoint |
+		| `FlxButton.HIGHLIGHT` | when the mouse overlaps the button, but isn't pressed |
+		| `FlxButton.PRESSED` 	| when the mouse/touchpoint not only overlap the button, but are also pressed |
 	**/
 	public var status(get, null):Int;
 
@@ -48,6 +49,8 @@ class FlxTextButton extends FlxSpriteGroup
 	public var mouseButtons:Array<FlxMouseButtonID> = [FlxMouseButtonID.LEFT];
 	#end
 
+	var input:FlxInput<Int>;
+
 	public function new(x:Float = 0, y:Float = 0, width:Int = 0, text:String = "", size:Int = 8, ?OnClick:Void->Void = null, ?OnEnter:Void->Void = null)
 	{
 		super(x, y);
@@ -65,7 +68,7 @@ class FlxTextButton extends FlxSpriteGroup
 		add(label);
 	}
 
-	function getMouseButtonPressed():Bool
+	function checkMouseOverlap():Bool
 	{
 		var overlap:Bool = false;
 		#if FLX_MOUSE
@@ -74,58 +77,47 @@ class FlxTextButton extends FlxSpriteGroup
 			for (buttonID in mouseButtons)
 			{
 				var button = FlxMouseButton.getByID(buttonID);
-				if (button != null && checkInput(FlxG.mouse, button, button.justPressedPosition, camera))
+				if (button != null && status == FlxButton.HIGHLIGHT)
 				{
 					overlap = true;
 				}
 			}
 		}
+		#end
 		return overlap;
-	}
-	function checkInput(pointer:FlxPointer, input:IFlxInput, justPressedPosition:FlxPoint, camera:FlxCamera):Bool
-	{
-		if (maxInputMovement != Math.POSITIVE_INFINITY
-			&& justPressedPosition.distanceTo(pointer.getScreenPosition(FlxPoint.weak())) > maxInputMovement
-			&& input == currentInput)
-		{
-			currentInput = null;
-		}
-		else if (overlapsPoint(pointer.getWorldPosition(camera, _point), true, camera))
-		{
-			updateStatus(input);
-			return true;
-		}
-
-		return false;
 	}
 
 	function get_status():Int
 	{
-		#if FLX_MOUSE
-		if (FlxG.mouse.overlaps(this) && FlxG.mouse.pressed)
-			return FlxButton.PRESSED;
-		if (FlxG.mouse.overlaps(this))
-			return FlxButton.HIGHLIGHT;
-		return FlxButton.NORMAL;
-		#else
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.overlaps(this))
+		if(visible) {
+			#if FLX_MOUSE
+			if (FlxG.mouse.overlaps(this) && FlxG.mouse.pressed)
 				return FlxButton.PRESSED;
+			if (FlxG.mouse.overlaps(this))
+				return FlxButton.HIGHLIGHT;
 			return FlxButton.NORMAL;
-		}
+			#else
+			for (touch in FlxG.touches.list)
+			{
+				if (touch.overlaps(this))
+					return FlxButton.PRESSED;
+				return FlxButton.NORMAL;
+			}
 		#end
+		}
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		#if !mobile
-		if (FlxG.keys.justPressed.ENTER && label.hasFocus)
-			onEnter();
-		if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased)
-			onClick();
-		#end
+		if(visible) {
+			#if !mobile
+			if (FlxG.keys.justPressed.ENTER && label.hasFocus)
+				onEnter();
+			if (FlxG.mouse.overlaps(this) && FlxG.mouse.justReleased)
+				onClick();
+			#end
+		}
 	}
 }
 
