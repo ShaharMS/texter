@@ -57,7 +57,7 @@ class FlxInputTextRTL extends FlxInputText
 	/**
 		Creates a new text input with extra features & bug fixes that the regular `FlxInputText` doesnt have:
 
-		- multilne
+		- multiline
 		- multiple languages
 		- LTR & RTL support both in the same text input
 		- fully working caret
@@ -71,14 +71,16 @@ class FlxInputTextRTL extends FlxInputText
 		@param	BackgroundColor	The color of the background (FlxColor.TRANSPARENT for no background color)
 		@param	EmbeddedFont	Whether this text field uses embedded fonts or not
 	**/
-	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, ?Text:String, size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK,
+	public function new(X:Float = 0, Y:Float = 0, Width:Int = 150, Text:String = '', size:Int = 8, TextColor:Int = flixel.util.FlxColor.BLACK,
 			BackgroundColor:Int = flixel.util.FlxColor.WHITE, EmbeddedFont:Bool = true)
 	{
 		super(X, Y, Width, Text, size, TextColor, BackgroundColor, EmbeddedFont);
 		wordWrap = true;
 		FlxG.stage.window.onTextInput.add(regularKeysDown, false, 1);
 		FlxG.stage.window.onKeyDown.add(specialKeysDown, false, 2);
-		#if js FlxG.stage.window.onFocusOut.add(() -> hasFocus = false); #end
+		#if js
+		FlxG.stage.window.onFocusOut.add(() -> hasFocus = false);
+		#end
 	}
 
 	#if js
@@ -112,7 +114,7 @@ class FlxInputTextRTL extends FlxInputText
 
 	/**
 		This function replaces `onKeyDown` with support for `delete`, `backspace`, arrow keys and more.
-		`specialKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+		`specialKeysDown()` is one of two functions, and is using `window.onKeyDown` to get button
 		presses, so pay attention to that when overriding.
 
 		@param key the keycode of the current key that was presses according to lime's `window.onKeyDown`
@@ -145,7 +147,7 @@ class FlxInputTextRTL extends FlxInputText
 				}
 			}
 		}
-		// those keys break the caret and place it in caretIndex -1
+		// this keys break the caret and place it in caretIndex -1
 		if (modifier.altKey || modifier.shiftKey || modifier.ctrlKey || modifier.metaKey)
 			return;
 
@@ -231,7 +233,7 @@ class FlxInputTextRTL extends FlxInputText
 				var insertionIndex = 0;
 				insertionIndex = caretIndex;
 				// starts a search for the last RTL char and places the "\n" there
-				// if the string ends and theres still no last RTl char, "\n" will be insterted at length.
+				// if the string ends and theres still no last RTL char, "\n" will be insterted at length.
 				while (CharTools.isRTL(text.charAt(insertionIndex)) || text.charAt(insertionIndex) == " " && insertionIndex != text.length)
 					insertionIndex++;
 				text = insertSubstring(text, "\n", insertionIndex);
@@ -253,7 +255,7 @@ class FlxInputTextRTL extends FlxInputText
 
 	/**
 	 * This function replaces `onKeyDown` with support for RTL & LTR letter input
-	 * `regularKeysDown()` is one of two functions, and is utilizing `window.onKeyDown` to get button
+	 * `regularKeysDown()` is one of two functions, and is using `window.onKeyDown` to get button
 	 * presses, so pay attention to that when overriding.
 	 * @param letter the letter outputted from the current key-press according to lime's `window.onTextInput`
 	 */
