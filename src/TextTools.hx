@@ -35,7 +35,7 @@ class TextTools
 	 */
 	public static function replaceLast(string:String, replace:String, by:String):String
 	{
-		var place = string.lastIndexOf(replace);
+		final place = string.lastIndexOf(replace);
 		var result = string.substring(0, place) + by + string.substring(place + replace.length);
 		return result;
 	}
@@ -50,7 +50,7 @@ class TextTools
 	 */
 	public static function replacefirst(string:String, replace:String, by:String):String
 	{
-		var place = string.indexOf(replace);
+		final place = string.indexOf(replace);
 		var result = string.substring(0, place) + by + string.substring(place + replace.length);
 		return result;
 	}
@@ -64,7 +64,7 @@ class TextTools
 	 */
 	public static function splitOnFirst(string:String, delimiter:String):Array<String>
 	{
-		var place = string.indexOf(delimiter);
+		final place = string.indexOf(delimiter);
 		var result = new Array<String>();
 		result.push(string.substring(0, place));
 		result.push(string.substring(place + delimiter.length));
@@ -81,7 +81,7 @@ class TextTools
 	 */
 	public static function splitOnLast(string:String, delimiter:String):Array<String>
 	{
-		var place = string.lastIndexOf(delimiter);
+		final place = string.lastIndexOf(delimiter);
 		var result = new Array<String>();
 		result.push(string.substring(0, place));
 		result.push(string.substring(place + delimiter.length));
@@ -248,7 +248,7 @@ class TextTools
 	 */
 	public static function multiply(string:String, times:Int):String
 	{
-		var stringcopy = string;
+		final stringcopy = string;
 		if (times <= 0)
 			return "";
 		while (--times > 0)
@@ -265,7 +265,7 @@ class TextTools
 	 * @param string the string to subtract from
 	 * @param by the string to subtract
 	 */
-	public static inline function subtract(string:String, by:String)
+	public static inline function subtract(string:String, by:String):String
 	{
 		return replaceLast(string, by, "");
 	}
@@ -276,7 +276,7 @@ class TextTools
 	 * @param paragraphs the amount of paragraphs to generate
 	 * @param length **Optional** - the total length of the text.
 	 */
-	public static inline function loremIpsum(?paragraphs:Int = 1, ?length:Int = -1)
+	public static inline function loremIpsum(paragraphs:Int = 1, length:Int = -1):String
 	{
 		var loremArray = splitOnParagraph(StringTools.replace(loremIpsumText, "\t", ""));
 		var loremText = loremArray.join("\n\n");
@@ -350,7 +350,7 @@ class TextTools
 	 */
 	public static function getLineIndexOfChar(string:String, index:Int):Int
 	{
-		var lines = string.split("\n");
+		final lines = string.split("\n");
 		var lineIndex = 0;
 		for (i in 0...lines.length)
 		{
