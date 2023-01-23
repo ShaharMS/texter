@@ -37,17 +37,17 @@ my name is שחר and היום אני בן 16
 				)
 			//)
 		);
-		trace(
-			MathLexer.extractTextFromAttributes(
-				MathLexer.resetAttributesOrder(
-					MathLexer.splitBlocks(
-						MathLexer.getMathAttributes(
-							"((12345x) + 4)/(3490)"
-						)
-					)	
-				)
-			)
-		);
+		// trace(
+		// 	MathLexer.extractTextFromAttributes(
+		// 		MathLexer.resetAttributesOrder(
+		// 			MathLexer.splitBlocks(
+		// 				MathLexer.getMathAttributes(
+		// 					"((12345x) + 4)/(3490)"
+		// 				)
+		// 			)	
+		// 		)
+		// 	)
+		// );
 		#end
 	}
 }

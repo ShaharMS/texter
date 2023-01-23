@@ -1,7 +1,5 @@
 package texter.general.math;
 
-import flash.utils.QName;
-
 using TextTools;
 using StringTools;
 using texter.general.CharTools;
