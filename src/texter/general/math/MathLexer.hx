@@ -21,7 +21,7 @@ class MathLexer
 	public static function getMathAttributes(text:String):Array<MathAttribute>
 	{
 		var attributes:Array<MathAttribute> = [];
-		text = text.trim().remove(" ").replace("sqrt", "√");
+		text = text.trim().remove(" ");
 
 		for (i in 0...text.length)
 		{
