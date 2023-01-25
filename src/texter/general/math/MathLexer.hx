@@ -39,7 +39,7 @@ class MathLexer
 			{
 				attributes.push(EndClosure(i, char));
 			}
-			else if ('${CharTools.generalMarks.join("")}√'.contains(char))
+			else if ('${CharTools.generalMarks.join("")}√⩵'.contains(char))
 			{
 				attributes.push(Sign(i, char));
 			}
