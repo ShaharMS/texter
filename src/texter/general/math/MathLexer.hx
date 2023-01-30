@@ -250,7 +250,7 @@ class MathLexer
 		var closuresMerged = numbersMerged.copy();
 		trace(closuresMerged);
 		var i = 0;
-		var start:Int = -1, end:Int = -1;
+		var start:Int = 0, end:Int = -1;
 		var elements:Array<MathAttribute> = [];
 		while (i < numbersMerged.length)
 		{
