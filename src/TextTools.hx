@@ -48,7 +48,7 @@ class TextTools
 	 * @param by the replacement string
 	 * @return the string with the first occurrence of `replace` replaced by `by`
 	 */
-	public static function replacefirst(string:String, replace:String, by:String):String
+	public static function replaceFirst(string:String, replace:String, by:String):String
 	{
 		final place = string.indexOf(replace);
 		var result = string.substring(0, place) + by + string.substring(place + replace.length);
@@ -128,7 +128,7 @@ class TextTools
 			return text;
 		}
 		var patternType:String = cast filter;
-		if (replacefirst(text, "/", "") != patternType)
+		if (replaceFirst(text, "/", "") != patternType)
 		{ // someone decided to be quirky and pass an EReg as a string
 			var regexDetector:EReg = ~/^~?\/(.*)\/(.*)$/s;
 			regexDetector.match(patternType);
@@ -376,7 +376,7 @@ class TextTools
 		while (contains(string, sub))
 		{
 			count++;
-			string = replacefirst(string, sub, "");
+			string = replaceFirst(string, sub, "");
 		}
 		return count;
 	}
