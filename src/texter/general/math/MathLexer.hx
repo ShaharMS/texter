@@ -248,7 +248,6 @@ class MathLexer
 		// TODO: #8 More efficient implementation of parenthesis grouping in SplitBlocks
 		// Closure grouping - iterative scan from the begining of the array for Start & End Closure elements
 		var closuresMerged = numbersMerged.copy();
-		trace(closuresMerged);
 		var i = 0;
 		var start:Int = 0, end:Int = -1;
 		var elements:Array<MathAttribute> = [];
