@@ -25,11 +25,11 @@ using texter.general.TextTools;
 	function parseLanguage(text) {
 	 	var interp:Array<{color:Int, start:Int, end:Int}> = [];
 		var indexOfKeyColor1 = text.indexesFromEReg(~/(?: |\n|^)(keywords|that|need|to|be|colored|blue)/m),
-		indexOfKeyColor2 = text.indexesFromArray([ "You", "can", "also", "add", "words", "with", "an", "array"]), 
+		indexOfKeyColor2 = text.indexesOfSubs([ "You", "can", "also", "add", "words", "with", "an", "array"]), 
 		indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m), //detects function syntax, camal/snake/Title case
 		indexOfClassName = text.indexesFromEReg(~/(?:\(| |\n|^)[A-Z]+[a-z]+/m), // detects Title Case
 		indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/), // detects "" and ''
-		indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+		indexOfNumbers = text.indexesOfSubs(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
 		indexOfComment = text.indexesFromEReg(~/\/\/[^\n]*|\/\*[^]*?\*\//m); // detects //
 
 		//add the indexes to the interp array
@@ -72,11 +72,11 @@ class MarkdownBlocks
 	public static dynamic function parseJSON(text:String):Array<{color:Int, start:Int, end:Int}>
 	{
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
-		var indexOfBool = text.indexesFromArray(["true", "false", "null"]),
-			indexOfCB = text.indexesFromArray(["{", "}"]),
-			indexOfEnd = text.indexesFromArray(['"\n', '",']),
+		var indexOfBool = text.indexesOfSubs(["true", "false", "null"]),
+			indexOfCB = text.indexesOfSubs(["{", "}"]),
+			indexOfEnd = text.indexesOfSubs(['"\n', '",']),
 			indexOfKeyEnd = text.indexesOf('":'),
-			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+			indexOfNumbers = text.indexesOfSubs(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 
 		for (i in indexOfBool)
 			interp.push({color: 0x4169E1, start: i.startIndex, end: i.endIndex});
@@ -108,13 +108,13 @@ class MarkdownBlocks
 	{
 		var interp:Array<{color:Int, start:Int, end:Int}> = [];
 		var indexOfBlue = text.indexesFromEReg(~/(?:\(| |\n|^)(overload|true|false|null|public|static|dynamic|extern|inline|override|macro|abstract|final|var|function|package|enum|typedef|in|is|trace|new|this|class|super|extends|implements|interface|->)/m),
-			indexOfPurple = text.indexesFromArray([
+			indexOfPurple = text.indexesOfSubs([
 				"if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "try", "catch", "throw", "import"
 			]),
 			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m),
 			indexOfClassName = text.indexesFromEReg(~/(?::|\(| |\n|^)[A-Z][a-zA-Z]+/m),
 			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
-			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+			indexOfNumbers = text.indexesOfSubs(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
 			indexOfComments = text.indexesFromEReg(~/\/\/.*/m),
 			indexOfConditionals = text.indexesFromEReg(~/#(?:if|end|elseif) [^\n]*/m);
 
@@ -145,7 +145,7 @@ class MarkdownBlocks
 			indexOfFunctionName = text.indexesFromEReg(~/([a-zA-Z_]+)\(/m),
 			indexOfClassName = text.indexesFromEReg(~/(?:\(| |\n|^)[A-Z]+[a-z]+/m),
 			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'|\$".*?"/),
-			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+			indexOfNumbers = text.indexesOfSubs(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
 			indexOfComments = text.indexesFromEReg(~/\/\/.*/m);
 		trace("endParse");
 
@@ -173,7 +173,7 @@ class MarkdownBlocks
 			indexOfPurple = text.indexesFromEReg(~/(?:\(| |\n|^)(break|case|continue|default|do|else|for|if|return|switch|while)/m),
 			indexOfFunctionName = text.indexesFromEReg(~/(?:\(| |\n|^)([a-zA-Z_]+)\(/m),
 			indexOfString = text.indexesFromEReg(~/"[^"]*"|'[^']*'/),
-			indexOfNumbers = text.indexesFromArray(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
+			indexOfNumbers = text.indexesOfSubs(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]),
 			indexOfComments = text.indexesFromEReg(~/\/\/.*/m),
 			indexOfPink = text.indexesFromEReg(~/^#[^\n]*/m);
 
